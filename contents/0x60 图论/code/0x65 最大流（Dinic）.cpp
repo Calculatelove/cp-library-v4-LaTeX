@@ -1,0 +1,80 @@
+template <class T>
+struct MaxFlow {
+    struct Edge {
+        int to;
+        T cap;
+    };
+
+    int n;
+    std::vector<Edge> e;
+    std::vector<std::vector<int>> g;
+    std::vector<int> d, cur;
+
+    MaxFlow() {}
+    MaxFlow(int n) {
+        init(n);
+    }
+
+    void init(int n) {
+        this->n = n;
+        e.clear();
+        g.assign(n + 1, {});
+        d.resize(n + 1), cur.resize(n + 1);
+    }
+
+    void addEdge(int u, int v, T w) {
+        g[u].push_back(e.size());
+        e.push_back({v, w});
+        g[v].push_back(e.size());
+        e.push_back({u, 0});
+    }
+
+    bool bfs(int s, int t) {
+        d.assign(n + 1, 0);
+        std::queue<int> q;
+        q.push(s), d[s] = 1;
+        while (q.size()) {
+            int u = q.front(); q.pop();
+            for (int i : g[u]) {
+                auto [v, w] = e[i];
+                if (w > 0 && !d[v]) {
+                    d[v] = d[u] + 1;
+                    q.push(v);
+                    if (v == t) {
+                        return 1;
+                    }
+                }
+            }
+        }
+        return 0;
+    }
+    T dfs(int u, int t, T f) {
+        if (u == t) {
+            return f;
+        }
+        auto r = f;
+        for (int &i = cur[u]; i < g[u].size(); i ++) {
+            int j = g[u][i];
+            auto [v, w] = e[j];
+            if (w > 0 && d[v] == d[u] + 1) {
+                auto a = dfs(v, t, std::min(r, w));
+                e[j].cap -= a;
+                e[j ^ 1].cap += a;
+                r -= a;
+                if (r == 0) {
+                    return f;
+                }
+            }
+        }
+        return f - r;
+    }
+
+    T dinic(int s, int t) {
+        T ans = 0;
+        while (bfs(s, t)) {
+            cur.assign(n + 1, 0);
+            ans += dfs(s, t, std::numeric_limits<T>::max());
+        }
+        return ans;
+    }
+};

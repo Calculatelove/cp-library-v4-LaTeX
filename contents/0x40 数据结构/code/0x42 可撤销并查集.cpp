@@ -1,0 +1,45 @@
+// 可撤销并查集
+struct DSU {
+    std::vector<int> sze;
+    std::vector<int> fa;
+    std::vector<std::pair<int, int>> his;
+
+    DSU() {}
+    DSU(int n) {
+        init(n);
+    }
+
+    void init(int n) {
+        sze.assign(n + 1, 1);
+        fa.resize(n + 1);
+        std::iota(fa.begin(), fa.end(), 0);
+        his.clear();
+    }
+
+    int get(int x) {
+        return fa[x] == x ? x : get(fa[x]); // 按秩合并不能路径压缩
+    }
+
+    bool merge(int x, int y) {
+        int p = get(x), q = get(y);
+        if (p == q) {
+            return 0;
+        }
+        if (sze[p] > sze[q]) {
+            std::swap(p, q);
+        }
+        his.push_back({p, q});
+        sze[q] += sze[p], fa[p] = q;
+        return 1;
+    }
+
+    int time() {
+        return his.size();
+    }
+    void revert(int tim) {
+        while (his.size() > tim) {
+            auto [p, q] = his.back(); his.pop_back();
+            sze[q] -= sze[p], fa[p] = p;
+        }
+    }
+};
