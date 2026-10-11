@@ -1,0 +1,313 @@
+\section{0x22\ 字符串\ II}
+\label{sec:0x22}
+
+\subsection{Trie}
+
+\Highlight{trie}：trie 是一个纯正的自动机，形态是树。
+
+\begin{itemize}
+\item 一个起点，若干终点。
+\item 多模式串的所有前缀，与 trie 上的所有状态一一对应。
+\item trie 主要考虑一种转移边：表示在当前状态所表示的串后面加一个字符。
+\end{itemize}
+
+\Highlight{01 trie}：
+
+\begin{itemize}
+\item 01 trie 支持可持久化，可以作为 \textbf{01 trie 的前缀和}来使用。
+\item 01 trie 支持合并：
+  \begin{itemize}
+  \item 01 trie 单次合并复杂度，取决于两棵 01 trie 的交集大小。
+  \item 01 trie 合并总复杂度，取决于所有 01 trie 的节点总数。
+  \end{itemize}
+\item 01 trie 支持可持久化合并，需要在合并时新建节点。
+\end{itemize}
+
+\InputCode{cpp}{contents/0x20 字符串/code/0x22 01 trie.cpp}
+
+\InputCode{cpp}{contents/0x20 字符串/code/0x22 可持久化 01 trie.cpp}
+
+\Highlight{01 trie 查询与 $x$ 异或的最大值}：\textbf{从高位到低位贪心}，有异走异，无异走同。
+
+\Highlight{01 trie 查询与 $x$ 异或的第 $k$ 大值}：\textbf{从高位到低位}
+
+\begin{itemize}
+\item 设当前考虑到第 $i$ 位，设 $x$ 的异位有 $\mathrm{cnt}$ 个数。
+  \begin{itemize}
+  \item 若 $k \leq \mathrm{cnt}$，则查询 $x$ 的异位中，与 $x$ 异或的第 $k$ 大值。
+  \item 若 $k > \mathrm{cnt}$，则查询 $x$ 的同位中，与 $x$ 异或的第 $k - \mathrm{cnt}$ 大值。
+  \end{itemize}
+\end{itemize}
+
+\Highlight{01 trie 查询与 $x$ 异或 $\geq k$ 的信息}：\textbf{从高位到低位}
+
+\begin{itemize}
+\item 设当前考虑到第 $i$ 位：
+  \begin{itemize}
+  \item 若 $k$ 的第 $i$ 位为 $1$，直接走 $x$ 的异位。
+  \item 若 $k$ 的第 $i$ 位为 $0$，统计 $x$ 的异位的贡献，然后走 $x$ 的同位。
+  \end{itemize}
+\item 考虑完所有位之后，统计当前叶子节点的贡献。
+\end{itemize}
+
+\Highlight{01 trie 全局异或 $x$}：\textbf{从高位到低位}，运用懒标记。
+
+设当前考虑到第 $i$ 位，若懒标记的第 $i$ 位为 $1$，则交换左右儿子。
+
+\Highlight{01 trie 维护集合异或和，支持插入、删除、全局 +1}：\textbf{从低位到高位}
+
+\begin{itemize}
+\item 额外维护：
+  \begin{itemize}
+  \item $\mathrm{cnt}$：当前状态的子树内的节点数。
+  \item $\mathrm{xr}$：当前状态的子树内的异或和。
+  \end{itemize}
+\item 插入、删除：递归操作即可。
+\item 全局 +1：交换当前节点的左右儿子，然后进入 $0$ 转移边（未交换前是 $1$ 转移边）的儿子进行递归交换。
+\end{itemize}
+
+（因为考虑二进制下 +1，相当于是\textbf{从低位到高位}找到第一个 $0$ 将其改为 $1$，然后将前面的 $1$ 都改为 $0$）
+
+\InputCode{cpp}{contents/0x20 字符串/code/0x22 01 trie 维护集合异或和.cpp}
+
+\subsection{AC 自动机}
+
+\Highlight{AC 自动机}：AC 自动机是一个状态自动机，形态是 trie。
+
+\begin{itemize}
+\item 一个起点，若干终点。
+\item 多模式串的所有前缀，与 AC 自动机上的所有状态一一对应。
+\item AC 自动机主要考虑两种边：
+  \begin{itemize}
+  \item 普通转移边：表示在当前状态所表示的串后面加一个字符。
+  \item 失配指针 fail：表示当前状态所表示的串的最长匹配后缀。这类边构成一棵树，称作 fail 树。
+  \end{itemize}
+\end{itemize}
+
+\Highlight{trie 图}：将原来 trie 中不存在的转移边 $\delta(p, c)$ 指向 $\delta(\mathrm{fail}_p, c)$。本质上是路径压缩。
+
+\Highlight{trie 图的普通转移边}：从字符串 $s$ 指向 $s' + c$，其中 $s'$ 为 $s$ 中满足 $s' + c$ 存在的最长后缀。
+
+\InputCode{cpp}{contents/0x20 字符串/code/0x22 AC 自动机.cpp}
+
+\Highlight{AC 自动机（大字符集）}：当字符集很大时，需要用到 \texttt{std::map} 与可持久化数组建立 trie 图。
+
+\InputCode{cpp}{contents/0x20 字符串/code/0x22 AC 自动机（大字符集）.cpp}
+
+\Highlight{AC 自动机查询所有模式串在文本串中的出现位置}：
+
+\textbf{将所有询问串 $t$ 去重之后}，所有询问串 $t$ 在文本串 $s$ 中的出现次数之和不超过 $\mathcal{O}(|s|\sqrt{\sum |t|})$ 级别。
+
+因为询问串的串长 $|t|$ 种类数不超过 $\mathcal{O}(\sqrt{\sum |t|})$ 级别，同一长度的询问串 endpos 各不相同。
+
+对询问串建 AC 自动机（trie 图），每个节点记录一下向上跳 fail 指针遇到的最近询问节点 up。
+
+然后从左到右扫描 $s$，扫描到右端点 $r$ 时，维护以 $r$ 结尾的最长匹配串对应的状态。然后在当前状态不断地跳 up 指针，去更新（记录）当前询问串在 $s$ 中的 endpos。
+
+\subsection{SA}
+
+\Highlight{序列 SA 的求法}：
+
+\begin{itemize}
+\item $\mathcal{O}(n \log^2 n)$：sort + 倍增 + hash。当比较函数时间开销较大时，尝试使用 \texttt{std::stable\_sort()}。
+\item $\mathcal{O}(n \log n)$：倍增 + 基数排序（双关键字排序）。
+\item $\mathcal{O}(n)$：DC3，SA-IS。
+\end{itemize}
+
+\Highlight{height 数组}：$\mathrm{height}_i = \mathrm{LCP}(\mathrm{sa}_{i - 1}, \mathrm{sa}_i)$
+
+\Highlight{height 数组求后缀 LCP}：后缀 $\mathrm{sa}_i, \mathrm{sa}_j$ ($i < j$) 的最长公共前缀为
+
+\[
+\mathrm{LCP}(\mathrm{sa}_i, \mathrm{sa}_j) = \min_{i < k \leq j}\{\mathrm{height}_k\}
+\]
+\Highlight{本质不同子串个数}：
+
+\[
+\frac{n(n + 1)}{2} - \sum_{i = 2}^n \mathrm{height}_i
+\]
+
+\Highlight{（序列 SA）height 数组的性质}：$\mathrm{height}_{\mathrm{rk}_i} \geq \mathrm{height}_{\mathrm{rk}_{i - 1}} - 1$
+
+证明：
+
+\begin{itemize}
+\item 当 $\mathrm{height}_{\mathrm{rk}_{i - 1}} = 0$ 时，命题成立。
+\item 当 $\mathrm{height}_{\mathrm{rk}_{i - 1}} \geq 1$ 时，考虑到后缀排序将 “前缀相近的后缀” 放到一起，所以 $\mathrm{height}_i$ 可以视为字典序小于 $\mathrm{sa}_i$ 的后缀与 $\mathrm{sa}_i$ 的 LCP 最大值。记 $u = \mathrm{sa}_{\mathrm{rk}_{i - 1} - 1}$，则有 $s_u = s_{i - 1}$，于是 $s[u + 1 : n]$ 的字典序比 $s[i : n]$ 更小，则必然存在一个字典序小于 $s[i : n]$ 的后缀使得与其的 LCP 大于等于 $\mathrm{height}_{\mathrm{rk}_{i - 1}} - 1$，故命题成立。
+\end{itemize}
+
+\InputCode{cpp}{contents/0x20 字符串/code/0x22 SA.cpp}
+
+\subsection{SAM}
+
+\Highlight{SAM 与其他后缀数据结构的关系}：
+
+\begin{itemize}
+\item 后缀 trie：一个字符串的所有后缀构成的 trie。
+\item 后缀 trie 上建 AC 自动机的 fail 指针：表示删除当前状态所表示的串的首字母。
+\item 后缀树：后缀 trie 虚树化（仅保留所有后缀在后缀 trie 上的终止节点，以及两两 LCA）。
+\item 后缀自动机的 parent 树：反串的后缀树。
+\end{itemize}
+
+\Highlight{SAM}：SAM 是一个状态自动机，形态是 DAG。
+
+\begin{itemize}
+\item 一个起点，若干终点。
+\item 原串的所有本质不同的子串，与在 SAM 上从起点开始到任意点结束的所有路径一一对应，不重不漏。
+\item SAM 主要考虑两种边：
+  \begin{itemize}
+  \item 普通转移边：表示在当前状态所表示的串后面加一个字符。
+  \item 后缀链接 link：表示将当前状态所表示的最短串的首字母删除。这类边构成一棵树，称作 parent 树。
+  \end{itemize}
+\item SAM 点数 $\leq 2n - 1$，边数 $\leq 3n - 4$。
+\end{itemize}
+
+\Highlight{endpos 集合}：子串 $s$ 的所有终止位置的集合，记做 $\mathrm{endpos}(s)$。
+
+\begin{itemize}
+\item SAM 中的每一个状态，都对应一个 endpos 等价类。
+\item SAM 中的每一个状态（endpos 等价类），包含的子串长度构成一个连续段，且短串是长串的后缀。
+\item 若 $s_1$ 为 $s_2$ 的后缀，则 $\mathrm{endpos}(s_1) \supseteq \mathrm{endpos}(s_2)$；否则 $\mathrm{endpos}(s_1) \bigcap \mathrm{endpos}(s_2) = \varnothing$。
+\end{itemize}
+
+\Highlight{endpos 集合的维护}：在 parent 树上使用\textbf{（可持久化）线段树合并}维护。
+
+由于在 parent 树上，节点 $p$ 的 endpos 集合为 $\mathrm{subtree}(p)$ 中所有节点 endpos 集合的并集。为此，我们\textbf{在 $s[1 : i]$ 对应状态的 endpos 集合里插入位置 $i$，然后使用数据结构合并子树的 endpos 集合}。
+
+当字符集很大时，需要用到 \texttt{std::map} 建立 SAM。
+
+\InputCode{cpp}{contents/0x20 字符串/code/0x22 SAM.cpp}
+
+\Highlight{SAM 子串定位}：\textcolor{blue}{求 $s[l : r]$ 在 SAM 中的对应状态}
+
+先定位 $s[1 : r]$ 在 SAM 中的对应状态（在构造 SAM 的过程中记录一下），然后\textbf{在 parent 树上倍增}，找到深度最浅的满足 $\mathrm{maxl} \geq r - l + 1$ 的状态。
+
+\Highlight{SAM 子串匹配}：\textcolor{blue}{给定模式串 $S$ 与文本串 $T$，对每个右端点~$r$ 求最左端的 $l$ 使得 $T[l : r]$ 为 $S$ 的子串}
+
+当 $r$ 扩展时，不断地跳后缀链接（这里令 $\mathrm{len}$ 变为对应状态的 $\mathrm{maxl}$），直到跳到根节点或存在相应的转移边为止。
+
+若存在相应的转移边，则走该转移边（这里令 $\mathrm{len} \gets \mathrm{len} + 1$）。
+
+\begin{minted}{cpp}
+int p = 1, len = 0; // 当前匹配到的状态与长度
+for (int i = 1; i <= m; i ++) {
+    int c = T[i] - 'a';
+    while (p > 1 && !SAM::t[p].trans[c]) {
+        p = SAM::t[p].link, len = SAM::t[p].maxl;
+    }
+    if (SAM::t[p].trans[c]) {
+        p = SAM::t[p].trans[c], len ++;
+    }
+    // 此时的 p 与 len，就是以 i 为结尾时匹配到的最长状态与长度
+}
+\end{minted}
+
+\Highlight{子 SAM}：\textcolor{blue}{给定模式串 $S$ 与文本串 $T$，让 $T$ 在 $S[l : r]$ 中进行匹配}
+
+判断由 $S[l : r]$ 组成的子 SAM 是否存在相应的转移边，首先在原 SAM 就要存在相应的转移边，并且原 SAM 中新状态的 endpos 集合在区间 $[l + \mathrm{len}' - 1, r]$ 中至少要有一个元素。
+
+失配时，应先尝试 $\mathrm{len} \gets \mathrm{len} - 1$ 然后继续匹配，而非直接跳失配链接。
+
+\Highlight{SAM 前端删除}：\textcolor{blue}{在一个状态的前面删除字符，求新状态}
+
+若当前长度等于当前状态的 $\mathrm{minl}$，则跳后缀链接。
+
+\Highlight{SAM 前端插入}：\textcolor{blue}{在一个状态的前面添加字符，求新状态}
+
+维护每个状态 $u$ 对应 endpos 集合的任意一个元素 $\mathrm{pos}_u$，就可以做到\textbf{在原串中定位状态 $u$}。
+
+\begin{itemize}
+\item 若长度等于当前状态的 $\mathrm{maxl}$：则相当于\textbf{在 parent 树上向某一个儿子走}。在构建 parent 树的时候，预处理每个状态的极长串前加一个字符 $c$，能走到哪个儿子即可（枚举 $u$ 以及其儿子 $v$，根据 $\mathrm{pos}_v$ 在原串中定位，即可得知从 $u$ 到 $v$ 需要添加什么字符）。
+\item 若长度小于当前状态的 $\mathrm{maxl}$：相当于要考虑当前状态是否能够容纳新串，根据 $\mathrm{pos}_u$ 在原串中定位，判断新加的字符是否与原串对应位置上的字符匹配。
+\end{itemize}
+
+\InputCode{cpp}{contents/0x20 字符串/code/0x22 SAM 前端操作.cpp}
+
+\Highlight{SAM 补节点}：\textcolor{blue}{在 parent 树中，补充询问对应的状态}
+
+parent 树是反串的后缀树，而后缀树又是后缀 trie 虚树化（仅保留所有后缀在后缀 trie 上的终止节点，以及两两 LCA）。
+
+由于询问串 $s[l : r]$ 在 SAM 上的状态可能不完全覆盖 $\mathrm{minl} \sim \mathrm{maxl}$（为该区间的一个前缀），于是我们离线将所有询问串在 SAM 上的状态找出来，然后将状态划分，\textbf{建立有关询问串的虚拟节点（补充有关询问串的虚树结构）}。此时所有询问串一定完整地覆盖了从当前状态到根的路径，且总节点数不超过 $2n + m$。
+
+简化了 parent 树的结构，降低了讨论难度。
+
+\Highlight{广义 SAM}：\textcolor{blue}{对多模式串建立 SAM}
+
+\InputCode{cpp}{contents/0x20 字符串/code/0x22 广义 SAM（离线）.cpp}
+
+\InputCode{cpp}{contents/0x20 字符串/code/0x22 广义 SAM（在线）.cpp}
+
+\subsection{PAM}
+
+\Highlight{PAM}：PAM 是一个状态自动机，形态为由两棵树构成的森林。
+
+\begin{itemize}
+\item 两个起点（偶根为 $0$，奇根为 $1$），若干终点。
+\item 原串的所有本质不同的回文子串，与 PAM 上的所有状态一一对应，不重不漏。
+\item PAM 主要考虑两种边：
+  \begin{itemize}
+  \item 普通转移边：表示在当前状态所表示的串\textbf{前后各加一个字符}。
+  \item 后缀链接 link：表示当前状态所表示的串的\textbf{最长回文后缀}。这类边构成一棵树，称作 parent 树。
+  \end{itemize}
+\item 偶根的 link 指向奇根，而我们不关心奇根的 link（因为奇根不可能失配，奇根转移出的下一个状态是单个字符，必定为回文串）。
+\item PAM 点数（\textbf{本质不同回文子串个数}）$\leq n$。因为在任意串后面加一个字符，由反证法可知本质不同回文子串至多 $+1$。
+\end{itemize}
+
+\InputCode{cpp}{contents/0x20 字符串/code/0x22 PAM.cpp}
+
+\Highlight{PAM half 指针}：表示当前状态所表示的串，长度小于等于该串一半的\textbf{最长回文后缀}。
+
+\InputCode{cpp}{contents/0x20 字符串/code/0x22 PAM half.cpp}
+
+\subsubsection{Palindrome Series}
+
+当 $t$ 是回文串 $s$ 的后缀时，$t$ 是 $s$ 的 border $\iff$ $t$ 是回文串。
+
+所以\textbf{回文串 $s$ 的回文后缀一定是 border，反之亦然}。
+
+\Highlight{Palindrome Series}：回文串 $s$ 的所有回文后缀，可以被划分成至多 $\left\lceil \log_2 n \right\rceil$ 个等差数列。
+
+进一步，每个等差数列都具有一定的周期性。同一个等差数列里的字符串，都可以被表示成
+
+\[
+W, W + A, W + A^2, \dots, W + A^k
+\]
+
+或
+
+\[
+W, B + W, B^2 + W, \dots, B^k + W
+\]
+
+其中 $W, A, B$ 均为字符串。
+
+\Highlight{PAM series-link}：对于 PAM 上的每个状态 $u$
+
+\begin{itemize}
+\item $\mathrm{diff}_u = \mathrm{len}_u - \mathrm{len}_{\mathrm{link}_u}$。
+\item $\mathrm{slink}_u$ 表示 $u$ 不断跳后缀链接 link，跳到的第一个满足 $\mathrm{diff}_v \neq \mathrm{diff}_u$ 的节点 $v$。
+\end{itemize}
+
+我们称 \textbf{diff 值相同的连续 link 链为一个 Series}，Series 中的回文串长度都构成一个等差数列。那么 $\mathrm{slink}_u$ 就表示 $u$ 所在的 Series 对应的下一个 Series 的最长回文节点。
+
+上述理论可以用来优化一类 dp 问题：
+
+\[
+f_i = \bigoplus_{s[j + 1 : i] \ \text{is} \ \text{Palindrome}} f_j
+\]
+
+（其中 $\oplus$ 表示一种运算，例如 $+$ 或者 $\min$）
+
+考虑将一个 Series 表示的所有回文串的 dp 值都记录到最长的回文串上，设 $g_u$ 表示 $u$ 所在 Series 的 dp 贡献之和（其中 $u$ 作为该 Series 中最长回文节点）。
+
+若节点 $u$ 最近一次在位置 $i$ 结尾，且 $\mathrm{diff}_u = \mathrm{diff}_{\mathrm{link}_u}$，则 $\mathrm{link}_u$ 在严格早于 $i$ 的最近一次出现在位置 $i - \mathrm{diff}_u$ 结尾。
+
+假设当前处理到位置 $i$，沿着 slink 处理每一个 Series 的贡献。设当前节点为 $u$，则 $u$ 所在 Series 中最短回文串长度为 $\mathrm{diff}_u + \mathrm{len}_{\mathrm{slink}_u}$，除了最短回文串的其他贡献，恰好等于在位置 $i - \mathrm{diff}_u$ 时已经维护好的 $g_{\mathrm{link}_u}$。因此有转移：
+
+\[
+g_u = \begin{cases}
+f_{i - \mathrm{diff}_u - \mathrm{len}_{\mathrm{slink}_u}} & \mathrm{diff}_u \neq \mathrm{diff}_{\mathrm{link}_u} \\
+f_{i - \mathrm{diff}_u - \mathrm{len}_{\mathrm{slink}_u}} \oplus g_{\mathrm{link}_u} & \mathrm{diff}_u = \mathrm{diff}_{\mathrm{link}_u}
+\end{cases}
+\]
+\InputCode{cpp}{contents/0x20 字符串/code/0x22 PAM series-link.cpp}

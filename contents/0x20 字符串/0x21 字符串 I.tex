@@ -1,0 +1,306 @@
+\section{0x21\ 字符串\ I}
+\label{sec:0x21}
+
+\subsection{哈希}
+
+\subsubsection{字符串哈希}
+
+\Highlight{字符串哈希}：字符串哈希要求\textbf{数据有序}。将字符串的元素通过某种\textbf{不具有交换律的运算}结合（例如矩阵乘法）。
+
+通常将字符串 $s$ 视为一个 \textbf{$\mathrm{base}$ 进制数}，即
+
+\[
+f(s) \equiv \sum_{i = 1}^{l} s_i \times \mathrm{base}^{l - i} \pmod M
+\]
+
+其中模数 $M$ 尽量为\textbf{大质数}，并且尽量对两个大质数模数 $M_1, M_2$ 各求一次哈希（\textbf{双哈希}）
+
+\Highlight{静态字符串区间哈希}：
+
+\[
+\begin{gathered}
+\mathrm{pre}_i = \mathrm{pre}_{i - 1} \times \mathrm{base} + s_i \\
+f(s[l : r]) = \mathrm{pre}_r - \mathrm{pre}_{l - 1} \times \mathrm{base}^{r - l + 1}
+\end{gathered}
+\]
+
+\Highlight{动态字符串区间哈希}：区间哈希值可以合并。设左右两个区间的长度与哈希值分别为 $(l_1, h_1), (l_2, h_2)$，将它们拼接形成大区间的长度与哈希值为
+
+\[
+(l_1 + l_2, h_1 \times \mathrm{base}^{l_2} + h_2)
+\]
+
+可以使用线段树动态维护。
+
+\Highlight{卡自然溢出哈希（Hash Killer I）}：
+
+$\mathrm{base}$ 为偶数：此时 $\mathrm{base}^{64} \equiv 0 \pmod{2^{64}}$。所以两个长度 $> 64$，且后 $64$ 位相同的不完全相同字符串就会哈希冲突。
+
+$\mathrm{base}$ 为奇数：使用 Thue Morse 序列攻击。对于二进制串 $s$，设 $\overline{s}$ 表示 $s$ 按位取反后得到的串。
+
+Thue Morse 序列：$t_0 = \mathtt{0}$，$t_i = t_{i - 1} + \overline{t_{i - 1}}$。此时
+
+\[
+\begin{gathered}
+f(t_i) = \mathrm{base}^{2^{i - 1}} f(t_{i - 1}) + f(\overline{t_{i - 1}}) \\
+f(\overline{t_i}) = \mathrm{base}^{2^{i - 1}} f(\overline{t_{i - 1}}) + f(t_{i - 1})
+\end{gathered}
+\]
+
+记 $h_i = f(t_i) - f(\overline{t_i})$，有 $h_i = \left(\mathrm{base}^{2^{i - 1}} - 1\right)h_{i - 1}$。由于
+
+\[
+\mathrm{base}^{2^{i - 1}} - 1 = (\mathrm{base}^{2^{i - 2}} + 1)(\mathrm{base}^{2^{i - 3}} + 1)\dots(\mathrm{base} + 1)(\mathrm{base} - 1)
+\]
+
+其中每一项都是偶数，所以 $2^i \mid \mathrm{base}^{2^{i - 1}} - 1$。于是 $2^{\frac{i(i + 1)}{2}} \mid h_i$，因此 $t_{11}$ 与 $\overline{t_{11}}$ 就会哈希冲突。
+
+\begin{quoteblock}
+Thue Morse 序列的规律：第 $x$ 位上的值等于 $\mathrm{popcount}(x) \bmod 2$。
+\end{quoteblock}
+
+\Highlight{卡大质数哈希（Hash Killer II）}：使用生日悖论攻击。
+
+\subsubsection{集合哈希}
+
+\Highlight{集合哈希}：集合哈希要求\textbf{数据无序}。将集合的元素通过某种映射规则转化后，再通过某种\textbf{具有交换律的运算}结合。
+
+\Highlight{可用的映射规则}：以打乱原来可能有的某些性质。
+
+\begin{itemize}
+\item 查表映射：将原数值 $x$ 随机赋一个新数值 $c_x$ 并存入表中。
+\item 位运算映射：将原数值 $x$ 经过 $\mathrm{xorshift}$ 得到一个新数值。
+\end{itemize}
+
+\Highlight{可用的结合方式}：
+
+\begin{itemize}
+\item 使用加法结合：
+
+\[
+f(S) = \sum_{x \in S} \mathrm{shift}(x)
+\]
+
+\item 使用异或结合（\textbf{异或哈希}）：
+
+\[
+f(S) = \bigoplus_{x \in S} \mathrm{shift}(x)
+\]
+\end{itemize}
+
+此时出现偶数次元素无贡献，出现奇数次元素只贡献一次。
+
+
+
+\Highlight{异或哈希判完全平方数}：定义\textbf{完全异或性}函数 $f$，对于任意正整数 $x, y$ 都有 $f(xy) = f(x) \oplus f(y)$。先对 $1 \sim n$ 进行一次线性筛。给其中的所有质数 $p$ 对应的 $f(p)$ 赋一个范围较大的随机数，其余合数的 $f$ 值通过线性筛得出。
+
+\textbf{此时 $x$ 为完全平方数，当且仅当 $f(x) = 0$}。
+
+当待判断的数的所有质因子都在 $1 \sim n$ 时，就可以根据所有质因子的 $f$ 函数的异或和，求出该数的 $f$ 函数。
+
+\subsection{kmp}
+
+\Highlight{字符串的 border}：对字符串 $s$ 与整数 $0 \leq r < |s|$，若 $s$ 长度为 $r$ 的前缀与后缀相等，则称 $s$ 长度为 $r$ 的前缀为 $s$ 的 border。
+
+\Highlight{字符串的周期}：对字符串 $s$ 与整数 $1 \leq p \leq |s|$，若对于任意 $i \in [1, |s| - p]$ 均有 $s_i = s_{i + p}$，则称 $p$ 为 $s$ 的周期。特别地，若 $p$ 整除 $|s|$，则称 $p$ 为 $s$ 的整周期。
+
+相当于 $s[1 : n - p] = s[p + 1 : n]$，所以 \textbf{$s$ 有长度为 $r$ 的 border $\iff$ $|s| - r$ 是 $s$ 的周期}。
+
+\Highlight{kmp}：记 $\mathrm{next}_i$ 表示字符串 $s[1 : i]$ 的最长 border 的长度。
+
+利用 border 的 border 还是原串 border 的性质，可以 $\mathcal{O}(n)$ 求解前缀函数。
+
+进一步，\textbf{$s[1 : i]$ 的所有 border 为 $\mathrm{next}_i, \mathrm{next}_{\mathrm{next}_i}, \dots$}
+
+\InputCode{cpp}{contents/0x20 字符串/code/0x21 kmp.cpp}
+
+\subsubsection{border 理论}
+
+\Highlight{弱周期引理}：若 $p, q$ 是 $s$ 的周期且 $p + q \leq n$，则 $\gcd(p, q)$ 也是 $s$ 的周期。
+
+证明：不妨设 $p > q$，下面证明 $p - q$ 也是 $s$ 的周期。
+
+\begin{itemize}
+\item 当 $i \leq q$ 时，$s_i = s_{i + p} = s_{i + p - q}$。
+\item 当 $i > q$ 时，$s_i = s_{i - q} = s_{i + p - q}$。
+\end{itemize}
+
+所以 $p - q$ 也是 $s$ 的周期，运用辗转相除法可知 $\gcd(p, q)$ 也是 $s$ 的周期。
+
+\begin{quoteblock}
+周期引理：若 $p, q$ 是 $s$ 的周期且 $p + q - \gcd(p, q) \leq n$，则 $\gcd(p, q)$ 也是 $s$ 的周期。
+\end{quoteblock}
+
+\Highlight{长 border 结构}：$s$ 的所有长度 $\geq \left\lfloor\frac{n}{2}\right\rfloor$ 的 border，它们与 $n$ 共同构成一个等差数列，公差为 $s$ 的最小周期。
+
+证明：对于两个不同 border $n - p, n - q$ ($p, q \leq \left\lceil \frac{n}{2} \right\rceil$)，\textbf{其中 $n - p$ 是最大的 border}。
+
+已知 $p, q$ 是 $s$ 的周期，由于 $p + q \leq n$，可知 $\gcd(p, q)$ 也是 $s$ 的周期。由于 $n - p$ 是最大 border，所以 $p$ 是最小周期。结合两个条件可得 $\gcd(p, q) = p$，即 $p \mid q$。同时，周期的整数倍也一定是周期。
+
+综上，$s$ 的所有长度 $\geq \left\lfloor\frac{n}{2}\right\rfloor$ 的 border 与 $n$ 共同构成一个\textbf{公差为 $p$（最小周期）的等差数列}。
+
+\begin{quoteblock}
+短周期结构：$s$ 的所有长度 $\leq \left\lceil \frac{n}{2} \right\rceil$ 的周期，都是 $s$ 最小周期的倍数。
+
+证明同「长 border 结构」。
+\end{quoteblock}
+
+\Highlight{字符串 border 结构}：$s$ 的所有 border 可以被划分成至多 $\left\lceil \log_2 n \right\rceil$ 个等差数列。
+
+进一步，每个等差数列都具有一定的周期性。同一个等差数列里的字符串，都可以被表示成
+
+\[
+W, W + A, W + A^2, \dots, W + A^k
+\]
+
+或
+
+\[
+W, B + W, B^2 + W, \dots, B^k + W
+\]
+
+其中 $W, A, B$ 均为字符串。
+
+证明：设 $[2^i, 2^{i + 1})$ 中最大的 border 为 $p$，那么段内的其余 border 都是 $s[1 : p]$ 的 border，且长度 $\geq \left\lfloor \frac{p}{2} \right\rfloor$，由「长 border 结构」可知段内构成一个等差数列。
+
+推论：$s$ 的所有公差 $\geq d$ 的 border 的等差数列总大小是 $\mathcal{O}\left( \frac{n}{d} \right)$ 的。
+
+\Highlight{Misc}：
+
+\begin{itemize}
+\item 若 $s$ 在 $t$ 中的某两个匹配 $s_1, s_2$ 有重合，且起始位置相差 $d$，则 $d$ 均为 $s$ 与 $s_1 \cup s_2$（两个匹配区间并）的周期。
+\item 若 $|s| \geq \frac{|t|}{2}$，则 $s$ 在 $t$ 中的匹配起始位置形成等差数列。若该等差数列至少有 $3$ 项，则公差为 $s$ 的最小周期 $\mathrm{per}(s)$。
+\end{itemize}
+
+\subsection{Z Algorithm}
+
+\Highlight{Z Algorithm}：记 $Z_i$ 表示字符串 $s$ 与 $s[i : n]$ 的最长公共前缀（LCP）长度。在某些情况下，可能会记 $Z_1 = 0$。
+
+考虑从前向后扫。维护一个右端点最靠右，且与 $s$ 的前缀匹配的子串 $s[l : r]$。
+
+\begin{itemize}
+\item 若 $i \leq r$，则
+
+\[
+Z_i \geq \min(Z_{i - l + 1}, r - i + 1)
+\]
+
+\item 若 $i > r$，则
+
+\[
+Z_i \geq 0
+\]
+\end{itemize}
+
+在当前 $Z_i$ 的基础上不断尝试扩展。
+
+注意到单次枚举的次数为 $\max\{l + Z_l - 1\}$ 的增量，时间复杂度 $\mathcal{O}(n)$。
+
+\InputCode{cpp}{contents/0x20 字符串/code/0x21 Z-Algorithm.cpp}
+
+\subsection{manacher}
+
+\Highlight{奇偶回文串的处理}：回文串按照长度分成奇偶两类，奇回文串的对称轴处于一个字符上，偶回文串的对称轴处于两个相邻字符的中间。
+
+可以在一个字符串的首尾以及所有的相邻两字符之间，插入一个原串中从未出现的字符（例如 \texttt{\#}, \texttt{\$}, \texttt{\textasciicircum{}}）。
+
+这样原串中的每一个回文串，都可以对应到新串中的一个极长的奇回文串。
+
+\Highlight{manacher}：记 $p_i$ 表示以位置 $i$ 为中心的最长回文子串的半径（含中心）。
+
+考虑从前向后扫。维护一个右端点最靠右的回文子串，不妨记该回文串的中心为 $k$。
+
+\begin{itemize}
+\item 若 $i \leq k + p_k - 1$，则
+
+\[
+p_i \geq \min(k + p_k - i, p_{2k - i})
+\]
+
+\item 若 $i > k + p_k - 1$，则
+
+\[
+p_i \geq 0
+\]
+\end{itemize}
+
+在当前 $p_i$ 的基础上不断尝试扩展。
+
+注意到单次枚举的次数为 $\max\{k + p_k - 1\}$ 的增量，时间复杂度 $\mathcal{O}(n)$。
+
+\InputCode{cpp}{contents/0x20 字符串/code/0x21 manacher.cpp}
+
+\InputCode{cpp}{contents/0x20 字符串/code/0x21 manacher（奇偶分开考虑）.cpp}
+
+\Highlight{反回文串}：对于长度为 $n$ 的字符串 $s$，若对于任意 $i \in [1, n]$ 均有 $s_i \neq s_{n - i + 1}$，则称 $s$ 为反回文串。
+
+\Highlight{01 串的反 manacher}：相当于对于每两个相邻字符的中间，求以该位置为中心的\textbf{最长反回文子串}的半径。注意我们只需要考虑长度为偶数的串。
+
+当字符集大小为 $2$ 时，考虑形如 \texttt{ABCD} 的字符串，若已知 $A \neq B, A \neq D, B \neq C$，可以推出 $C\neq D$，所以 manacher 的对称复用逻辑还是正确的。但是字符集大小超过 $2$ 的时候，上述推理就不成立了。
+
+具体实现时，只需要将 manacher 偶回文串指针扩展过程中的 \texttt{==} 改成 \texttt{!=} 即可。
+
+\subsection{Lyndon 分解}
+
+\Highlight{Lyndon 串}：对于字符串 $s$，若 $s$ 的字典序小于 $s$ 的所有非空真后缀，则称 $s$ 为 Lyndon 串。
+
+等价定义：
+
+\begin{itemize}
+\item 字符串 $s$ 的字典序\textbf{严格小于} $s$ 的其他循环移位。
+\item 对字符串 $s$ 的任意非空分解 $s = uv$，都有 $u < v$。
+\item 对字符串 $s$ 的任意非空分解 $s = uv$，都有 $uv < vu$。
+\end{itemize}
+
+\Highlight{Lyndon 串的拼接性质}：
+
+\begin{itemize}
+\item \textbf{若字符串 $u, v$ 均为 Lyndon 串并且 $u < v$，则 $uv$ 为 Lyndon 串，且 $u < uv < v$}。
+\item 若字符串 $u, v$ 均为 Lyndon 串并且 $u < v$，则对于任意正整数 $a, b$，均有 $u^av^b$ 为 Lyndon 串，且 $u < u^av^b < v$。
+\item 字符串 $s$ ($|s| \geq 2$) 是 Lyndon 串，当且仅当 $s = uv$ ($|u| > 0, |v| > 0, \boldsymbol{u < v}$) 并且 $u, v$ 均为 Lyndon 串。
+\end{itemize}
+
+\Highlight{Lyndon 串的简单性质}：
+
+\begin{itemize}
+\item Lyndon 串不存在非空 border。
+\item 截取 Lyndon 串的某个前缀，将其末字符增大，结果仍是 Lyndon 串（截出的前缀本身不必是 Lyndon 串）。
+\item 若字符串 $s_1, s_2$ 满足 $s_1$ 是 Lyndon 串且 $s_1 > s_2$，则 $s_1 > s_2^2$。
+\end{itemize}
+
+\Highlight{Lyndon 分解}：将字符串 $s$ 分解为 $w_1w_2\dots w_k$，其中所有的 $w_i$ 均为 Lyndon 串，且满足 $w_1 \geq w_2 \geq \dots \geq w_k$。
+
+\Highlight{Lyndon 分解的性质}：
+
+\begin{itemize}
+\item Lyndon 分解存在且唯一。
+\item 字符串 $s$ 的字典序最小非空后缀为 $w_k$。
+\item 字符串 $s$ 是 Lyndon 串当且仅当 $k = 1$。
+\end{itemize}
+
+\Highlight{Lyndon 分解（duval）}：
+
+\InputCode{cpp}{contents/0x20 字符串/code/0x21 duval.cpp}
+
+\subsection{最小表示法}
+
+\Highlight{循环同构}：若长度为 $n$ 的字符串 $s$，可以选择一个起始位置 $i$ ($1 \leq i \leq n$)，使得 $s[i : n] + s[1 : i - 1] = t$，则称 $s, t$ 循环同构。
+
+\Highlight{最小表示法}：字符串 $s$ 的最小表示法，为与 $s$ 循环同构的所有字符串中，字典序最小的字符串。
+
+对于两个不同的起始位置 $i, j$，已知它们的前 $k$ 位相同。考虑继续比较下一位：
+
+\begin{itemize}
+\item 若 $s_{(i + k) \bmod n} > s_{(j + k) \bmod n}$，可以发现区间 $[i, i + k]$ 内的起始位置都不能成为答案，因为\textbf{对于起始位置 $i + p$ ($p \in [0, k]$) 来说，起始位置 $j + p$ 一定更优}。所以此时可以跳过区间 $[i, i + k]$ 的起始位置，令 $i \gets i + k + 1$，$k \gets 0$。
+\item 若 $s_{(i + k) \bmod n} < s_{(j + k) \bmod n}$ 也是同理，跳过区间 $[j, j + k]$ 的起始位置，令 $j \gets j + k + 1$，$k \gets 0$。
+\item 若 $s_{(i + k) \bmod n} = s_{(j + k) \bmod n}$，令 $k \gets k + 1$，然后继续比较。
+\end{itemize}
+
+在跳转的过程中，若两个起始位置 $i, j$ 相同，则任选一个加一。最终 $\min(i, j)$ 即为最优的起始位置。
+
+时间复杂度 $\mathcal{O}(n)$。
+
+\InputCode{cpp}{contents/0x20 字符串/code/0x21 最小表示法.cpp}
+
+\subsection{带通配符的字符串匹配}
+

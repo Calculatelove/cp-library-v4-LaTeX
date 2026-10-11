@@ -1,0 +1,880 @@
+\section{0x33\ 数学\ 组合计数}
+\label{sec:0x33}
+
+\subsection{排列组合}
+
+\Highlight{排列数}：$A_{n}^m$，从 $n$ 个有标号元素中，取出 $m$ 个元素排成一列的方案数（需要考虑取数顺序）。
+
+\[
+A_n^m = \frac{n!}{(n - m)!} = n^{\underline{m}}
+\]
+\Highlight{组合数}：$C_n^m$ 或 $\binom{n}{m}$，从 $n$ 个有标号元素中，取出 $m$ 个元素组成集合的方案数（不需要考虑取数顺序）。
+
+\[
+\binom{n}{m} = \begin{cases}
+\frac{n^{\underline{m}}}{m!} & m \in \mathbb{Z}, m \geq 0 \\
+0 & m \in \mathbb{Z}, m < 0
+\end{cases}
+\]
+
+\subsubsection{组合数常见恒等式}
+
+\Highlight{阶乘展开式}：$n, m \in \mathbb{Z}$，$n \geq m \geq 0$
+
+\[
+\binom{n}{m} = \frac{n!}{m!(n - m)!}
+\]
+\Highlight{归纳恒等式}：$m \in \mathbb{Z}$
+
+\[
+\binom{n}{m} = \binom{n - 1}{m} + \binom{n - 1}{m - 1}
+\]
+\Highlight{对称恒等式}：$n, m \in \mathbb{Z}$，$n \geq 0$
+
+\[
+\binom{n}{m} = \binom{n}{n - m}
+\]
+\Highlight{吸收恒等式}：$m \in \mathbb{Z}$
+
+\[
+\begin{aligned}
+\binom{n}{m} & = \frac{n}{m}\binom{n - 1}{m - 1} \\
+\binom{n}{m} & = \frac{n}{n - m}\binom{n - 1}{m} \\
+\end{aligned}
+\]
+\Highlight{上指标反转}：$m \in \mathbb{Z}$
+
+\[
+\binom{n}{m} = (-1)^m \binom{m - n - 1}{m}
+\]
+\Highlight{三项式版恒等式}：$m, k \in \mathbb{Z}$
+
+\[
+\binom{n}{m}\binom{m}{k} = \binom{n}{k}\binom{n - k}{m - k}
+\]
+\Highlight{二项式定理}：$n \in \mathbb{N}$
+
+\[
+(x + y)^n = \sum_{i = 0}^n \binom{n}{i}x^{i}y^{n - i}
+\]
+
+\begin{quoteblock}
+一些常见特例：
+
+\begin{itemize}
+\item $x = 1$ 且 $y = a$：
+
+\[
+\sum_{i = 0}^{n} \binom{n}{i}a^i = (1 + a)^n
+\]
+
+\item $x = 1$ 且 $y = -1$：
+
+\[
+\sum_{i = 0}^n (-1)^i \binom{n}{i} = [n = 0]
+\]
+\end{itemize}
+\end{quoteblock}
+
+\Highlight{广义二项式定理}：$r \in \mathbb{R}$
+
+\[
+(x + y)^r = \sum_{k = 0}^{\infty} \frac{r^{\underline{k}}}{k!} x^{k}y^{r - k}
+\]
+\Highlight{平行求和法}：$m \in \mathbb{Z}$
+
+\[
+\sum_{0 \leq k \leq m} \binom{n + k}{k} = \binom{n + m + 1}{m}
+\]
+\Highlight{上指标求和法}：$m \in \mathbb{Z}$，$n \geq 0$
+
+\[
+\sum_{0 \leq k \leq n}\binom{k}{m} = \binom{n + 1}{m + 1}
+\]
+\Highlight{范德蒙德卷积}：$m \in \mathbb{Z}$
+
+\[
+\sum_k \binom{s}{k}\binom{t}{m - k} = \binom{s + t}{m}
+\]
+\Highlight{范德蒙德卷积变式}：$m \in \mathbb{Z}$
+
+\[
+\sum_k \binom{k}{s}\binom{m - k}{t} = \binom{m + 1}{s + t + 1}
+\]
+\Highlight{斜对角线求和法}：$n \in \mathbb{Z}$
+
+\[
+\sum_{i = 0}^n \binom{n - i}{i} = \mathrm{Fib}_{n + 1}
+\]
+
+\begin{quoteblock}
+等价于长度为 $n - 1$ 的没有相邻 $1$ 的二进制串个数。
+\end{quoteblock}
+
+\Highlight{组合数带权和}：$n \in \mathbb{Z}$
+
+\[
+\sum_{i = 0}^n i\binom{n}{i} = n2^{n - 1}
+\]
+\Highlight{组合数带权平方和}：$n \in \mathbb{Z}$
+
+\[
+\sum_{i = 0}^n i^2\binom{n}{i} = n(n + 1)2^{n - 2}
+\]
+
+\subsubsection{插板法}
+
+\Highlight{问题 1}：将 $n$ 个完全相同的元素分成 $k$ 组，保证每组至少有一个元素。等价于 $\sum_{i = 1}^k x_i = n$ 且 $\forall x_i \geq 1$ 的整数解个数。
+
+相当于将 $k - 1$ 块板，插入 $n - 1$ 个间隙中。
+
+\[
+\binom{n - 1}{k - 1}
+\]
+\Highlight{问题 2}：将 $n$ 个完全相同的元素分成 $k$ 组，允许组内元素为空。等价于 $\sum_{i = 1}^k x_i = n$ 且 $\forall x_i \geq 0$ 的整数解个数。
+
+给 $k$ 组分别补一个元素，转化为问题 1。
+
+\[
+\binom{n + k - 1}{k - 1}
+\]
+\Highlight{问题 3}：给 $n$ 个完全相同的元素分成 $k$ 组，保证第 $i$ 组至少分到 $a_i$ 个元素。
+
+给第 $i$ 组提前安排 $a_i$ 个元素，转化为问题 2。
+
+\[
+\binom{n - \sum a_i + k - 1}{k - 1}
+\]
+
+\subsubsection{Lucas 定理}
+
+\Highlight{Lucas 定理}：对于质数 $p$
+
+\[
+\binom{n}{m} \equiv \binom{\lfloor n / p \rfloor}{\lfloor m / p \rfloor}\binom{n \bmod p}{m \bmod p} \pmod p
+\]
+相当于是将 $n, m$ 转化为 $p$ 进制，将每一位上对应的组合数 $\binom{n_i}{m_i}$ 相乘后对 $p$ 取模。
+
+\Highlight{组合数 mod 2}：当 $p = 2$ 时，$\binom{n}{m} \equiv \binom{\lfloor n / 2 \rfloor}{\lfloor m / 2 \rfloor}\binom{n \bmod 2}{m \bmod 2} \pmod 2$。
+
+故 $\binom{n}{m} \bmod 2 = 1$，当且仅当\textbf{在二进制下 $m$ 是 $n$ 的子集}。
+
+\subsection{组合数常见求法}
+
+\subsubsection{求法 1：递推}
+
+\begin{quoteblock}
+\textbf{适用情况：对模数不做要求，可以承受平方时间的预处理（$n \leq 5000$）。}
+
+时间复杂度：预处理 $\mathcal{O}(n^2)$，查询 $\mathcal{O}(1)$。
+\end{quoteblock}
+
+初值 $\binom{n}{0} = \binom{n}{n} = 1$，递推式 $\binom{n}{m} = \binom{n - 1}{m} + \binom{n - 1}{m - 1}$。
+
+\begin{minted}{cpp}
+for (int i = 0; i <= n; i ++) {
+    C[i][0] = C[i][i] = 1;
+    for (int j = 1; j < i; j ++) {
+        C[i][j] = (C[i - 1][j] + C[i - 1][j - 1]) % mod;
+    }
+}
+\end{minted}
+
+\subsubsection{求法 2：预处理阶乘与阶乘逆元}
+
+\begin{quoteblock}
+\textbf{适用情况：要求模数为质数，可以承受线性时间的预处理（$n \leq 10^6$）。}
+
+时间复杂度：预处理 $\mathcal{O}(n)$，查询 $\mathcal{O}(1)$。
+\end{quoteblock}
+
+将组合数使用阶乘形式表达
+
+\[
+\binom{n}{m} = \frac{n!}{m!(n - m)!}
+\]
+考虑预处理出阶乘与阶乘逆元。
+
+设 $\mathrm{fact}_i = i!$，则有初值 $\mathrm{fact}_0 = 1$，递推式 $\mathrm{fact}_i =\mathrm{fact}_{i - 1} \times i$。
+
+设 $\mathrm{facv}_i = \frac{1}{i!}$，则有初值 $\mathrm{facv}_n = \mathrm{fact}_n^{-1}$，递推式 $\mathrm{facv}_i = \mathrm{facv}_{i + 1} \times(i + 1)$。
+
+于是先正着递推一遍得到 $\mathrm{fact}_{0, \dots, n}$，然后通过一次求逆元得到 $\mathrm{facv}_n$，最后再反着递推一遍得到 $\mathrm{facv}_{n, \dots, 0}$。
+
+\InputCode{cpp}{contents/0x30 数学/code/0x33 组合数（预处理阶乘与阶乘逆元）.cpp}
+
+\subsubsection{求法 3：暴力统计}
+
+\begin{quoteblock}
+\textbf{适用范围：要求模数为质数，$m$ 的范围可以承受线性枚举。}
+
+时间复杂度：无预处理，查询 $\mathcal{O}(m)$。
+\end{quoteblock}
+
+将组合数表达为
+
+\[
+\binom{n}{m} = \frac{n^{\underline{m}}}{m!}
+\]
+注意到分子分母均只有 $m$ 项，当 $n$ 很大但 $m$ 很小时，可以暴力枚举。
+
+具体实现时，可以先分别求出分子与分母，然后再对分母求一次逆元。
+
+\subsubsection{求法 4：Lucas 定理}
+
+\begin{quoteblock}
+\textbf{适用范围：要求模数为质数，模数以内的组合数可以预处理。}
+
+时间复杂度：预处理 $\mathcal{O}(p)$，查询 $\mathcal{O}(\log_{p} n)$。
+\end{quoteblock}
+
+由 Lucas 定理，得
+
+\[
+\binom{n}{m} \equiv \binom{\lfloor n / p \rfloor}{\lfloor m / p \rfloor}\binom{n \bmod p}{m \bmod p} \pmod p
+\]
+先预处理出模数以内的组合数。然后不断地使用 Lucas 定理，直到 $n, m$ 递降至模数以内。
+
+\subsubsection{求法 5：exLucas 定理}
+
+\sout{待填坑。}
+
+\subsubsection{求法 6：分段打表}
+
+\begin{quoteblock}
+\textbf{适用范围：要求模数为固定质数，代码长度限制不小，可以承受段长 $\mathcal{O}(W)$ 时间的查询。}
+
+\textbf{（正常数据范围 $n \leq 10^9$，配合 Lucas 定理可以做到 $\mathrm{mod} \leq 10^9$ 且 $n \leq 10^{18}$）}
+
+时间复杂度：打表预处理，查询 $\mathcal{O}(W)$。
+\end{quoteblock}
+
+仍然将组合数使用阶乘形式表达，每次查询相当于要得到三个阶乘的值。
+
+考虑分段打表。记段长为 $W$（取 $10^5 \sim 10^6$ 相对合适），先通过打表预处理出所有 $W$ 的倍数的阶乘。
+
+每次查询 $n!$ 的时候，就找到最近的 $W$ 的倍数，根据该答案继续向上乘。
+
+\subsubsection{邪修：快速阶乘算法}
+
+\begin{quoteblock}
+\textbf{适用范围：要求模数为不固定质数（$n \leq 10^9$）。}
+
+时间复杂度：无预处理，查询 $\mathcal{O}(\sqrt{n} \log n)$。
+\end{quoteblock}
+
+直接使用快速阶乘算法！得到三个阶乘的值。
+
+\subsubsection{求法 7：阶乘分解质因数}
+
+\begin{quoteblock}
+\textbf{适用范围 1：对模数不做要求，可以承受线性时间的查询（$n \leq 10^6$）。}
+
+时间复杂度：预处理 $\mathcal{O}(n)$，查询 $\mathcal{O}(n)$。
+
+\textbf{适用范围 2：高精度组合数（$n \leq 5000$）。}
+\end{quoteblock}
+
+仍然将组合数使用阶乘形式表达，我们考虑 $1 \sim n$ 中的每个质数出现的次数。
+
+先将 $1 \sim n$ 中所有的质数提前筛出来，大约有 $\frac{n}{\ln n}$ 个质数。对于质数 $p$，在阶乘 $n!$ 中 $p$ 的出现次数为
+
+\[
+\sum_{i = 1}^{\lfloor \log_p n \rfloor} \left\lfloor \frac{n}{p^i} \right\rfloor
+\]
+于是将三个阶乘都进行质因数分解，得出每个质数的出现次数，然后将所有质数的贡献相乘即可。
+
+时间复杂度 $\mathcal{O}(n)$（高精度组合数的复杂度另算）。
+
+\subsection{斯特林数}
+
+\subsubsection{第一类斯特林数}
+
+\sout{待填坑。}
+
+\subsubsection{第二类斯特林数}
+
+\sout{待填坑。}
+
+\subsection{卡特兰数}
+
+\Highlight{卡特兰数}：$\mathrm{Cat}_n$，从原点 $(0, 0)$ 出发，每次只能向 $x$ 轴或 $y$ 轴正方向走，且不能越过直线 $y = x$，到达 $(n, n)$ 的方案数。
+
+下标从 $0$ 开始的若干项：
+
+\[
+1, 1, 2, 5, 14, 42, 132, 429, 1430, \dots
+\]
+\Highlight{卡特兰数通项公式}：
+
+\[
+\begin{aligned}
+\mathrm{Cat}_n & = \binom{2n}{n} - \binom{2n}{n - 1} \\
+& = \frac{\binom{2n}{n}}{n + 1}
+\end{aligned}
+\]
+简单推导：越过直线 $y = x$，相当于是触碰直线 $y = x + 1$。
+
+将触碰 $y = x + 1$ 的第一个点以后的路径，关于 $y = x + 1$ 对称，就可以得到一条从 $(0, 0)$ 到 $(n - 1, n + 1)$ 的路径。
+
+\textbf{于是「$(0, 0) \to (n, n)$ 且越过 $y = x$ 的路径」与「$(0, 0) \to (n - 1, n + 1)$ 的路径」是一一对应的}，方案数均为 $\binom{2n}{n - 1}$。
+
+正难则反，不越过直线 $y = x$ 的方案数，即为总方案数 $\binom{2n}{n}$ 减去越过直线的方案数 $\binom{2n}{n - 1}$。
+
+\Highlight{卡特兰数递推公式}：
+
+\[
+\begin{gathered}
+\mathrm{Cat}_0 = 1 \\
+\mathrm{Cat}_n = \sum_{i = 0}^{n - 1}\mathrm{Cat}_i\mathrm{Cat}_{n - i - 1}
+\end{gathered}
+\]
+简单推导：\textbf{枚举第一次触碰直线 $y = x$ 的位置 $(i, i)$}，其中 $i \geq 1$。
+
+由于在 $(i, i)$ 之前不能触碰直线 $y = x$，相当于是 $(1, 0) \to (i, i - 1)$ 不越过直线 $y = x - 1$，于是这部分的方案数为 $\mathrm{Cat}_{i - 1}\mathrm{Cat}_{n - i}$。
+
+\Highlight{卡特兰数递推公式 2}：
+
+\[
+\begin{gathered}
+\mathrm{Cat}_0 = 1\\
+\mathrm{Cat}_n = \frac{4n - 2}{n + 1}\mathrm{Cat}_{n - 1}
+\end{gathered}
+\]
+\Highlight{常见卡特兰数问题}：
+
+\begin{itemize}
+\item 从原点 $(0, 0)$ 出发，每次只能向 $x$ 轴或 $y$ 轴正方向走，且不能越过直线 $y = x$，到达 $(n, n)$ 的方案数 $\mathrm{Cat}_n$。
+\item 以 $1, 2, \dots, n$ 作为 $n$ 个元素的进栈序列时，出栈序列的方案数 $\mathrm{Cat}_n$。
+\item 以 $n$ 对括号组成的合法括号序列的方案数 $\mathrm{Cat}_n$。
+\item 以 $n$ 个节点构造无标号、左右儿子区分的二叉树个数 $\mathrm{Cat}_n$。
+\item 以 $n$ 个节点构造无标号、儿子区分的有根树个数 $\mathrm{Cat}_{n - 1}$。
+\item 以圆周上的 $2n$ 个点为端点，连互不相交的 $n$ 条弦的方案数 $\mathrm{Cat}_n$。
+\item 将凸 $n$ 边形用其中 $n - 3$ 条对角线分割为互不重叠的 $n - 2$ 个三角形的方案数 $\mathrm{Cat}_{n - 2}$。
+\item 将 $1 \sim 2n$ 中的每个数，不重不漏地填入一个 $2 \times n$ 的矩阵，每个元素大于其左方、上方元素的方案数 $\mathrm{Cat}_n$。
+\end{itemize}
+
+\subsection{贝尔数}
+
+\Highlight{贝尔数}：$B_n$，表示将 $n$ 个两两不同的元素，划分成若干个互不区分的非空子集的方案数。
+
+下标从 $0$ 开始的若干项：
+
+\[
+\begin{gathered}
+1, 1, 2, 5, 15, \\
+52, 203, 877, 4140, \\
+21147, 115975, 678578, 4213597, \\
+27644437, 190899322, 1382958545, \dots
+\end{gathered}
+\]
+\Highlight{贝尔数递推公式}：
+
+\[
+\begin{gathered}
+B_0 = 1 \\
+B_n = \sum_{i = 0}^{n - 1} \binom{n - 1}{i}B_i
+\end{gathered}
+\]
+简单推导：枚举与元素 $n$ 在同一集合的元素个数 $i$，共有 $\binom{n - 1}{i}$ 种选法，剩下的元素继续划分，于是这部分的方案数为 $\binom{n - 1}{i}B_{n - 1 - i}$。
+
+\Highlight{\textbf{贝尔数级别的暴搜}}：当我们需要将 $n$ 个两两不同的元素，划分成若干个互不区分的非空子集时。\textbf{若 $n$ 较小可以直接暴搜，复杂度为 $B_n$ 级别}。
+
+设 $s_1, \dots, s_{t}$ 表示当前时刻已经存在的集合，每次加入一个新元素 $x$ 时有两种转移
+
+\begin{itemize}
+\item 选择一个已经存在的集合 $s_i$，将 $x$ 加入 $s_i$。
+\item 新开一个集合 $s_{t + 1}$，将 $x$ 加入 $s_{t + 1}$。
+\end{itemize}
+
+\Highlight{贝尔数与第二类斯特林数的关系}：
+
+\[
+B_n = \sum_{i = 0}^n {n \brace i}
+\]
+因为第二类斯特林数 ${n \brace i}$ 表示将 $n$ 个两两不同的元素，划分成 $i$ 个互不区分的非空子集的方案数。
+
+\subsection{斐波那契数列}
+
+\Highlight{斐波那契数列}：$\mathrm{Fib}_n$。
+
+\Highlight{斐波那契数列递推公式}：
+
+\[
+\begin{gathered}
+\mathrm{Fib}_0 = 0, \mathrm{Fib}_1 = 1\\
+\mathrm{Fib}_n = \mathrm{Fib}_{n - 1} + \mathrm{Fib}_{n - 2}
+\end{gathered}
+\]
+\Highlight{斐波那契数列递推公式（矩阵形式）}：
+
+\[
+\begin{bmatrix}
+\mathrm{Fib}_n & \mathrm{Fib}_{n - 1}
+\end{bmatrix}
+=
+\begin{bmatrix}
+\mathrm{Fib}_{n - 1} & \mathrm{Fib}_{n - 2}
+\end{bmatrix}
+\times
+\begin{bmatrix}
+1 & 1 \\
+1 & 0
+\end{bmatrix}
+\]
+即
+
+\[
+\begin{bmatrix}
+\mathrm{Fib}_n & \mathrm{Fib}_{n - 1}
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 & 0
+\end{bmatrix}
+\times
+\begin{bmatrix}
+1 & 1 \\
+1 & 0
+\end{bmatrix}^{n - 1}
+\]
+该转移矩阵可以求逆，从而实现逆向转移。
+
+\Highlight{斐波那契数列通项公式}：
+
+\[
+\mathrm{Fib}_n = \frac{\left( \frac{1 + \sqrt{5}}{2} \right)^n - \left( \frac{1 - \sqrt{5}}{2} \right)^n}{\sqrt{5}}
+\]
+当 $5$ 是模 $p$ 意义下的\textbf{二次剩余}时（一个常见模数是 $10^9 + 9$），可以直接暴力预先找出 $\sqrt{5}$，然后使用通项公式计算。
+
+否则，考虑使用\textbf{扩展数域}进行计算，定义扩展数域 $\mathbb{F}_p(\sqrt{5})$ 为
+
+\[
+\{ a + b\sqrt{5} \mid a, b \in \mathbb{F}_p \}
+\]
+可以验证，$\mathbb{F}_p(\sqrt{5})$ 关于加、减、乘、除封闭。记 $(a, b)$ 表示 $a + b\sqrt{5}$，则有
+
+\[
+\begin{aligned}
+(a, b) \pm (c, d) & = (a\pm c, b\pm d) \\
+(a, b) \times (c, d) & = (ac + 5bd, ad + bc) \\
+(a, b) \div (c, d) & = \left( \frac{ac - 5bd}{c^2 - 5d^2} , \frac{bc - ad}{c^2 - 5d^2} \right)
+\end{aligned}
+\]
+\Highlight{广义斐波那契数列}：将递推公式反过来写，有 $\mathrm{Fib}_n = \mathrm{Fib}_{n + 2} - \mathrm{Fib}_{n + 1}$。
+
+考虑将斐波那契数列扩展到负数域，经过推导可得
+
+\[
+\mathrm{Fib}_{-n} = (-1)^{n - 1}\mathrm{Fib}_n
+\]
+\Highlight{类斐波那契数列}：已知数列 $G_0 = a, G_1 = b$，$G_n = G_{n - 1} + G_{n - 2}$，则有
+
+\[
+G_n = \mathrm{Fib}_{n - 1} \times a + \mathrm{Fib}_n \times b
+\]
+类斐波那契数列相加，仍然是类斐波那契数列。只需将相应的 $a, b$ 相加即可。
+
+\subsubsection{斐波那契数列常见恒等式}
+
+\Highlight{斐波那契数列求和}：
+
+\[
+\sum_{i = 1}^n \mathrm{Fib}_i = \mathrm{Fib}_{n + 2} - 1
+\]
+\Highlight{斐波那契数列平方和}：
+
+\[
+\sum_{i = 1}^n \mathrm{Fib}_i^2 = \mathrm{Fib}_n\mathrm{Fib}_{n + 1}
+\]
+\Highlight{卡西尼性质}：
+
+\[
+\mathrm{Fib}_{n - 1}\mathrm{Fib}_{n + 1} - \mathrm{Fib}_n^2 = (-1)^n
+\]
+简单推导：$\mathrm{Fib}_{n - 1}\mathrm{Fib}_{n + 1} - \mathrm{Fib}_n^2 = \det\begin{pmatrix} \mathrm{Fib}_{n + 1} & \mathrm{Fib}_n \\\mathrm{Fib}_n & \mathrm{Fib}_{n - 1} \end{pmatrix} = \det\begin{pmatrix} 1 & 1 \\1 & 0 \end{pmatrix}^n = (-1)^n$。
+
+\Highlight{附加性质}：
+
+\[
+\mathrm{Fib}_{n + m} = \mathrm{Fib}_{n + 1}\mathrm{Fib}_m + \mathrm{Fib}_n\mathrm{Fib}_{m - 1}
+\]
+简单推导：可以使用 “类斐波那契数列” 的知识解释。
+
+记 $G_0 = \mathrm{Fib}_n, G_1 = \mathrm{Fib}_{n + 1}$，$G_n = G_{n - 1} + G_{n - 2}$，则有 $\mathrm{Fib}_{n + m} = G_m$。
+
+\Highlight{斐波那契数列相邻项互质性质}：
+
+\[
+\gcd(\mathrm{Fib}_n, \mathrm{Fib}_{n + 1}) = 1
+\]
+\Highlight{斐波那契数列 gcd 性质}：
+
+\[
+\gcd(\mathrm{Fib}_n, \mathrm{Fib}_m) = \mathrm{Fib}_{\gcd(n, m)}
+\]
+简单推导：不妨设 $n < m$，则有
+
+\[
+\begin{aligned}
+\gcd(\mathrm{Fib}_n, \mathrm{Fib}_m) & = \gcd(\mathrm{Fib}_n, \mathrm{Fib}_{n + (m - n)}) \\
+& = \gcd(\mathrm{Fib}_n, \mathrm{Fib}_{n + 1}\mathrm{Fib}_{m - n} + \mathrm{Fib}_n\mathrm{Fib}_{m - n - 1}) \\
+& = \gcd(\mathrm{Fib}_n, \mathrm{Fib}_{n + 1}\mathrm{Fib}_{m - n})
+\end{aligned}
+\]
+由上文提到的 $\mathrm{Fib}_{n + 1}$ 与 $\mathrm{Fib}_n$ 互质。则有 $\gcd(\mathrm{Fib}_n, \mathrm{Fib}_m) = \gcd(\mathrm{Fib}_n, \mathrm{Fib}_{m - n})$。该式子与辗转相除法相似，得证。
+
+\Highlight{斐波那契数列整除性质}：
+
+\[
+\mathrm{Fib}_n \mid \mathrm{Fib}_m \iff n \leq 2 \lor n \mid m
+\]
+
+\subsubsection{斐波那契数列模意义下的循环节}
+
+在模意义下，二元组 $(\mathrm{Fib}_n \bmod p, \mathrm{Fib}_{n + 1} \bmod p)$ 仅有 $p^2$ 种取值。\textbf{因此，当 $n$ 足够大时，必定会出现循环节}。
+
+根据递推式，有 $\mathrm{Fib}_n = \mathrm{Fib}_{n + 2} - \mathrm{Fib}_{n + 1}$，\textbf{也就是说 $\mathrm{Fib}_{n + 1}, \mathrm{Fib}_{n + 2}$ 的前面必为 $\mathrm{Fib}_n$}。
+
+根据这两个事实我们可以得知，\textbf{斐波那契数列在模意义下必有循环节，并且一定是纯循环的（循环节的起点为 $\mathrm{Fib}_0, \mathrm{Fib}_1$）}。
+
+\Highlight{最小循环节（皮萨诺周期）}：定义斐波那契数列模 $p$ 意义下的最小循环节 $\pi(p)$ 为最小的正整数 $m$，使得 $\mathrm{Fib}_m \equiv 0 \pmod p$ 且 $\mathrm{Fib}_{m + 1} \equiv 1 \pmod p$。
+
+注意：周期一定是最小循环节的倍数，即
+
+\[
+\begin{cases} \mathrm{Fib}_k \equiv 0 \pmod p \\ \mathrm{Fib}_{k + 1} \equiv 1 \pmod p \end{cases} \iff \pi(p) \mid k
+\]
+很多时候我们只需求出周期即可。
+
+\Highlight{最小循环节的上界}：\textbf{斐波那契数列 $\operatorname{mod} m$ 的最小正周期不超过 $6m$，即 $\pi(m) \leq 6m$}。
+
+\Highlight{求斐波那契数列循环节（结论法）}：
+
+\begin{itemize}
+\item 质数情景：
+  \begin{itemize}
+  \item $\pi(2) = 3$，$\pi(5) = 20$。
+  \item 当 $p$ 为奇质数且 $p \equiv \pm 1 \pmod 5$ 时，$\pi(p) \mid p - 1$。
+  \item 当 $p$ 为奇质数且 $p \equiv \pm 2 \pmod 5$ 时，$\pi(p) \mid 2p + 2$。
+  \end{itemize}
+\item 一般情景：
+  \begin{itemize}
+  \item 对于质数 $p$ 以及任意正整数 $k$，有 $\pi(p^k) \mid p^{k - 1}\pi(p)$。
+  \item 对于 $m = \prod p_i^{c_i}$，有 $\pi(m) = \mathrm{lcm}\{ \pi(p_i^{c_i}) \}$，同时有 $\pi(m) \mid \mathrm{lcm}\{ p_i^{c_i - 1}\pi(p_i) \}$。
+  \end{itemize}
+\end{itemize}
+
+在一般应用中，通常只需要求出一个循环节即可。
+
+对于质数 $p$，记
+
+\[
+g(p) = \begin{cases} 3 & p = 2 \\
+20 & p = 5 \\
+p - 1 & p \equiv \pm 1 \pmod 5\\
+2p + 2 & p \equiv \pm 2 \pmod 5
+\end{cases}
+\]
+然后将 $m$ 质因数分解成 $\prod p_i^{c_i}$，使用 $\mathrm{lcm}\{ p_i^{c_i - 1}g(p_i) \}$ 作为循环节即可（注意这并不是最小循环节，这个值在多数情况下已经够用了）。
+
+\Highlight{求斐波那契数列循环节（矩阵 BSGS）}：
+
+\begin{quoteblock}
+\textbf{适用场景：最小循环节的上界确定，转移矩阵可逆。}
+\end{quoteblock}
+
+考虑斐波那契数列的矩阵表示
+
+\[
+\begin{bmatrix}
+\mathrm{Fib}_n & \mathrm{Fib}_{n - 1}
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 & 0
+\end{bmatrix}
+\times
+\begin{bmatrix}
+1 & 1 \\
+1 & 0
+\end{bmatrix}^{n - 1}
+\]
+记转移矩阵 $A = \begin{bmatrix} 1 & 1 \\ 1 & 0 \end{bmatrix}$，那么循环节即为满足 $A^m \equiv I \pmod p$ 的正整数 $m$。
+
+在转移矩阵可逆的情况下，套用 BSGS 的流程：取 $S$ 表示上界的根号，设 $m = iS - j$（其中 $i \geq 1$ 且 $0 \leq j < S$），则有
+
+\[
+\begin{gathered}
+A^{iS} \times A^{-j} \equiv I \pmod p \\
+A^{iS} \equiv A^j \pmod p
+\end{gathered}
+\]
+预处理 $0 \leq j < S$ 的 $A^j$ 存入哈希表，每次在哈希表中查询 $A^{iS}$ 即可。
+
+时间复杂度 $\mathcal{O}(\sqrt{p})$。
+
+\Highlight{求斐波那契数列循环节（生日悖论随机化）}：
+
+若存在两个数 $0 \leq i, j \leq 6p$，满足 $(\mathrm{Fib}_i, \mathrm{Fib}_{i + 1}) \equiv (\mathrm{Fib}_j, \mathrm{Fib}_{j + 1}) \pmod p$，则 $|i - j|$ 为一个循环节（注意这并不是最小循环节）。
+
+每次新随机一个数 $x$，将二元组 $(\mathrm{Fib}_x, \mathrm{Fib}_{x + 1})$ 存入哈希表中，并查询哈希表中有没有与之相同的 $(\mathrm{Fib}_y, \mathrm{Fib}_{y + 1})$。
+
+发现这与生日悖论的形式很像，于是时间复杂度正确。
+
+\begin{quoteblock}
+生日悖论：在 $[1, n]$ 中随机选择正整数，选出两个相同数的期望轮数为 $\mathcal{O}(\sqrt{n})$ 级别（近似 $\sqrt{\frac{\pi n}{2}}$）。
+\end{quoteblock}
+
+实际取数过程可能需要在 $[0, 12p]$ 中随机以保证期望次数。求 $\mathrm{Fib}_{i}$ 需要用到 “光速幂” 的技巧。
+
+\subsection{普通生成函数}
+
+\Highlight{普通生成函数（OGF）}：
+
+\[
+F(x) = \sum_{n} a_nx^n
+\]
+\Highlight{OGF 乘法}：
+
+\[
+F(x)G(x) = \sum_{n} \left( \sum_{i = 0}^n a_ib_{n - i} \right)x^n
+\]
+OGF 常用于解决\textbf{无标号的计数问题}（例如：优化计数类背包）。
+
+\Highlight{常见序列 OGF 封闭形式}：
+
+\begin{itemize}
+\item $\{1, 1, 1, \dots \} \xrightarrow{\mathrm{OGF}} \frac{1}{1 - x}$
+\item $\{1, p, p^2, \dots \} \xrightarrow{\mathrm{OGF}} \frac{1}{1 - px}$
+\item $\{ \binom{n}{0}, \binom{n}{1}, \binom{n}{2}, \dots \} \xrightarrow{\mathrm{OGF}} (1 + x)^n$
+\item $\{ \binom{n}{0}, \binom{n + 1}{1}, \binom{n + 2}{2}, \dots \} \xrightarrow{\mathrm{OGF}} \frac{1}{(1 - x)^{n + 1}}$
+\item $\{ 0, 1, \frac{1}{2}, \frac{1}{3}, \frac{1}{4}, \dots \} \xrightarrow{\mathrm{OGF}} \ln \frac{1}{1 - x} = -\ln(1 - x)$
+\item $\{ 1, 1, \frac{1}{2!}, \frac{1}{3!}, \frac{1}{4!}, \dots \} \xrightarrow{\mathrm{OGF}} e^x$
+\end{itemize}
+
+\subsection{指数生成函数}
+
+\Highlight{指数生成函数（EGF）}：
+
+\[
+F(x) = \sum_{n} a_n \frac{x^n}{n!}
+\]
+\Highlight{EGF 乘法}：
+
+\[
+F(x)G(x) = \sum_{n} \left( \sum_{i = 0}^n \binom{n}{i}a_ib_{n - i} \right)\frac{x^n}{n!}
+\]
+EGF 常用于解决\textbf{有标号的计数问题}。
+
+\Highlight{常见序列 EGF 封闭形式}：
+
+\begin{itemize}
+\item $\{1, 1, 1, \dots\} \xrightarrow{\mathrm{EGF}} e^x$
+\item $\{1, p, p^2, \dots\} \xrightarrow{\mathrm{EGF}} e^{px}$
+\item $\{1, n, n^{\underline{2}}, n^{\underline{3}}, n^{\underline{4}} \dots \} \xrightarrow{\mathrm{EGF}} (1 + x)^n$
+\end{itemize}
+
+\Highlight{EGF 中多项式 exp 的组合意义}：
+
+回顾一下 exp 的式子（在这里我们默认 $[x^0]f(x) = 0$）
+
+\[
+\exp f(x) = \sum\limits_{i = 0}^{\infty} \frac{f^i(x)}{i!}
+\]
+如果 $f(x)$ 描述的是单个组件的 EGF，那么 $f^k(x)$ 得到的就是由 $k$ 个组件构成的有序序列的 EGF，但是如果我们将这 $k$ 个组件看成一个集合，就要除以 $k!$ 来消除顺序的影响。
+
+\textbf{所以 $\frac{f^k(x)}{k!}$ 的含义是由 $k$ 个组件构成的无序集合的 EGF}。因此，\textbf{$\exp f(x)$ 的含义是由若干个组件构成的无序集合的 EGF}。
+
+\subsection{符号化方法}
+
+\sout{待填坑。}
+
+\subsection{图论计数}
+
+\subsubsection{有标号无向连通图计数}
+
+\paragraph{算法一：分治 NTT}
+
+设 $f_i$ 表示点数为 $i$ 的\textbf{有标号简单无向连通图}个数，设 $g_i$ 表示点数为 $i$ 的\textbf{有标号简单无向图}个数，显然 $g_i = 2^{\binom{i}{2}}$。
+
+考虑容斥。枚举点 $1$ 所在的连通块大小，有递推式
+
+\[
+\begin{gathered}
+f_1 = 1 \\
+f_i = g_i - \sum_{j = 1}^{i - 1}\binom{i - 1}{j - 1}f_jg_{i - j}
+\end{gathered}
+\]
+化简式子，得
+
+\[
+\frac{f_i}{(i - 1)!} = \frac{g_i}{(i - 1)!} - \sum_{j = 1}^{i - 1}\frac{f_j}{(j - 1)!} \frac{g_{i - j}}{(i - j)!}
+\]
+使用分治 NTT，时间复杂度 $\mathcal{O}(n \log^2 n)$。
+
+\begin{quoteblock}
+另一种理解方式：设 $F_i = \frac{f_i}{(i - 1)!}, G_i = \frac{g_i}{(i - 1)!}, H_i = \frac{g_i}{i!}$，可以将该递推式看成 $G = F \times H$，于是 $F = G \times H^{-1}$。
+
+使用多项式求逆，时间复杂度 $\mathcal{O}(n \log n)$。
+\end{quoteblock}
+
+\paragraph{算法二：多项式 ln}
+
+设 $F(x)$ 是 $f_i$ 的 EGF，$G(x)$ 是 $g_i$ 的 EGF。由 EGF 中多项式 exp 的组合意义，有 $G(x) = e^{F(x)}$。所以
+
+\[
+F(x) = \ln G(x)
+\]
+使用多项式 ln，时间复杂度 $\mathcal{O}(n \log n)$。
+
+\InputCode{cpp}{contents/0x30 数学/code/0x33 有标号无向连通图计数.cpp}
+
+\subsubsection{有标号无向欧拉图计数}
+
+欧拉图的条件：所有节点的度数均为偶数，并且连通。
+
+设 $f_i$ 表示点数为 $i$ 的\textbf{有标号简单无向欧拉图}个数，设 $g_i$ 表示点数为 $i$ 的\textbf{有标号度数均为偶数的简单图}个数。
+
+考虑求 $g_i$，先让前 $i - 1$ 个点任意连边，最后所有奇点的度数都通过与 $i$ 连边调节成偶数。于是 $g_i = 2^{\binom{i - 1}{2}}$。
+
+剩余部分同 “有标号无向连通图计数”，时间复杂度 $\mathcal{O}(n \log n)$。
+
+\InputCode{cpp}{contents/0x30 数学/code/0x33 有标号无向欧拉图计数.cpp}
+
+\subsubsection{有标号无向二分图计数}
+
+设 $f_i$ 表示点数为 $i$ 的\textbf{有标号简单无向二分图}个数，设 $g_i$ 表示点数为 $i$ 的\textbf{对节点进行 $2$ 染色，满足同色节点不存在边的图（二分染色图）}个数。
+
+考虑求 $g_i$，枚举黑色节点个数 $j$，则有
+
+\[
+\begin{gathered}
+g_i = \sum_{j = 0}^i \binom{i}{j} 2^{j(i - j)} \\
+g_i = \sum_{j = 0}^i \binom{i}{j} 2^{\binom{i}{2} - \binom{j}{2} - \binom{i - j}{2}} \\
+\frac{g_i}{i! \cdot 2^{\binom{i}{2}}} = \sum_{j = 0}^i \frac{1}{j! \cdot 2^{\binom{j}{2}}} \cdot \frac{1}{(i - j)! \cdot 2^{\binom{i - j}{2}}}
+\end{gathered}
+\]
+
+\begin{quoteblock}
+这里用到了 $ij = \binom{i + j}{2} - \binom{i}{2} - \binom{j}{2}$。
+\end{quoteblock}
+
+可以使用卷积 $\mathcal{O}(n \log n)$ 求出 $g_i$。
+
+对于二分染色图的每一个连通块，确定了最小点的颜色就确定了整个连通块的颜色，而最小点有黑白两种选法。
+
+则二分染色图可以由两个组件构成，第一个组件是最小点颜色为黑色的连通块集合，第二个组件是最小点颜色为白色的连通块集合。而两个组件内部均是二分图。
+
+于是设 $F(x)$ 是 $f_i$ 的 EGF，$G(x)$ 是 $g_i$ 的 EGF，则有
+
+\[
+\begin{gathered}
+F(x) \times F(x) = G(x) \\
+F(x) = \sqrt{G(x)}
+\end{gathered}
+\]
+使用多项式开方，时间复杂度 $\mathcal{O}(n \log n)$。
+
+\InputCode{cpp}{contents/0x30 数学/code/0x33 有标号无向二分图计数.cpp}
+
+\subsubsection{有标号 DAG 计数}
+
+设 $f_i$ 表示点数为 $i$ 的\textbf{有标号 DAG（不保证弱连通）}个数。
+
+将 DAG 视作一个分层图，考虑容斥，\textbf{钦定}拓扑序第一层（零入度点）的个数。
+
+\[
+f_i = \sum_{j = 1}^{i}(-1)^{j + 1} \binom{i}{j} 2^{j(i - j)}f_{i - j}
+\]
+至此，可以做到 $\mathcal{O}(n^2)$。
+
+进一步
+
+\[
+\frac{f_i}{i! \cdot 2^\binom{i}{2}} = \sum_{j = 1}^i \frac{(-1)^{j + 1}}{j! \cdot 2^\binom{j}{2}} \cdot \frac{f_{i - j}}{(i - j)! \cdot 2^\binom{i - j}{2}}
+\]
+设 $F_i = \frac{f_i}{i! \cdot 2^\binom{i}{2}}, G_j = \frac{(-1)^{j + 1}}{j! \cdot 2^\binom{j}{2}}$，则有
+
+\[
+\begin{gathered}
+F = G\times F + 1 \\
+F = \frac{1}{1 - G}
+\end{gathered}
+\]
+使用多项式求逆，时间复杂度 $\mathcal{O}(n \log n)$。
+
+\InputCode{cpp}{contents/0x30 数学/code/0x33 有标号 DAG 计数.cpp}
+
+\subsubsection{有标号弱连通 DAG 计数}
+
+设 $f_i$ 表示点数为 $i$ 的\textbf{有标号 DAG（不保证弱连通）}个数，设 $h_i$ 表示点数为 $i$ 的\textbf{有标号弱连通 DAG} 个数。$f_i$ 的求解详见 “有标号 DAG 计数”。
+
+设 $F(x)$ 是 $f_i$ 的 EGF，$H(x)$ 是 $h_i$ 的 EGF。由 EGF 中多项式 exp 的组合意义，有 $F(x) = e^{H(x)}$。所以
+
+\[
+H(x) = \ln F(x)
+\]
+使用多项式 ln，时间复杂度 $\mathcal{O}(n \log n)$。
+
+\InputCode{cpp}{contents/0x30 数学/code/0x33 有标号弱连通 DAG 计数.cpp}
+
+\subsubsection{有标号强连通图计数}
+
+设 $f_i$ 表示点数为 $i$ 的\textbf{有标号强连通图}个数，设 $b_{i, j}$ 表示 \textbf{$i$ 个点形成 $j$ 个独立的强连通图}的个数，设 $h_i$ 表示点数为 $i$ 的\textbf{任意有向图}个数。显然 $h_i = 2^{i(i - 1)}$。
+
+则有
+
+\[
+h_i = \sum_{j = 1}^i \binom{i}{j} h_{i - j}\times 2^{j(i - j)} \times \sum_{k = 1}^{j}(-1)^{k + 1}b_{j, k}
+\]
+对于任意点数为 $i$ 的有向图，将每个强连通分量缩成一个点，会得到一张 DAG。这其中必定有出度为 $0$ 的点。
+
+\textbf{钦定 $k$ 个强连通分量出度为 $0$，这 $k$ 个强连通分量里包含了 $j$ 个点}。剩下的 $i - j$ 个点随意连接。
+
+设 $g_j = \sum_{k = 1}^j (-1)^{k + 1}b_{j, k}$，则有
+
+\[
+\begin{gathered}
+g_i = h_i - \sum_{j = 1}^{i - 1} \binom{i}{j} 2^{j(i - j)} h_{i - j} g_j \\
+\frac{h_i}{i! \cdot 2^{\binom{i}{2}}} = \sum_{j = 1}^i \frac{g_j}{j! \cdot 2^{\binom{j}{2}}} \cdot \frac{h_{i - j}}{(i - j)! \cdot 2^{\binom{i - j}{2}}}
+\end{gathered}
+\]
+设 $H_i = \frac{h_i}{i! \cdot 2^{\binom{i}{2}}}, G_i = \frac{g_i}{i! \cdot 2^{\binom{i}{2}}}$，则有
+
+\[
+\begin{gathered}
+H = G \times H + 1 \\
+G = 1 - \frac{1}{H}
+\end{gathered}
+\]
+至此，可以使用多项式求逆求出 $G$。
+
+再根据 $g$ 的定义，考虑 $g$ 的转移，有
+
+\[
+\begin{gathered}
+g_i = f_i - \sum_{j = 1}^{i - 1} \binom{i - 1}{j - 1}f_jg_{i - j} \\
+f_i = g_i + \sum_{j = 1}^{i - 1} \binom{i - 1}{j - 1}f_jg_{i - j} \\
+\frac{f_i}{(i - 1)!} = \frac{g_i}{(i - 1)!} + \sum_{j = 1}^{i - 1}\frac{f_j}{(j - 1)!}\cdot \frac{g_{i - j}}{(i - j)!}
+\end{gathered}
+\]
+设 $F_i = \frac{f_i}{(i - 1)!}, A_i = \frac{g_i}{(i - 1)!}, B_i = \frac{g_i}{i!}$，则有
+
+\[
+\begin{gathered}
+F = A + F \times B \\
+F = \frac{A}{1 - B}
+\end{gathered}
+\]
+\InputCode{cpp}{contents/0x30 数学/code/0x33 有标号强连通图计数.cpp}
+
+\subsection{Misc}
+
+\subsubsection{Raney 引理}
+
+\Highlight{Raney 引理}：若整数序列 $x_1, \dots, x_m$ 满足 $\sum_{i = 1}^m x_i = 1$，则它的 $m$ 个循环移位中恰好有 $1$ 个满足前缀和均为正数。
+
+唯一合法的循环移位起点，即为最靠后的 “前缀和最小点”。
+
+\Highlight{广义 Raney 引理}：若整数序列 $x_1, \dots, x_m$ 满足 $x_i \leq 1$ 且 $\sum_{i = 1}^m x_i = n$，则它的 $m$ 个循环移位中恰好有 $n$ 个满足前缀和均为正数。
