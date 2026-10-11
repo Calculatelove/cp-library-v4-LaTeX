@@ -1,6 +1,6 @@
 # 自定义接口效果检验
 
-本目录用于 `preamble/mystyle.tex` 各接口的效果检验。当前已有 `highlight.tex`、`input-code.tex`、`input-code-pages.tex`、`quoteblock.tex` 和 `separator.tex`，覆盖四个自定义接口。
+本目录仅用于测试 `preamble/` 目录中的内容，不放置 `contents/` 的章节测试。当前用于 `preamble/mystyle.tex` 各接口的效果检验。当前已有 `highlight.tex`、`input-code.tex`、`input-code-pages.tex`、`quoteblock.tex` 和 `separator.tex`，覆盖四个自定义接口。
 
 历史实现曾有高亮、代码插入、引用块、分隔线四类检验，但旧源码及产物当前不在工作区，不能引用旧结果作为新实现的验证证据。
 
