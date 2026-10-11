@@ -1,0 +1,24 @@
+% 从项目根目录编译；验证默认/显式标题、路径与多语言 minted 设置。
+\documentclass{article}
+\PassOptionsToPackage{fontset=fandol}{ctex}
+\input{preamble/packages.tex}
+\input{preamble/mystyle.tex}
+\setminted[cpp]{linenos,fontsize=\footnotesize}
+\setminted[python]{fontsize=\scriptsize}
+
+\begin{document}
+默认标题，路径含中文、空格和下划线：
+\InputCode{cpp}{preamble/tests/示例 文件_1.cpp}
+
+显式标题优先于文件名：
+\InputCode[原稿 显示名_1.cpp]{cpp}{preamble/tests/示例 文件_1.cpp}
+
+Python：
+\InputCode{python}{preamble/tests/sample.py}
+
+Bash：
+\InputCode{bash}{preamble/tests/sample.sh}
+
+Makefile：
+\InputCode{make}{preamble/tests/Makefile test}
+\end{document}

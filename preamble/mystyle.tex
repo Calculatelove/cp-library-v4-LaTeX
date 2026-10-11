@@ -1,0 +1,90 @@
+% 与 HTML <mark> 相同的纯黄底色；零内边距，不改变短语尺寸。
+% \colorbox 把短语作为不可拆分的行内盒子，局部分组防止间距设置外泄。
+\newcommand{\Highlight}[1]{%
+  \begingroup
+  \setlength{\fboxsep}{0pt}%
+  \colorbox[HTML]{FFFF00}{#1}%
+  \endgroup
+}
+
+% 代码标题栏固定外观；代码字体、配色、行号与折行由 \setminted[语言] 控制。
+\definecolor{InputCodeTitle}{HTML}{F2F2F2}
+\ExplSyntaxOn
+\str_new:N \l__inputcode_area_str
+\str_new:N \l__inputcode_base_str
+\str_new:N \l__inputcode_ext_str
+\str_new:N \l__inputcode_title_str
+
+\cs_new_protected:Npn \__inputcode_filename:n #1
+  {
+    \file_parse_full_name:nNNN {#1}
+      \l__inputcode_area_str \l__inputcode_base_str \l__inputcode_ext_str
+    \str_set:Nx \l__inputcode_title_str
+      {\str_use:N \l__inputcode_base_str \str_use:N \l__inputcode_ext_str}
+  }
+
+\cs_new_protected:Npn \__inputcode_print_title:n #1
+  {
+    \str_map_inline:nn {#1}
+      {
+        \str_if_eq:nnTF {##1} { ~ }
+          {\hspace{\fontdimen2\font}}
+          {##1}
+      }
+  }
+
+\cs_new_protected:Npn \__inputcode_box:nnn #1#2#3
+  {
+    \par
+    \begin{tcolorbox}[
+      enhanced,
+      breakable,
+      title={{\xeCJKsetup{CJKecglue={}}\__inputcode_print_title:n {#1}}},
+      colback=white,
+      colbacktitle=InputCodeTitle,
+      colframe=black,
+      coltitle=black,
+      boxrule=0.4pt,
+      titlerule=0.4pt,
+      arc=0pt,
+      left=1mm,right=1mm,top=1mm,bottom=1mm,
+      lefttitle=1mm,righttitle=1mm,toptitle=0.5mm,bottomtitle=0.5mm,
+      fonttitle=\normalfont
+    ]
+    \xeCJKsetup{CJKecglue={}}
+    \inputminted[mathescape=false,texcomments=false,autogobble=false]{#2}{#3}
+    \end{tcolorbox}
+  }
+
+\NewDocumentCommand{\InputCode}{o m m}
+  {
+    \IfNoValueTF{#1}
+      {
+        \__inputcode_filename:n {#3}
+        \exp_args:NV \__inputcode_box:nnn \l__inputcode_title_str {#2} {#3}
+      }
+      {\__inputcode_box:nnn {#1} {#2} {#3}}
+  }
+\ExplSyntaxOff
+
+% 可跨页的引用块：浅灰背景、左侧深灰竖线，无其余边框。
+\definecolor{QuoteBlockBackground}{HTML}{F7F7F7}
+\definecolor{QuoteBlockRule}{HTML}{777777}
+\newtcolorbox{quoteblock}{
+  enhanced,
+  breakable,
+  colback=QuoteBlockBackground,
+  boxrule=0pt,
+  borderline west={2pt}{0pt}{QuoteBlockRule},
+  arc=0pt,
+  boxsep=0pt,
+  left=2mm,right=2mm,top=2mm,bottom=2mm
+}
+
+% Markdown 水平分隔线：按当前容器的 \linewidth 排版，不改变分页。
+\definecolor{SeparatorRule}{HTML}{A0A0A0}
+\NewDocumentCommand{\Separator}{}{%
+  \par\addvspace{\baselineskip}%
+  \noindent{\color{SeparatorRule}\rule{\linewidth}{0.4pt}}\par
+  \addvspace{\baselineskip}%
+}

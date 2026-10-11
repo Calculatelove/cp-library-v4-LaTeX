@@ -1,0 +1,40 @@
+// Long listing for page break inspection.
+int main() {
+    int value01 = 1;
+    int value02 = 2;
+    int value03 = 3;
+    int value04 = 4;
+    int value05 = 5;
+    int value06 = 6;
+    int value07 = 7;
+    int value08 = 8;
+    int value09 = 9;
+    int value10 = 10;
+    int value11 = 11;
+    int value12 = 12;
+    int value13 = 13;
+    int value14 = 14;
+    int value15 = 15;
+    int value16 = 16;
+    int value17 = 17;
+    int value18 = 18;
+    int value19 = 19;
+    int value20 = 20;
+    int value21 = 21;
+    int value22 = 22;
+    int value23 = 23;
+    int value24 = 24;
+    int value25 = 25;
+    int value26 = 26;
+    int value27 = 27;
+    int value28 = 28;
+    int value29 = 29;
+    int value30 = 30;
+    int value31 = 31;
+    int value32 = 32;
+    int value33 = 33;
+    int value34 = 34;
+    int value35 = 35;
+    int value36 = 36;
+    return value36;
+}

@@ -1,0 +1,2 @@
+all:
+	@printf '%s\n' 'Makefile tab is preserved'

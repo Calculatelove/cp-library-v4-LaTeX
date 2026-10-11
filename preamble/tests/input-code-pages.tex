@@ -1,0 +1,12 @@
+% 长代码跨页检验：标题只在第一页出现。
+\documentclass{article}
+\PassOptionsToPackage{fontset=fandol}{ctex}
+\input{preamble/packages.tex}
+\input{preamble/mystyle.tex}
+\geometry{paperwidth=120mm,paperheight=110mm,margin=10mm}
+\pagestyle{empty}
+\setminted[cpp]{fontsize=\footnotesize}
+
+\begin{document}
+\InputCode{cpp}{preamble/tests/long-code.cpp}
+\end{document}

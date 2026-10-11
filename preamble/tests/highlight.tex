@@ -1,0 +1,33 @@
+% 从项目根目录运行：
+% xelatex -interaction=nonstopmode -halt-on-error -output-directory=preamble/tests/build preamble/tests/highlight.tex
+\documentclass{article}
+% 本机测试使用 TeX Live 的 Fandol；不决定笔记最终字体。
+\PassOptionsToPackage{fontset=fandol}{ctex}
+\input{preamble/packages.tex}
+\input{preamble/mystyle.tex}
+
+\newbox\highlightactual
+\newbox\highlightplain
+\newcommand{\CheckHighlightSize}[1]{%
+  \setbox\highlightactual=\hbox{\Highlight{#1}}%
+  \setbox\highlightplain=\hbox{#1}%
+  \ifdim\wd\highlightactual=\wd\highlightplain\else
+    \errmessage{Highlight added horizontal space}%
+  \fi
+  \ifdim\ht\highlightactual=\ht\highlightplain\else
+    \errmessage{Highlight added vertical height}%
+  \fi
+  \ifdim\dp\highlightactual=\dp\highlightplain\else
+    \errmessage{Highlight added vertical depth}%
+  \fi
+}
+
+\begin{document}
+\CheckHighlightSize{重点内容}
+\CheckHighlightSize{\textbf{加粗}与公式 $a^2+b^2=c^2$}
+
+普通文字\Highlight{重点内容}紧接普通文字。下一行没有高亮。\par
+嵌套样例：\Highlight{\textbf{加粗}与公式 $a^2+b^2=c^2$}，框外颜色恢复正常。\par
+行尾样例：这是一个不会拆分的短语框 \Highlight{重点内容}。\par
+
+\end{document}
