@@ -732,6 +732,13 @@ f(x)g(x) \\
 \]
 特别地，$\mu(1) = 1$。
 
+\Highlight{莫比乌斯函数的平方}：
+
+\[
+\mu^2(n) = \sum_{d^2 \mid n} \mu(d)
+\]
+简单推导：记 $m = \prod p_i^{\left\lfloor c_i / 2 \right\rfloor}$，则 $d^2 \mid n \iff d \mid m$，由 $\sum_{d \mid m}\mu(d) = [m = 1]$ 可证。
+
 \subsubsection{线性筛筛积性函数}
 
 对于积性函数 $f(x)$，若\textbf{质数幂的函数值 $f(p^c)$ 便于求出}。则 $f(x)$ 的前 $n$ 项函数值可以通过线性筛得出。
