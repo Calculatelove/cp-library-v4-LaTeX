@@ -2,13 +2,14 @@
 % 此文件集中加载宏包，具体版式与自定义命令分别放在 layout-portrait.tex 和 mystyle.tex 中。
 
 % 中文支持；不采用 ctex 的中文标题名称与版式方案。
-% 暂用 Fandol；字体选项必须在加载 ctex 前传入，最终字体方案尚未实现。
+% 无布局的独立接口测试使用 Fandol；正式字体由 layout-portrait.tex 覆盖。
 \PassOptionsToPackage{fontset=fandol}{ctex}
 \usepackage[scheme=plain]{ctex}
 
 % 数学公式、矩阵、对齐环境与数学符号（含 \mathbb）。
 \usepackage{amsmath}
 \usepackage{amssymb}
+\usepackage{unicode-math}
 
 % 图片与颜色。
 \usepackage{graphicx}
@@ -20,6 +21,14 @@
 % 页面尺寸、边距与多栏排版；具体参数在 layout-portrait.tex 中设置。
 \usepackage{geometry}
 \usepackage{multicol}
+\usepackage{titlesec}
+\usepackage{needspace}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{tocloft}
+\usepackage{lastpage}
+\usepackage{etoolbox}
+\usepackage{newunicodechar}
 
 % 代码高亮，以及后续代码标题栏、引用块所需的盒子支持。
 \usepackage{minted}

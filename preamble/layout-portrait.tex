@@ -1,5 +1,131 @@
-% A4 纵向单栏；边距、页眉页脚及最终字体尚待实现。
-\geometry{a4paper,portrait}
+% 单位统一用 bp（1/72 英寸）；已确认参数见本目录 README.md。
+\geometry{a4paper,portrait,left=15mm,right=15mm,top=10mm,bottom=10mm,
+  includeheadfoot,headheight=12bp,headsep=5mm,footskip=8mm}
+\makeatletter
+\@twosidetrue
+\@mparswitchtrue
+\makeatother
+\raggedbottom
 
-% 保留正文标题中的 0xPQ 编号，仅关闭 LaTeX 自动标题编号。
+% 字体：Open Sans 从 TeX Live 按文件名加载，避免依赖系统字体注册。
+\setmainfont{OpenSans}[Extension=.ttf,UprightFont=*-Regular,
+  BoldFont=*-Bold,ItalicFont=*-Italic,BoldItalicFont=*-BoldItalic]
+\setsansfont{OpenSans}[Extension=.ttf,UprightFont=*-Regular,
+  BoldFont=*-Bold,ItalicFont=*-Italic,BoldItalicFont=*-BoldItalic]
+\setCJKmainfont{PingFangSC-Regular}[Language=Chinese Simplified,BoldFont=PingFangSC-Semibold,
+  ItalicFont=PingFangSC-Regular,ItalicFeatures={FakeSlant=0.2},
+  BoldItalicFont=PingFangSC-Semibold,BoldItalicFeatures={FakeSlant=0.2}]
+\setCJKsansfont{PingFangSC-Regular}[Language=Chinese Simplified,BoldFont=PingFangSC-Semibold,
+  ItalicFont=PingFangSC-Regular,ItalicFeatures={FakeSlant=0.2},
+  BoldItalicFont=PingFangSC-Semibold,BoldItalicFeatures={FakeSlant=0.2}]
+\setmonofont{Maple Mono NF CN}[Scale=1,Ligatures=NoCommon,RawFeature={-calt,-liga,-clig}]
+\setCJKmonofont{Maple Mono NF CN}[Scale=1]
+\setmathfont{Latin Modern Math}
+% Latin Modern Math 无独立粗体文件；粗体数学版本使用同字体的人工加粗。
+\setmathfont{Latin Modern Math}[version=bold,FakeBold=1.5]
+\setmathrm{lmroman10-regular.otf}[BoldFont=lmroman10-bold.otf,
+  ItalicFont=lmroman10-italic.otf,BoldItalicFont=lmroman10-bolditalic.otf]
+\setboldmathrm{lmroman10-bold.otf}[ItalicFont=lmroman10-bolditalic.otf]
+% 仅补齐 Latin Modern Math 缺少的严格子集双线符号，保留原命令语义。
+\setmathfont{STIXTwoMath-Regular.otf}[range={"2ACB},BoldFont=STIXTwoMath-Regular.otf,BoldFeatures={FakeBold=1.5}]
+
+\newfontfamily\PortraitSymbolFont{NotoEmoji.ttf}[
+  Path=preamble/fonts/,BoldFont=NotoEmoji.ttf]
+\newunicodechar{⭐}{{\PortraitSymbolFont ⭐}}
+\newunicodechar{🚩}{{\PortraitSymbolFont 🚩}}
+
+% 固定正文基线；字号切换返回 normalsize 时也恢复同一组间距。
+\linespread{1}
+\makeatletter
+\renewcommand\normalsize{%
+  \@setfontsize\normalsize{9bp}{14bp}%
+  \abovedisplayskip=7bp \belowdisplayskip=7bp
+  \abovedisplayshortskip=7bp \belowdisplayshortskip=7bp}
+\makeatother
+\normalsize
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{7bp}
+\setlength{\emergencystretch}{1em}
+% 展示公式局部取消段距。段落后另起展示公式时，抵消 TeX 为进入
+% 数学模式而产生的空行；公式后源码空行不再产生额外的 7bp 段距。
+\makeatletter
+\newcommand\PortraitDisplayBefore{%
+  \ifvmode\ifdim\pagetotal>0pt\vskip-\baselineskip\fi\fi
+  \begingroup\setlength{\parskip}{0pt}}
+\newcommand\PortraitDisplayAfter{%
+  \endgroup\par\vskip-\parskip\ignorespaces}
+\makeatother
+\BeforeBeginEnvironment{equation}{\PortraitDisplayBefore}
+\AfterEndEnvironment{equation}{\PortraitDisplayAfter}
+\BeforeBeginEnvironment{equation*}{\PortraitDisplayBefore}
+\AfterEndEnvironment{equation*}{\PortraitDisplayAfter}
+\BeforeBeginEnvironment{align}{\PortraitDisplayBefore}
+\AfterEndEnvironment{align}{\PortraitDisplayAfter}
+\BeforeBeginEnvironment{align*}{\PortraitDisplayBefore}
+\AfterEndEnvironment{align*}{\PortraitDisplayAfter}
+\BeforeBeginEnvironment{gather}{\PortraitDisplayBefore}
+\AfterEndEnvironment{gather}{\PortraitDisplayAfter}
+\BeforeBeginEnvironment{gather*}{\PortraitDisplayBefore}
+\AfterEndEnvironment{gather*}{\PortraitDisplayAfter}
+
+% 标题保留手写编号；目录显示到第三级。
 \setcounter{secnumdepth}{-1}
+\setcounter{tocdepth}{3}
+\definecolor{PortraitHeadingRule}{HTML}{DDDDDD}
+\titleformat{\section}{\normalfont\bfseries\fontsize{20.25bp}{26bp}\selectfont}{}{0pt}{}
+  [{\color{PortraitHeadingRule}\titlerule[0.4bp]}]
+\titleformat{\subsection}{\normalfont\bfseries\fontsize{15.75bp}{21bp}\selectfont}{}{0pt}{}
+  [{\color{PortraitHeadingRule}\titlerule[0.4bp]}]
+\titleformat{\subsubsection}{\normalfont\bfseries\fontsize{13.5bp}{18bp}\selectfont}{}{0pt}{}
+\titleformat{\paragraph}[block]{\normalfont\bfseries\fontsize{11.25bp}{16bp}\selectfont}{}{0pt}{}
+% titlesec 的段后距离会叠加 parskip，故扣除正文的 7bp。
+\titlespacing*{\section}{0pt}{18bp}{3bp}
+\titlespacing*{\subsection}{0pt}{14bp}{1bp}
+\titlespacing*{\subsubsection}{0pt}{10bp}{-1bp}
+\titlespacing*{\paragraph}{0pt}{8bp}{-3bp}
+\newcommand\sectionbreak{\clearpage}
+% 连续标题作为一组保护，避免父标题在页底、目录写入下一页。
+\makeatletter
+\newcommand\PortraitHeadingSpace[1]{\Needspace{#1}}
+\makeatother
+\AddToHook{cmd/subsection/before}{\PortraitHeadingSpace{160bp}}
+\AddToHook{cmd/subsubsection/before}{\PortraitHeadingSpace{100bp}}
+\AddToHook{cmd/paragraph/before}{\PortraitHeadingSpace{60bp}}
+
+% 列表缩进逐级增加 28bp；列表与相邻段落的距离由正文段距提供。
+\setlist{leftmargin=28bp,labelsep=5bp,itemsep=4.5bp,parsep=0pt,
+  topsep=0pt,partopsep=0pt}
+\setlist[itemize,1]{label=\textbullet}
+\setlist[itemize,2]{label=\ensuremath{\circ}}
+
+% 页眉页脚：两面同位置，封面计入总页数但不显示导航。
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\normalfont\fontsize{8bp}{10bp}\selectfont\nouppercase{\leftmark}}
+\fancyfoot[C]{\normalfont\fontsize{8bp}{10bp}\selectfont\thepage\ /\ \pageref*{LastPage}}
+\renewcommand\headrulewidth{0pt}
+\renewcommand\footrulewidth{0pt}
+\renewcommand\sectionmark[1]{\markboth{#1}{}}
+\fancypagestyle{plain}{\fancyhf{}%
+  \fancyfoot[C]{\normalfont\fontsize{8bp}{10bp}\selectfont\thepage\ /\ \pageref*{LastPage}}%
+  \renewcommand\headrulewidth{0pt}}
+\AddToHook{cmd/maketitle/after}{\thispagestyle{empty}}
+
+% 目录：独立段距，不沿用正文 parskip；一级也保留点线。
+\renewcommand\contentsname{目录}
+\renewcommand\cfttoctitlefont{\normalfont\bfseries\fontsize{20.25bp}{26bp}\selectfont}
+\setlength\cftbeforetoctitleskip{0pt}
+\setlength\cftaftertoctitleskip{10bp}
+\setlength\cftbeforesecskip{0pt}
+\setlength\cftbeforesubsecskip{0pt}
+\setlength\cftbeforesubsubsecskip{0pt}
+\cftsetindents{section}{0bp}{0bp}
+\cftsetindents{subsection}{18bp}{0bp}
+\cftsetindents{subsubsection}{36bp}{0bp}
+\renewcommand\cftsecleader{\cftdotfill{\cftdotsep}}
+\renewcommand\cftsecfont{\bfseries}
+\renewcommand\cftsecpagefont{\bfseries}
+\tocloftpagestyle{fancy}
+\AddToHook{cmd/tableofcontents/before}{\clearpage\begingroup\normalsize
+  \setlength{\parskip}{0pt}\markboth{目录}{}}
+\AddToHook{cmd/tableofcontents/after}{\clearpage\endgroup}

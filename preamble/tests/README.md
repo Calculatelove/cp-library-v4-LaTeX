@@ -52,3 +52,28 @@ xelatex -interaction=nonstopmode -halt-on-error -output-directory=preamble/tests
 源码为 `preamble/tests/separator.tex`，PDF 与日志位于 `preamble/tests/build/`。检验普通正文、列表和 `quoteblock` 中的横线宽度及上下间距，产物应为单页。测试字体不决定项目最终字体。
 
 生成的 PDF、日志和缓存集中放在本目录的 `build/`，该目录已加入忽略规则；测试源码与资源保留。编译成功后仍需检查实际 PDF，不能只检查进程退出码。
+
+## 纵向布局综合检验
+
+`layout-portrait.tex` 加载三个实际导言区文件，覆盖 9/14 bp 正文、7 bp 段距、四级标题、三级目录、一级分页、单双页同位置页眉、总页码、粗体／斜体／数学／符号字体、嵌套列表、行内代码、折行和 Tab、代码跨页与其余接口。测试只使用本目录资源，不引入章节。`wrapping.cpp` 保留真实 Tab 和长代码行。
+
+需要本机安装苹方、Maple Mono NF CN，TeX Live 提供 Open Sans 和 Latin Modern Math；Noto Emoji 使用 `preamble/fonts/` 中随附的单色字体。在 macOS 上应允许 XeLaTeX 访问系统字体服务。
+
+```sh
+mkdir -p preamble/tests/build
+for pass in 1 2 3 4; do
+  xelatex -interaction=nonstopmode -halt-on-error -file-line-error \
+    -output-directory=preamble/tests/build preamble/tests/layout-portrait.tex
+done
+```
+
+输出为 `preamble/tests/build/layout-portrait.pdf`，日志和缓存同目录。四轮为此固定样张的检验命令；正文仍使用根目录具有收敛检查的 `run.sh`。核对末轮日志没有缺字、字体回退、溢出或未解决引用，并实际查看字体与分页；不能仅以编译退出码判断效果。
+
+`layout-spacing.tex` 是两页公式间距对照：第一页的公式前后无源码空行，第二页有空行。两页“前文”、公式、“后文”的纵坐标应分别一致，避免公式间距叠加普通段距。编译命令如下（两轮更新总页码）：
+
+```sh
+for pass in 1 2; do
+  xelatex -interaction=nonstopmode -halt-on-error \
+    -output-directory=preamble/tests/build preamble/tests/layout-spacing.tex
+done
+```

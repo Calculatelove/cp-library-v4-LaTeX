@@ -1,0 +1,50 @@
+\documentclass{article}
+\input{preamble/packages.tex}
+\input{preamble/layout-portrait.tex}
+\input{preamble/mystyle.tex}
+\title{纵向版式效果检验}
+\author{C.L.}
+\date{}
+\begin{document}
+\maketitle
+\tableofcontents
+\section{0x01 字体与间距 ⭐ 🚩}
+\subsection{中文 English 与数学}
+普通中文 Open Sans 0123456789，\textbf{中文加粗 English Bold}，\emph{中文斜体 English Italic}，\textbf{\emph{粗斜体 Bold Italic}}。
+
+第二段用于观察段距。行内代码 \texttt{std::vector<int>} 与 \verb|a  +  b|。\Highlight{高亮与 $a^2+b^2=c^2$}。
+
+\noindent 第一行基线。\\第二行基线。
+
+第三行另起段落。
+\[
+\sum_{k=0}^n\binom nk x^k=(1+x)^n,\qquad \mathbb{N}\subseteq\mathbb{Z}
+\]
+公式后的段落。粗体数学 $\boldsymbol{u<v}$ 与 $\mathbf{B}$，$j\subsetneqq i$，$\boldsymbol{j=\min\{a,b\}}$。
+\begin{align*}
+ A&=\begin{pmatrix}1&2\\3&4\end{pmatrix},\\
+ f(x)&=\frac{1}{1+x^2}.
+\end{align*}
+\subsubsection{三级标题}
+三级标题后的内容。
+\paragraph{四级标题，不进入目录}
+四级标题后的内容。
+\begin{itemize}
+\item 一级实心圆点。
+\item 第二个条目，有足够长的文字检验续行对齐。这里重复一段自然语言，以便验证条目跨行以后仍与正文的起始位置对齐，而不是与左侧的圆点对齐。这里继续补充文字，确保这一条确实发生换行。
+\begin{itemize}
+\item 二级空心圆点。
+\item 第二个二级条目。
+\end{itemize}
+\end{itemize}
+\begin{quoteblock}引用框内的正文、\textbf{粗体}与公式 $\frac ab$。\end{quoteblock}
+\Separator{}
+\section{0x02 代码与跨页}
+\InputCode{cpp}{preamble/tests/示例 文件_1.cpp}
+\InputCode{python}{preamble/tests/sample.py}
+\InputCode{cpp}{preamble/tests/wrapping.cpp}
+
+\InputCode{cpp}{preamble/tests/long-code.cpp}
+\section{0x03 新页与末页}
+本节应直接接续下一页，无空白页。页脚总页数应包含封面。
+\end{document}

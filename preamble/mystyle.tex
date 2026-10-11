@@ -1,3 +1,21 @@
+% 行内代码保持 C07 的 \texttt / \verb 语法，只统一字号与字体族。
+\let\PortraitOriginalTexttt\texttt
+\RenewDocumentCommand{\texttt}{m}{{\fontsize{8.1bp}{14bp}\selectfont\PortraitOriginalTexttt{#1}}}
+\makeatletter
+\def\verbatim@font{\normalfont\ttfamily\fontsize{8.1bp}{14bp}\selectfont}
+\makeatother
+
+% xcode 为试排候选，可按语言覆盖；源代码与缩进不变。
+\newcommand\CodeFontSize{\fontsize{8.1bp}{12.5bp}\selectfont}
+\definecolor{CodeNumber}{HTML}{999999}
+\setminted{style=xcode,fontsize=\CodeFontSize,baselinestretch=1,
+  linenos,firstnumber=1,numbersep=5bp,xleftmargin=22bp,
+  tabsize=4,autogobble=false,mathescape=false,texcomments=false,
+  showspaces=false,showtabs=false,breaklines=true,breakanywhere=true,
+  breaksymbolleft={\textcolor{CodeNumber}{\ensuremath{\hookrightarrow}}},
+  breaksymbolright={},breakindent=0pt}
+\renewcommand\theFancyVerbLine{\textcolor{CodeNumber}{\ttfamily\fontsize{7bp}{9bp}\selectfont\arabic{FancyVerbLine}}}
+
 % 与 HTML <mark> 相同的纯黄底色；零内边距，不改变短语尺寸。
 % \colorbox 把短语作为不可拆分的行内盒子，局部分组防止间距设置外泄。
 \newcommand{\Highlight}[1]{%
@@ -49,7 +67,7 @@
       arc=0pt,
       left=1mm,right=1mm,top=1mm,bottom=1mm,
       lefttitle=1mm,righttitle=1mm,toptitle=0.5mm,bottomtitle=0.5mm,
-      fonttitle=\normalfont
+      fonttitle={\normalfont\ttfamily\mdseries\upshape\fontsize{9bp}{14bp}\selectfont}
     ]
     \xeCJKsetup{CJKecglue={}}
     \inputminted[mathescape=false,texcomments=false,autogobble=false]{#2}{#3}
