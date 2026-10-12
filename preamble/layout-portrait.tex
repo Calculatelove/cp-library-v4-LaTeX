@@ -31,8 +31,9 @@
 
 \newfontfamily\PortraitSymbolFont{NotoEmoji.ttf}[
   Path=preamble/fonts/,BoldFont=NotoEmoji.ttf]
-\newunicodechar{⭐}{{\PortraitSymbolFont ⭐}}
-\newunicodechar{🚩}{{\PortraitSymbolFont 🚩}}
+% Noto Emoji 的空格约为 1.27 em，不能用作默认中西文间距。
+\newunicodechar{⭐}{{\xeCJKsetup{CJKecglue={\hskip .15em\relax}}\PortraitSymbolFont ⭐}}
+\newunicodechar{🚩}{{\xeCJKsetup{CJKecglue={\hskip .15em\relax}}\PortraitSymbolFont 🚩}}
 
 % 固定正文基线；字号切换返回 normalsize 时也恢复同一组间距。
 \linespread{1}

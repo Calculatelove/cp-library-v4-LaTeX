@@ -183,7 +183,9 @@ for (int j = 1; j <= primeCount; j ++) {
 建图后形似 $\rho$ 形（rho），\textbf{由生日悖论可得尾长与环长均为 $\mathcal{O}(\sqrt{p})$ 级别}。
 
 % 原 HTML：<img src="https://cdn.luogu.com.cn/upload/image_hosting/tw7xcqnu.png" style="zoom:50%;" />
-\noindent\includegraphics[width=\textwidth]{contents/0x30 数学/figures/0x34 rho 形图.png}
+\begin{center}
+\includegraphics[width=0.6\textwidth]{contents/0x30 数学/figures/0x34 rho 形图.png}
+\end{center}
 
 我们发现，\textbf{若 $x \equiv y \pmod p$，必有 $f(x) \equiv f(y) \pmod p$}。由此可得\textbf{在模 $p$ 的环上，只要某个相距 $d$ 步的点对满足条件，则所有相距 $d$ 步的点对均满足条件}。所以我们每次最好要检查不同的距离。
 

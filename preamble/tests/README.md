@@ -1,5 +1,7 @@
 # 自定义接口效果检验
 
+`emoji-spacing.tex` 检查中文标题、正文及英文前后的 emoji 间距，并比较修复前后标题宽度。依赖与纵向版式相同；从根目录运行两次 `xelatex -interaction=nonstopmode -halt-on-error -output-directory=preamble/tests/build preamble/tests/emoji-spacing.tex`，产物为 `preamble/tests/build/emoji-spacing.pdf`。
+
 本目录仅用于测试 `preamble/` 目录中的内容，不放置 `contents/` 的章节测试。当前用于 `preamble/mystyle.tex` 各接口的效果检验。当前已有 `highlight.tex`、`input-code.tex`、`input-code-pages.tex`、`quoteblock.tex` 和 `separator.tex`，覆盖四个自定义接口。
 
 历史实现曾有高亮、代码插入、引用块、分隔线四类检验，但旧源码及产物当前不在工作区，不能引用旧结果作为新实现的验证证据。

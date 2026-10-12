@@ -1,0 +1,16 @@
+\documentclass{article}
+\input{preamble/packages.tex}
+\input{preamble/layout-portrait.tex}
+\begin{document}
+\subsection{质数🚩}
+中文🚩中文，中文⭐中文。English🚩English，English⭐English。
+
+普通中文 English 中文，确认普通中英文间距不变。
+\begingroup
+\fontsize{15.75bp}{21bp}\selectfont\bfseries
+\setbox0=\hbox{质数🚩}
+\setbox1=\hbox{质数{\PortraitSymbolFont\char"1F6A9}}
+\typeout{EMOJI-FIXED-WIDTH=\the\wd0; ORIGINAL-WIDTH=\the\wd1}
+\ifdim\wd0<\wd1\else\errmessage{Emoji spacing did not shrink}\fi
+\endgroup
+\end{document}
