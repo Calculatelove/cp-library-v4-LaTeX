@@ -23,10 +23,10 @@ for name in ("syntax-colors", "code-cards"):
                         spans.append(span)
                         assert span["color"] in palette, (name, span)
                         assert "Bold" not in span["font"], (name, span)
-                        assert ("Italic" in span["font"]) == (span["color"] == 0x70757D), (name, span)
+                        assert "Italic" not in span["font"], (name, span)
     assert spans, f"No code found: {name}"
     if name == "syntax-colors":
         assert {s["color"] for s in spans} == palette
         for word in ("vector", "string", "pair", "return", "42", "3.14159"):
             assert any(s["text"].strip() == word and s["color"] == 0x506B82 for s in spans), word
-    print(f"{name}: palette, regular weight and comment italics verified")
+    print(f"{name}: palette, regular weight and upright code verified")

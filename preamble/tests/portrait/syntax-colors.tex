@@ -5,14 +5,14 @@
 \input{preamble/mystyle.tex}
 \begin{document}
 \section{代码配色：阅读与打印}
-白色背景，深灰正文，灰蓝关键字与数字，灰绿字符串，灰色斜体注释。
+白色背景，深灰正文，灰蓝关键字与数字，灰绿字符串，灰色直立注释。
 \subsection{C++：类型、模板与表达式}
 \begin{minted}{cpp}
 #include <bits/stdc++.h>
 #define LIMIT 100000
 #pragma once
 using namespace std;
-// 中文注释：保持 9pt 下的清晰度；italic f i j k l x y
+// 中文注释：保持 9pt 下的清晰度；upright f i j k l x y
 template<class T> struct Fenwick {
     vector<T> tree;
     explicit Fenwick(int n) : tree(n + 1, 0) {}
