@@ -1,0 +1,68 @@
+% 两种数学字体共用同一内容；只用于导言区检验，不引用正文。
+\section{数学字体对照}
+{\sffamily\color{PortraitMuted}\MathSampleName\par}
+\subsection{行内公式与中文正文}
+设 $n\in\mathbb{N}$，序列 $a_1,a_2,\ldots,a_n$ 的前缀和为
+$S_k=\sum_{i=1}^{k}a_i$。区间和 $S_r-S_{l-1}$ 可以在
+$\mathcal{O}(1)$ 时间内求出；预处理需要 $\mathcal{O}(n)$ 时间。
+西文正文：Generating functions and linear algebra, 0123456789.
+直立数学字母：$\mathrm{base}^{2^{i-1}}$、$x_{\mathrm{base}}$、
+$\boldsymbol{\mathrm{base}^{2^{i-1}}}$；公式内文本：$\text{base}$。
+未额外分组的上下标：$x^\mathrm{mid}+x_\mathrm{mid}$。
+\[
+  T(n)=T(\tfrac{n}{2})+\mathcal{O}(n\log n)=\mathcal{O}(n\log n),
+  \qquad \boldsymbol{\log n}
+\]
+
+\subsection{常用字母与符号}
+\[
+  ABCXYZ\quad abcxyz\quad 0123456789\quad
+  \alpha\beta\gamma\delta\varepsilon\varphi\theta\lambda\mu\sigma\omega
+\]
+\[
+  \mathbb{N}\;\mathbb{Z}\;\mathbb{Q}\;\mathbb{R}\;\mathbb{C}
+  \qquad \mathcal{A}\;\mathcal{F}\;\mathcal{O}
+  \qquad \mathbf{A}\;\mathbf{x}\quad \boldsymbol{\alpha}
+\]
+\[
+  \leq\;\geq\;\neq\;\equiv\;\sim\;\approx\;\in\;\subseteq\;\varnothing
+  \quad \forall\;\exists\;\Rightarrow\;\Longleftrightarrow
+\]
+
+\subsection{分式、上下标与求和}
+\[
+  \binom{n}{k}=\frac{n!}{k!(n-k)!},\qquad
+  \sum_{k=0}^{n}\binom{n}{k}x^k=(1+x)^n
+\]
+\[
+  F(x)=\frac{1}{1-x-x^2},\qquad
+  \prod_{p\mid n}\left(1-\frac{1}{p}\right),\qquad
+  \sqrt{1+\sqrt{1+x^2}}
+\]
+\[
+  \int_0^1 x^n\,\mathrm{d}x=\frac{1}{n+1},\qquad
+  \lim_{n\to\infty}\left(1+\frac{1}{n}\right)^n=\mathrm{e}
+\]
+
+\subsection{矩阵、分段函数与多行推导}
+\[
+ \begin{pmatrix}F_{n+1}\\F_n\end{pmatrix}
+ =\begin{pmatrix}1&1\\1&0\end{pmatrix}^{n}
+ \begin{pmatrix}1\\0\end{pmatrix},\qquad
+ f(x)=\begin{cases}x^2,&x\geq0,\\-x,&x<0.\end{cases}
+\]
+\begin{align*}
+ S_n&=\sum_{i=1}^{n}i=\frac{n(n+1)}{2},\\
+ \det(A)&=\sum_{\sigma\in S_n}\operatorname{sgn}(\sigma)
+                 \prod_{i=1}^{n}a_{i,\sigma(i)},\\
+ &\boldsymbol{j=\min\left\{\left\lfloor\frac{n}{i}\right\rfloor,m\right\}}.
+\end{align*}
+\subsection{强调与嵌套结构}
+\Highlight{结论 $\mathcal{O}(n\log n)$}：高亮不改变后续正文颜色。
+\begin{quoteblock}
+若 $A$ 可逆，则 $A^{-1}A=I$。\textbf{粗体正文}与行内公式应保持清晰。
+\begin{itemize}
+\item 第一层结论包含 $\lVert x\rVert_2$ 与 $\langle x,y\rangle$。
+\item 第二条结论包含 $\overline{AB}$、$\widehat{f}$ 和 $\vec{v}$。
+\end{itemize}
+\end{quoteblock}

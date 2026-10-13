@@ -180,7 +180,7 @@ for (int i = 0; i < m; i ++) {
 }
 \end{minted}
 
-\Highlight{半在线子集 dp}：求出 $b_0, \dots, b_{2^m - 1}$，其中 $b_i$ 与 $\sum_{j \subsetneqq i} b_j$ 强相关。
+\Highlight{半在线子集 dp}：求出 $b_0, \dots, b_{2^m - 1}$，其中 $b_i$ 与 $\sum_{j \subsetneq i} b_j$ 强相关。
 
 按照 $|S|$ 从小到大分层计算。每一层都做一次子集 dp，然后更新当前层的所有状态。
 

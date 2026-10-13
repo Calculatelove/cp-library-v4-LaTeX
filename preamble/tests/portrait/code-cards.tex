@@ -1,0 +1,21 @@
+% 从根目录编译；只测试 InputCode 外观，不引用正文。
+\documentclass{article}
+\input{preamble/packages.tex}
+\input{preamble/layout-portrait.tex}
+\input{preamble/mystyle.tex}
+\begin{document}
+\section{InputCode 外观样张}
+\InputCode[0x21 KMP.cpp]{cpp}{preamble/tests/fixtures/示例 文件_1.cpp}
+\InputCode{python}{preamble/tests/fixtures/sample.py}
+\InputCode{bash}{preamble/tests/fixtures/sample.sh}
+\InputCode{make}{preamble/tests/fixtures/Makefile test}
+\subsection{长标题完整换行}
+\InputCode[中文与空格 文件名_用于检验长标题自动换行并完整保留所有字符_abcdefghijklmnopqrstuvwxyz_ABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789.cpp]{cpp}{preamble/tests/fixtures/示例 文件_1.cpp}
+\subsection{跨页代码}
+标题与图标仅出现在代码块开头，分页连接处保持直边。
+\InputCode{cpp}{preamble/tests/fixtures/long-code.cpp}
+代码块之后的正文应恢复正常颜色与字体。
+\subsection{通用图标}
+没有专用映射的语言（text）使用通用代码文件图标。
+\InputCode[notes.txt]{text}{preamble/tests/fixtures/sample.py}
+\end{document}

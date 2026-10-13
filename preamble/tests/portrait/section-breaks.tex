@@ -1,0 +1,32 @@
+\documentclass{article}
+\input{preamble/packages.tex}
+\input{preamble/layout-portrait.tex}
+\input{preamble/mystyle.tex}
+% 短样例每章一页：检查空标题后的分页及多余空白页。
+\newcommand{\CheckPage}[1]{%
+  \ifnum\value{page}=#1\relax\else
+    \errmessage{Section pagination: expected page #1, got \thepage}%
+  \fi}
+\begin{document}
+\tableofcontents
+\section{A：目录后起页}
+\CheckPage{2}
+上一章的正文。
+\subsection{章末空二级标题}
+\subsubsection{章末空三级标题}
+\section{B：空小标题后起页}
+\CheckPage{3}
+本章应从新页开始，前两个空标题留在上一页。
+\section[短目录标题]{C：普通正文后起页}
+\CheckPage{4}
+\section{D：空一级标题后起页}
+\CheckPage{5}
+\InputCode{cpp}{preamble/tests/fixtures/示例 文件_1.cpp}
+\clearpage
+\section{E：已有分页不插入空页}
+\CheckPage{6}
+星号标题也应另起一页。
+\section*{F：星号一级标题}
+\CheckPage{7}
+本页应为第七页，保留页码，无页眉。
+\end{document}

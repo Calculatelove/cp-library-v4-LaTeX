@@ -5,11 +5,21 @@
 \input{preamble/packages.tex}
 \input{preamble/mystyle.tex}
 \geometry{paperwidth=145mm,paperheight=160mm,margin=15mm}
+% 用段间距区分段落，检查盒子没有重置正文参数。
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{3pt plus 1pt minus 1pt}
+\newcommand{\CheckQuoteParagraphs}{%
+  \typeout{Quote paragraph skip: \the\parskip}%
+  \ifdim\parskip=3pt\else
+    \PackageError{quoteblock-test}{Paragraph spacing was reset}{Expected 3pt inside and after quoteblock.}%
+  \fi
+}
 
 \begin{document}
 普通正文位于引用块之前。
 
 \begin{quoteblock}
+\CheckQuoteParagraphs
 给出一棵包含 $n$ 个节点的树。每个节点都有一个显示值，初始均为 $0$。
 
 有两次操作，每次操作形如以下两种：
@@ -27,6 +37,7 @@
 \end{quote}
 
 \begin{quoteblock}
+\CheckQuoteParagraphs
 跨页引用块从此处开始。页尾和下一页应都有浅灰背景及左侧竖线。
 \newcount\quoteblockline
 \quoteblockline=1
@@ -37,5 +48,6 @@
 \repeat
 \end{quoteblock}
 
+\CheckQuoteParagraphs
 引用块之后的正文。
 \end{document}

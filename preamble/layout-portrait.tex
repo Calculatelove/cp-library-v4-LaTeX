@@ -1,5 +1,184 @@
-% A4 纵向单栏；边距、页眉页脚及最终字体尚待实现。
-\geometry{a4paper,portrait}
+% A4 纵向单栏；上下 15 mm 包含页眉、页脚及其间距。
+\geometry{
+  a4paper,portrait,left=20mm,right=20mm,top=15mm,bottom=15mm,
+  includeheadfoot,headheight=12pt,headsep=5mm,footskip=8mm
+}
 
-% 保留正文标题中的 0xPQ 编号，仅关闭 LaTeX 自动标题编号。
+% 正文与导航字体：本机字体须可供 XeLaTeX 访问，不静默替换。
+% 使用 TeX Live 的静态字形，避免 macOS 同名字体的可变字重映射缺失。
+\setmainfont{STIXTwoText}[
+  Extension=.otf,UprightFont=*-Regular,BoldFont=*-Bold,
+  ItalicFont=*-Italic,BoldItalicFont=*-BoldItalic
+]
+\setsansfont{PingFang SC}[BoldFont={PingFang SC Semibold}]
+\setCJKmainfont{Songti SC}[BoldFont={Songti SC Bold},ItalicFont={Songti SC}]
+\setCJKsansfont{PingFang SC}[BoldFont={PingFang SC Semibold}]
+% 单色符号使用项目内的静态字体；标题中也保持常规直立字重。
+% 只映射原稿实际使用的两个字符，不更改正文或全局字符分类。
+\newfontfamily\PortraitSymbolFont{NotoEmoji-Regular.ttf}[
+  Path=preamble/fonts/,
+  BoldFont=NotoEmoji-Regular.ttf,
+  ItalicFont=NotoEmoji-Regular.ttf,
+  BoldItalicFont=NotoEmoji-Regular.ttf
+]
+% xeCJK 默认借用当前字体空格；Noto Emoji 的空格宽达 1.27em。
+% 仅在符号局部分组内固定中西文间距，避免中文后的符号被推远。
+\DeclareRobustCommand{\PortraitStar}{{%
+  \xeCJKsetup{CJKecglue={\hskip .25em\relax}}%
+  \PortraitSymbolFont\char"2B50\relax}}
+\DeclareRobustCommand{\PortraitFlag}{{%
+  \xeCJKsetup{CJKecglue={\hskip .25em\relax}}%
+  \PortraitSymbolFont\char"1F6A9\relax}}
+\newunicodechar{⭐}{\PortraitStar}
+\newunicodechar{🚩}{\PortraitFlag}
+% 书签保留原 Unicode，避免把字体命令写入 PDF 字符串。
+\pdfstringdefDisableCommands{%
+  \def⭐{\string⭐}%
+  \def🚩{\string🚩}%
+}
+\setmathfont{Latin Modern Math}
+% 直立数学字母与算子均使用数学字体；\text 仍使用正文字体。
+% 显式外层分组兼容原稿的 ^\mathrm{mid}、_\mathrm{mid} 写法。
+% 直接使用 mathrm=sym 时，unicode-math 的内部组命令不能充当上下标组。
+% 在 unicode-math 完成文档起始初始化后设置，避免被其默认定义覆盖。
+\AddToHook{begindocument/end}{\renewcommand{\mathrm}[1]{{\symup{#1}}}}
+\setoperatorfont{\symup}
+% 保留 \boldsymbol 对完整表达式（含算子和定界符）的语义。
+% 数学字体没有独立粗体文件，bold 版本采用轻度合成加粗。
+\setmathfont{Latin Modern Math}[version=bold,FakeBold=1.2]
+% 保留文本类数学字母（如 \mathbf、\mathit）的 bold 版本字体映射。
+% \mathrm 已由上方定义改用数学字形，不走此文本映射。
+\setboldmathrm{STIXTwoText}[
+  Extension=.otf,UprightFont=*-Bold,BoldFont=*-Bold,
+  ItalicFont=*-BoldItalic,BoldItalicFont=*-BoldItalic
+]
+
+% 只供 minted 使用；不改变 \texttt 或代码标题栏。
+% 禁用标准、上下文、可选、历史连字，以及 calt/TeX 字符替换。
+% cv01 去除符号间隙；cv32--cv37 将手写斜体改为常规斜体（仍保留倾斜）。
+\newfontfamily\PortraitCodeLatin{Maple Mono NF CN}[
+  Ligatures={NoCommon,NoContextual,NoDiscretionary,NoHistoric},
+  RawFeature={-calt;-tlig;+cv01;+cv32;+cv33;+cv34;+cv35;+cv36;+cv37}
+]
+\newCJKfontfamily\PortraitCodeCJK{Maple Mono NF CN}[
+  Ligatures={NoCommon,NoContextual,NoDiscretionary,NoHistoric},
+  RawFeature={-calt;-tlig;+cv01;+cv32;+cv33;+cv34;+cv35;+cv36;+cv37}
+]
+\makeatletter
+\@namedef{FV@fontfamily@portraitcode}{%
+  \def\FV@FontScanPrep{}%
+  \def\FV@FontFamily{\PortraitCodeLatin\PortraitCodeCJK}%
+}
+% 固定正文及常用相对字号，数学上下间距随正常字号一起恢复。
+\renewcommand\normalsize{%
+  \@setfontsize\normalsize{10.5pt}{15pt}%
+  \abovedisplayskip=7pt plus 2pt minus 2pt
+  \belowdisplayskip=7pt plus 2pt minus 2pt
+  \abovedisplayshortskip=3pt plus 1pt
+  \belowdisplayshortskip=5pt plus 1pt minus 1pt
+}
+\renewcommand\small{\@setfontsize\small{9.5pt}{13pt}}
+\renewcommand\footnotesize{\@setfontsize\footnotesize{8.5pt}{11.5pt}}
+\makeatother
+\normalsize
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{3pt plus 1pt minus 1pt}
+\setlength{\emergencystretch}{1em}
+\raggedbottom
+\clubpenalty=10000
+\widowpenalty=10000
+\displaywidowpenalty=10000
+\setlist{topsep=3pt,itemsep=1pt,parsep=1pt,partopsep=0pt,leftmargin=*}
+
+\definecolor{PortraitMuted}{HTML}{666666}
 \setcounter{secnumdepth}{-1}
+\setcounter{tocdepth}{2}
+\hypersetup{bookmarksdepth=3,bookmarksopen=true,bookmarksopenlevel=1}
+\titleformat{\section}{\sffamily\bfseries\fontsize{22}{28}\selectfont}{}{0pt}{}[\thispagestyle{plain}]
+\titleformat{\subsection}{\sffamily\bfseries\fontsize{14}{19}\selectfont}{}{0pt}{}
+\titleformat{\subsubsection}{\sffamily\bfseries\fontsize{11.5}{16}\selectfont}{}{0pt}{}
+\titlespacing*{\section}{0pt}{8mm}{6mm}
+\titlespacing*{\subsection}{0pt}{12pt plus 2pt minus 2pt}{5pt}
+\titlespacing*{\subsubsection}{0pt}{8pt plus 2pt minus 1pt}{3pt}
+% titlesec 在空标题后的 nobreak 状态下会跳过 sectionbreak。
+% 在 section 解析参数前分页，兼容星号和可选短标题。
+\AddToHook{cmd/section/before}{\clearpage}
+
+% 目录只展开到二级；更深层级仍可通过 PDF 书签查阅。
+\renewcommand{\contentsname}{目录}
+\renewcommand{\cfttoctitlefont}{\sffamily\bfseries\fontsize{22}{28}\selectfont}
+\renewcommand{\cftsecfont}{\sffamily\bfseries}
+\renewcommand{\cftsecpagefont}{\sffamily}
+\renewcommand{\cftsubsecfont}{\normalfont\small}
+\renewcommand{\cftsubsecpagefont}{\normalfont\small}
+\setlength{\cftbeforesecskip}{8pt}
+\setlength{\cftbeforesubsecskip}{2pt}
+\setlength{\cftsubsecindent}{1em}
+\setlength{\cftaftertoctitleskip}{16pt}
+
+% 普通正文页统一显示当前一级标题，页码居中。
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\sffamily\fontsize{8}{10}\selectfont\color{PortraitMuted}%
+  \nouppercase{\leftmark}}
+\fancyfoot[C]{\sffamily\fontsize{8}{10}\selectfont\color{PortraitMuted}\thepage}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+\renewcommand{\sectionmark}[1]{\markboth{#1}{}}
+\renewcommand{\subsectionmark}[1]{\markright{#1}}
+\fancypagestyle{plain}{\fancyhf{}\fancyfoot[C]{\sffamily\fontsize{8}{10}\selectfont\color{PortraitMuted}\thepage}}
+
+% 阅读 / 打印配色：仅两种彩色；名称、调用与标点保持深灰。
+\definecolor{PortraitCodeText}{HTML}{30343B}
+\definecolor{PortraitCodeBlue}{HTML}{506B82}
+\definecolor{PortraitCodeGreen}{HTML}{58715D}
+\definecolor{PortraitCodeComment}{HTML}{70757D}
+% 使用 bw 提供 Pygments 转义与分词接口，在每次加载样式后替换 token 外观。
+% 兼容目标：minted 3.x / Pygments 2.x；不安装系统 Python 插件。
+% 未列出的 token 不增加颜色、粗体、下划线或错误边框。
+\makeatletter
+\newcommand{\PortraitCodeBlueText}[1]{\textcolor{PortraitCodeBlue}{#1}}
+\newcommand{\PortraitCodeGreenText}[1]{\textcolor{PortraitCodeGreen}{#1}}
+\newcommand{\PortraitCodeCommentText}[1]{\textcolor{PortraitCodeComment}{#1}}
+\def\PortraitToken@k{\let\PYG@tc\PortraitCodeBlueText}
+\let\PortraitToken@m\PortraitToken@k
+\let\PortraitToken@no\PortraitToken@k
+\let\PortraitToken@ow\PortraitToken@k
+\def\PortraitToken@s{\let\PYG@tc\PortraitCodeGreenText}
+\def\PortraitToken@c{\let\PYG@tc\PortraitCodeCommentText\let\PYG@it\textit}
+\def\PortraitToken@cp{\let\PYG@tc\PortraitCodeBlueText\let\PYG@it\relax}
+\def\PortraitToken@cpf{\let\PYG@tc\PortraitCodeGreenText\let\PYG@it\relax}
+\AddToHook{cmd/minted@defstyle/after}{%
+  \edef\PortraitCodeStyle{\mintedtexoptvalueof{style}}%
+  \ifdefstring{\PortraitCodeStyle}{bw}{%
+    \def\PYG@tok#1{\ifcsname PortraitToken@#1\endcsname
+      \csname PortraitToken@#1\endcsname\fi}%
+  }{}%
+}
+\makeatother
+\setminted{
+  fontfamily=portraitcode,fontsize=\fontsize{9}{12}\selectfont,
+  baselinestretch=1,style=bw,linenos=false,
+  formatcom=\color{PortraitCodeText}\mdseries\upshape,
+  breaklines=true,breakanywhere=false,tabsize=4
+}
+% 词法高亮并非 C++ 语义分析；仅补充明确要求的三个标准库类型名称。
+\setminted[cpp]{extrakeywordstype={vector,string,pair}}
+\setminted[c++]{extrakeywordstype={vector,string,pair}}
+\setminted[cxx]{extrakeywordstype={vector,string,pair}}
+\newfontfamily\PortraitCodeTitleLatin{PingFang SC Medium}
+\newCJKfontfamily\PortraitCodeTitleCJK{PingFang SC Medium}
+% coltext 同时保证 tcolorbox 续页恢复深灰，而非默认纯黑。
+\tcbset{input-code-title/.style={coltext=PortraitCodeText,fonttitle=\mdseries\upshape\PortraitCodeTitleLatin\PortraitCodeTitleCJK\fontsize{9}{12}\selectfont}}
+
+% 保留入口的书名、作者、日期，仅在此定义标题页外观。
+\makeatletter
+\renewcommand{\maketitle}{%
+  \clearpage\thispagestyle{empty}%
+  \vspace*{35mm}%
+  {\sffamily\bfseries\fontsize{30}{40}\selectfont\@title\par}%
+  \vspace{8mm}%
+  {\sffamily\fontsize{12}{17}\selectfont\color{PortraitMuted}\@author\par}%
+  {\sffamily\small\color{PortraitMuted}\@date\par}%
+}
+\makeatother

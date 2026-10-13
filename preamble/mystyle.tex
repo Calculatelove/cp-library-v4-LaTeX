@@ -7,13 +7,41 @@
   \endgroup
 }
 
-% 代码标题栏固定外观；代码字体、配色、行号与折行由 \setminted[语言] 控制。
-\definecolor{InputCodeTitle}{HTML}{F2F2F2}
+% 代码卡片：浅灰标题栏、细灰边框、小圆角；代码设置仍由 \setminted 控制。
+\definecolor{InputCodeTitle}{HTML}{F5F5F7}
+\definecolor{InputCodeFrame}{HTML}{D1D1D6}
+\definecolor{InputCodeText}{HTML}{1D1D1F}
+\definecolor{InputCodeMuted}{HTML}{6E6E73}
+% 只用于标题图标；不改变文件名、代码正文或行内代码字体。
+\newfontfamily\InputCodeIconFont{Maple Mono NF CN}
 \ExplSyntaxOn
 \str_new:N \l__inputcode_area_str
 \str_new:N \l__inputcode_base_str
 \str_new:N \l__inputcode_ext_str
 \str_new:N \l__inputcode_title_str
+
+% Nerd Fonts 官方 glyphnames.json 中的语言图标；其余语言使用 fa-file_code。
+% https://github.com/ryanoasis/nerd-fonts/blob/master/glyphnames.json
+\cs_new_protected:Npn \__inputcode_icon:n #1
+  {
+    \group_begin:
+    \InputCodeIconFont\mdseries\upshape\color{InputCodeMuted}
+    \str_case:nnF {#1}
+      {
+        {cpp}{\symbol{"E61D}} % custom-cpp
+        {c++}{\symbol{"E61D}}
+        {c}{\symbol{"E61E}}   % custom-c
+        {python}{\symbol{"E606}} % seti-python
+        {py}{\symbol{"E606}}
+        {bash}{\symbol{"EBCA}} % cod-terminal_bash
+        {sh}{\symbol{"EBCA}}
+        {shell}{\symbol{"EBCA}}
+        {make}{\symbol{"E673}} % seti-makefile
+        {makefile}{\symbol{"E673}}
+      }
+      {\symbol{"F1C9}} % fa-file_code
+    \group_end:
+  }
 
 \cs_new_protected:Npn \__inputcode_filename:n #1
   {
@@ -28,9 +56,19 @@
     \str_map_inline:nn {#1}
       {
         \str_if_eq:nnTF {##1} { ~ }
-          {\hspace{\fontdimen2\font}}
-          {##1}
+          {\hskip\fontdimen2\font\relax}
+          {##1\penalty200\relax}
       }
+  }
+
+\cs_new_protected:Npn \__inputcode_title:nn #1#2
+  {
+    \xeCJKsetup{CJKecglue={}}
+    \raggedright
+    % 图标独占 4 mm；多行文件名的续行与首行对齐。
+    \hangindent=4mm\hangafter=1
+    \noindent\makebox[4mm][l]{\__inputcode_icon:n {#2}}
+    \__inputcode_print_title:n {#1}\par
   }
 
 \cs_new_protected:Npn \__inputcode_box:nnn #1#2#3
@@ -39,20 +77,26 @@
     \begin{tcolorbox}[
       enhanced,
       breakable,
-      title={{\xeCJKsetup{CJKecglue={}}\__inputcode_print_title:n {#1}}},
+      title={\__inputcode_title:nn {#1}{#2}},
       colback=white,
       colbacktitle=InputCodeTitle,
-      colframe=black,
-      coltitle=black,
+      colframe=InputCodeFrame,
+      coltitle=InputCodeText,
       boxrule=0.4pt,
-      titlerule=0.4pt,
-      arc=0pt,
-      left=1mm,right=1mm,top=1mm,bottom=1mm,
-      lefttitle=1mm,righttitle=1mm,toptitle=0.5mm,bottomtitle=0.5mm,
-      fonttitle=\normalfont
+      titlerule=0pt,
+      arc=2mm,
+      boxsep=0pt,
+      left=2.5mm,right=2.5mm,top=2mm,bottom=2mm,
+      lefttitle=2.5mm,righttitle=2.5mm,toptitle=1.5mm,bottomtitle=1.5mm,
+      fonttitle=\normalfont,
+      % 各版可设置此样式；未设置时保留接口默认外观。
+      input-code-title/.try
     ]
     \xeCJKsetup{CJKecglue={}}
-    \inputminted[mathescape=false,texcomments=false,autogobble=false]{#2}{#3}
+    % 上下留白由卡片的 top/bottom 管理，不叠加 FancyVerb 列表间距。
+    \inputminted[mathescape=false,texcomments=false,autogobble=false,
+      listparameters={\setlength{\topsep}{0pt}\setlength{\partopsep}{0pt}},
+      vspace=0pt]{#2}{#3}
     \end{tcolorbox}
   }
 
@@ -73,12 +117,15 @@
 \newtcolorbox{quoteblock}{
   enhanced,
   breakable,
+  % 保留所在版式的段间距与首行缩进，避免默认 parbox 将其清零。
+  parbox=false,
   colback=QuoteBlockBackground,
   boxrule=0pt,
   borderline west={2pt}{0pt}{QuoteBlockRule},
   arc=0pt,
   boxsep=0pt,
-  left=2mm,right=2mm,top=2mm,bottom=2mm
+  % 左竖线外侧至正文约一个中文字宽，包含竖线自身的厚度。
+  left=\ccwd,right=2mm,top=2mm,bottom=2mm
 }
 
 % Markdown 水平分隔线：按当前容器的 \linewidth 排版，不改变分页。

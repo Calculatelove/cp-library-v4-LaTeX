@@ -5,6 +5,14 @@
 \input{preamble/mystyle.tex}
 \setminted[cpp]{linenos,fontsize=\footnotesize}
 \setminted[python]{fontsize=\scriptsize}
+% 卡片内部只保留 tcolorbox 内边距，不叠加 FancyVerb 列表间距。
+\makeatletter
+\AddToHook{cmd/FV@ListVSpace/after}{%
+  \ifdim\@topsepadd=0pt\else
+    \PackageError{input-code-test}{Unexpected code list spacing: \the\@topsepadd}{Expected zero inside InputCode.}%
+  \fi
+}
+\makeatother
 
 \begin{document}
 默认标题，路径含中文、空格和下划线：

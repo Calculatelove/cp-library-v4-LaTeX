@@ -1,0 +1,95 @@
+\documentclass{article}
+\input{preamble/packages.tex}
+\input{preamble/layout-portrait.tex}
+\input{preamble/mystyle.tex}
+\title{算法竞赛第四版笔记}
+\author{C.L.}
+\date{}
+\begin{document}
+% 宽度检验：左右各 20 mm，回退旧版边距时应明确失败。
+\ifdim\dimexpr\textwidth-170mm\relax>0.1pt
+  \errmessage{Portrait text width must be 170 mm}
+\fi
+\ifdim\dimexpr170mm-\textwidth\relax>0.1pt
+  \errmessage{Portrait text width must be 170 mm}
+\fi
+\maketitle
+\newpage
+\tableofcontents
+\section{0x00\ 纵向版式样张}
+\subsection{正文、字重与信息层级}
+本文件仅检验导言区排版，不属于算法笔记正文。页面采用 A4 单栏，左右各
+20 mm，上下各 15 mm；上下范围包含页眉与页脚。中文正文使用宋体，标题采用黑体。
+
+这段文字用于观察连续阅读时的密度。短结论、数学公式与代码需要共享稳定的排版节奏。
+适度紧凑的页面应当便于查找关键词，同时保留足够的行间空间，避免上下标与相邻行相碰。
+\textbf{这是中文粗体及 Bold text}；\emph{这是强调文字及 emphasis}。
+行内代码保持独立设置：\texttt{lower\_bound(first, last, value)}。
+
+\subsubsection{局部标题与列表}
+\Highlight{重要结论}后的正文保持黑色。设 $n\in\mathbb{N}$，预处理复杂度为
+$\mathcal{O}(n\log n)$，单次查询复杂度为 $\mathcal{O}(1)$。
+\begin{itemize}
+\item 简短条目应当保持紧凑，换行后与本条正文对齐。
+\item 包含较长说明的条目用于检验缩进。这里继续补充一段文字，确认列表宽度和正文宽度的关系，并观察中文断行效果。
+  \begin{enumerate}
+  \item 嵌套列表保留层级。
+  \item 行内公式 $a_i\leq a_{i+1}$ 不改变行高节奏。
+  \end{enumerate}
+\end{itemize}
+\subsection{公式与引用块}
+\[
+ \sum_{k=0}^{n}\binom{n}{k}x^k=(1+x)^n,\qquad
+ A=\begin{pmatrix}1&1\\1&0\end{pmatrix}.
+\]
+\begin{quoteblock}
+引用块沿用浅灰背景与左侧竖线。\textbf{说明：}公式、列表及高亮可以置于其中。
+\[
+ F(x)=\frac{1}{1-x-x^2}.
+\]
+\begin{itemize}
+\item 第一条说明。
+\item \Highlight{强调文字}的背景只覆盖文字本身。
+\end{itemize}
+\end{quoteblock}
+\begin{quote}
+标准 quote 环境仍保持原有语义，不使用灰色背景。
+\end{quote}
+\Separator{}
+分隔线后继续正文，用于观察纵向间距及颜色作用范围。脚注用于补充说明。\footnote{脚注应当清晰，且不侵入页脚。}
+
+\section{0x01\ 代码字体与跨页}
+\subsection{字符辨识与无连字}
+代码正文使用 Maple Mono NF CN；标题栏使用黑体。下面的运算符应逐字符显示。
+\begin{minted}{cpp}
+// 中文注释：字符与运算符逐一显示，保持等宽。
+// 0 O 1 l I | != == === <= >= -> => <=> && || ++ --
+// fi fl ffi ffl ... :: << >> /* */ // __ ~~
+// @ $ & % Q f i j k l x y: ordinary italic, no handwriting
+const char* symbols = "@ $ & % Q f i j k l x y";
+if (left != right && count <= limit) node->next = nullptr;
+const char* message = "中英文 Mixed code 0123456789";
+\end{minted}
+\InputCode{cpp}{preamble/tests/fixtures/示例 文件_1.cpp}
+\InputCode[显式标题 File_1.cpp]{python}{preamble/tests/fixtures/sample.py}
+\InputCode{bash}{preamble/tests/fixtures/sample.sh}
+\InputCode{make}{preamble/tests/fixtures/Makefile test}
+\subsection{长行与长代码}
+\begin{minted}{cpp}
+// A deliberately long comment checks visual wrapping without changing the source text: alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu nu xi omicron pi rho sigma tau.
+\end{minted}
+\InputCode{cpp}{preamble/tests/fixtures/long-code.cpp}
+
+\subsection{引用块自然跨页}
+\begin{quoteblock}
+\newcount\sampleline
+\sampleline=1
+\loop
+第 \the\sampleline\ 条检验说明：跨页后背景与左侧竖线应连续，文字不应与页眉页脚相碰。
+这里包含 $a_n=a_{n-1}+a_{n-2}$，以及\textbf{中文强调}。\par
+\advance\sampleline by 1
+\ifnum\sampleline<27
+\repeat
+\end{quoteblock}
+引用块结束后恢复普通正文。
+\end{document}

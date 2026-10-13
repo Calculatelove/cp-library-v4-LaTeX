@@ -9,6 +9,10 @@
 % 数学公式、矩阵、对齐环境与数学符号（含 \mathbb）。
 \usepackage{amsmath}
 \usepackage{amssymb}
+% OpenType 数学字体；各版在 layout 文件中选择具体字体。
+\usepackage{unicode-math}
+% 保留正文 Unicode 字符，由各版按需设置符号字体映射。
+\usepackage{newunicodechar}
 
 % 图片与颜色。
 \usepackage{graphicx}
@@ -20,6 +24,10 @@
 % 页面尺寸、边距与多栏排版；具体参数在 layout-portrait.tex 中设置。
 \usepackage{geometry}
 \usepackage{multicol}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+\usepackage{tocloft}
 
 % 代码高亮，以及后续代码标题栏、引用块所需的盒子支持。
 \usepackage{minted}
