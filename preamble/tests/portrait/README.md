@@ -16,13 +16,13 @@
 | `math-content.tex` | 上述两份数学样张共用的内容，不能独立编译 | — |
 | `run.sh` | 至少两轮、最多八轮编译，检查辅助文件收敛、缺字、溢出及字体替换 | — |
 
-两份数学样张的正文均使用 STIX Two Text，除标识文字外只改变数学字体；包含行内公式、黑板粗体、花体、粗体希腊字母、求和、积分、分式、矩阵与引用块。代码引用复用 `preamble/tests/fixtures/` 的五个原样资源。
+两份数学样张的正文均使用 Latin Modern Roman，除标识文字外只改变数学字体；包含行内公式、黑板粗体、花体、粗体希腊字母、求和、积分、分式、矩阵与引用块。代码引用复用 `preamble/tests/fixtures/` 的五个原样资源。
 
 两份数学样张均保留 `\boldsymbol` 的完整表达式语义：显式配置 bold 数学版本，符号使用 `FakeBold=1.2` 轻度合成加粗，直立算子使用所选数学字体（`\setoperatorfont{\symup}`），随 bold 数学版本合成加粗；显式 `\mathrm` 通过带外层分组的 `\symup` 使用所选数学字体，兼容 `^\mathrm{mid}`、`_\mathrm{mid}` 的原有写法，`\text` 保持正文字体。复合粗体样例包含分式、定界符和 min 算子，并增加递推式中的 log 与粗体 log 检验，以及普通、上下标、粗体 `\mathrm{base}` 与 `\text{base}` 对照。
 
 ## 依赖与运行
 
-需要 XeLaTeX、可用的 `latexminted`，以及 `packages.tex` 中的宏包。字体需要 Songti SC、PingFang SC、Maple Mono NF CN（含常规、粗体、斜体、粗斜体）；STIX Two Text、STIX Two Math、Latin Modern Math 使用 TeX Live 提供的字体文件。字体缺失时应报错，不自动改用其他字体。
+需要 XeLaTeX、可用的 `latexminted`，以及 `packages.tex` 中的宏包。字体需要 Songti SC、PingFang SC、Maple Mono NF CN（含常规、粗体、斜体、粗斜体）；Latin Modern Roman、STIX Two Math、Latin Modern Math 使用 TeX Live 提供的字体文件。字体缺失时应报错，不自动改用其他字体。
 
 从项目根目录运行：
 
@@ -37,7 +37,7 @@ macOS 沙箱中的 XeLaTeX 可能无法通过名称访问苹方和用户安装�
 ## 设计参数与检查项
 
 - A4 单栏；左右各 20 mm；上下各 15 mm 包含页眉页脚，正文宽 170 mm。
-- 中文宋体、西文 STIX Two Text，正文 10.5/15 pt；黑体标题 22/28、14/19、11.5/16 pt。
+- 中文宋体、西文 Latin Modern Roman，正文 10.5/15 pt；黑体标题 22/28、14/19、11.5/16 pt。
 - 代码 Maple Mono NF CN，9/12 pt；关闭 liga、clig、dlig、hlig、calt、tlig；启用 cv01 去除符号间隙、cv32—cv37 使用常规斜体；标题栏苹方 Medium 9/12 pt。行内代码不随之改字体。
 - 默认无代码行号，长行仅视觉折行；标题不在续页重复。语言级 `setminted` 仍可覆盖默认设置。
 - 章节另起页，不强制奇数页；章首页无页眉，其他页面统一显示当前一级标题；页码居中。
@@ -62,7 +62,7 @@ pdffonts preamble/tests/build/portrait/preview.pdf
 
 这是导言区样张验证，不代表完整笔记已经通过编译或视觉验收。完整入口引用的 19 篇章节文件现已全部存在（含补齐的 0x51、0x52）；本次仅核对文件与引用路径，未重新编译完整笔记。
 
-用户已选定 Latin Modern Math 为纵向版默认数学字体；西文正文继续使用 STIX Two Text。综合样张和默认数学样张直接读取此配置，STIX 对照样张显式覆盖数学字体。
+用户已选定 Latin Modern Math 为纵向版默认数学字体；西文正文现使用 Latin Modern Roman。综合样张和默认数学样张直接读取此配置，STIX 对照样张显式覆盖数学字体。
 
 切换默认数学字体后，三份样张再次各两轮编译收敛；综合 PDF 已确认嵌入 Latin Modern Math，日志无缺字、Overfull 或字体替换，并重新检查受影响的正文及跨页公式页面。完整笔记未在本轮重编译。
 
@@ -189,3 +189,12 @@ python3 preamble/tests/portrait/check-syntax-colors.py
 思源字体安装后编译修复（2026-10-13）：已复现完整编译失败：`Source Han Serif SC Regular` 不存在。字体元数据确认新安装的 TTC 中，宋体 Regular 的完整名称为 `Source Han Serif SC`，旧配置在检测族名成功后错误追加 `Regular`，此前因未安装而未触发。移除思源宋体及 Noto Serif CJK 分支不可靠的 Regular 后缀；按族名选择其默认 Regular。另确认本机思源黑体提供 ExtraLight/Light/Normal/Regular/Medium/Bold/Heavy，没有 SemiBold；新增思源黑体原生 Bold 分支，避免已安装思源字体却仍回退 Heiti。保留 SemiBold 优先检测与系统黑体兜底。
 
 八份纵向样张各两轮收敛，无缺字、Overfull 或字体替换；配色检查通过，分页边界标题组仍同页。完整竖版通过 `./run.sh portrait` 三轮收敛，153 页；PDF 字体提取确认一级使用 SourceHanSans-Bold，二三级使用 SourceHanSerif-Regular，编译日志确认所选族为 SC。已渲染检查完整目录第 2—6 页及长标题样张第 1 页，无裁切遮挡。末轮无缺字或字体替换，保留原有 4 条 Overfull、2 条 amsmath 警告。Noto 分支未在本机实际渲染验证；未重编译 mystyle 独立样张、未逐页验收正文，未修改正文、未提交或推送。
+
+
+## 西文正文改用 Latin Modern Roman（2026-10-13）
+
+按用户确认的真实段落样张，纵向布局将西文正文由 STIX Two Text 改为 Latin Modern Roman，使用 TeX Live 的 lmroman10 静态 Regular / Bold / Italic / BoldItalic；正文仍为 10.5/15 pt。同步替换文本类数学字母的 bold 版本映射及两份数学对照样张的标识和映射。中文正文、标题、Latin Modern Math、代码块和行内代码字体配置不变；目录二三级的西文与目录数字页码继承新正文字体，一级目录仍使用思源黑体。未修改封面设计或正文内容。
+
+八份纵向样张各两轮收敛，无缺字、Overfull 或字体替换；代码配色及跨页卡片检查通过。两份数学样张共四页与目录样张第一页已渲染检查，无裁切遮挡；PDF 字体提取确认数学样张正文常规／粗体为 Latin Modern Roman，数学仍分别为 Latin Modern Math / STIX Two Math。
+
+完整竖版通过 ./run.sh portrait 三轮收敛，仍为 153 页；PDF 中无 STIX Two Text，西文常规／粗体为 Latin Modern Roman。末轮无缺字或字体替换，有 3 条 Overfull 与 2 条 amsmath 警告。已渲染检查完整 PDF 第 2、21、23、69 页，未逐页验收全文。其余纵向样张仅编译回归；公共接口未修改，未重编译 mystyle 独立样张。横版和代码版仍为空占位；未提交或推送。

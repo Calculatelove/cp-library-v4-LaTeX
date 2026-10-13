@@ -5,10 +5,10 @@
 }
 
 % 正文与导航字体：本机字体须可供 XeLaTeX 访问，不静默替换。
-% 使用 TeX Live 的静态字形，避免 macOS 同名字体的可变字重映射缺失。
-\setmainfont{STIXTwoText}[
-  Extension=.otf,UprightFont=*-Regular,BoldFont=*-Bold,
-  ItalicFont=*-Italic,BoldItalicFont=*-BoldItalic
+% 使用与已确认样张一致的 Latin Modern Roman 10 pt 静态字形。
+\setmainfont{lmroman10}[
+  Extension=.otf,UprightFont=*-regular,BoldFont=*-bold,
+  ItalicFont=*-italic,BoldItalicFont=*-bolditalic
 ]
 \setsansfont{PingFang SC}[BoldFont={PingFang SC Semibold}]
 \setCJKmainfont{Songti SC}[BoldFont={Songti SC Bold},ItalicFont={Songti SC}]
@@ -48,9 +48,9 @@
 \setmathfont{Latin Modern Math}[version=bold,FakeBold=1.2]
 % 保留文本类数学字母（如 \mathbf、\mathit）的 bold 版本字体映射。
 % \mathrm 已由上方定义改用数学字形，不走此文本映射。
-\setboldmathrm{STIXTwoText}[
-  Extension=.otf,UprightFont=*-Bold,BoldFont=*-Bold,
-  ItalicFont=*-BoldItalic,BoldItalicFont=*-BoldItalic
+\setboldmathrm{lmroman10}[
+  Extension=.otf,UprightFont=*-bold,BoldFont=*-bold,
+  ItalicFont=*-bolditalic,BoldItalicFont=*-bolditalic
 ]
 
 % 只供 minted 使用；不改变 \texttt 或代码标题栏。

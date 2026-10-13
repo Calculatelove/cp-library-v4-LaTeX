@@ -2,15 +2,15 @@
 \input{preamble/packages.tex}
 \input{preamble/layout-portrait.tex}
 \input{preamble/mystyle.tex}
-% 唯一字体变量：西文正文仍用 STIX Two Text，便于直接比较数学字体。
+% 唯一字体变量：西文正文仍用 Latin Modern Roman，便于直接比较数学字体。
 \setmathfont{STIXTwoMath-Regular.otf}
 \setmathfont{STIXTwoMath-Regular.otf}[version=bold,FakeBold=1.2]
 % 重设数学版本后重新关联文本类数学字母；\mathrm 与算子继承数学字形设置。
-\setboldmathrm{STIXTwoText}[
-  Extension=.otf,UprightFont=*-Bold,BoldFont=*-Bold,
-  ItalicFont=*-BoldItalic,BoldItalicFont=*-BoldItalic
+\setboldmathrm{lmroman10}[
+  Extension=.otf,UprightFont=*-bold,BoldFont=*-bold,
+  ItalicFont=*-bolditalic,BoldItalicFont=*-bolditalic
 ]
-\newcommand{\MathSampleName}{STIX Two Math / STIX Two Text}
+\newcommand{\MathSampleName}{STIX Two Math / Latin Modern Roman}
 \begin{document}
 \input{preamble/tests/portrait/math-content.tex}
 \end{document}

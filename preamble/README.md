@@ -53,7 +53,7 @@
 
 代码正文（含内嵌 minted 和中文注释）使用 Maple Mono NF CN，9/12 pt，禁用字体连字；启用 cv01 去除符号间隙，启用 cv32—cv37 将手写斜体切换为常规斜体；行内代码不随之改变。`mystyle.tex` 的 `input-code-title/.try` 是可选 tcolorbox 外观设置，纵向布局将其定义为苹方 Medium 9/12 pt；其他检验未定义时仍保留原默认标题字体。
 
-STIX Two Text 明确使用 TeX Live 静态字形以保证粗体可用；数学按用户确认使用 Latin Modern Math。保留原有 `\boldsymbol` 语义，显式配置 bold 数学版本：数学符号采用 `FakeBold=1.2` 轻度合成加粗，算子通过 `\setoperatorfont{\symup}` 使用所选数学字体的直立字形，粗体版本随数学字体合成加粗；显式 `\mathrm` 通过在 `begindocument/end` 钩子中定义的、带外层分组的 `\symup` 使用所选数学字体，兼容 `^\mathrm{mid}`、`_\mathrm{mid}` 的原有写法，粗体版本随数学字体合成加粗；`\text` 保持正文字体。STIX Two Math 对照使用相同策略，仅替换数学字体。具体依赖与运行方式见 `tests/portrait/README.md`。
+西文正文使用 Latin Modern Roman 的 TeX Live 静态字形（lmroman10），包含原生粗体、斜体和粗斜体；数学按用户确认使用 Latin Modern Math。保留原有 `\boldsymbol` 语义，显式配置 bold 数学版本：数学符号采用 `FakeBold=1.2` 轻度合成加粗，算子通过 `\setoperatorfont{\symup}` 使用所选数学字体的直立字形，粗体版本随数学字体合成加粗；显式 `\mathrm` 通过在 `begindocument/end` 钩子中定义的、带外层分组的 `\symup` 使用所选数学字体，兼容 `^\mathrm{mid}`、`_\mathrm{mid}` 的原有写法，粗体版本随数学字体合成加粗；`\text` 保持正文字体。STIX Two Math 对照使用相同策略，仅替换数学字体。具体依赖与运行方式见 `tests/portrait/README.md`。
 
 三份纵向样张编译收敛，综合样张 6 页、数学对照各 1 页，全部逐页渲染检查；无缺字、Overfull 或字体字形替换。既有五个接口检验也重新两轮编译通过，日志无缺字／Overfull。本轮未编译或视觉验收完整笔记。
 
@@ -76,3 +76,6 @@ InputCode 代码区缩进调整（2026-10-12）：按用户要求，代码区左
 
 
 InputCode 间距修复（2026-10-13）：内部 minted 的 vspace、topsep、partopsep 清零，只由卡片的上下 2 mm 内边距管理内部留白；独立 minted 与卡片外间距不变。间距断言及编译、视觉检查范围见 tests/mystyle/README.md。
+
+
+西文正文调整（2026-10-13）：按用户确认改为 Latin Modern Roman（lmroman10），正文大小仍为 10.5/15 pt；同步更新文本类数学字母的粗体映射。目录中继承正文的西文和页码随之更新，中文、标题、数学与代码字体配置不变。八份纵向样张各两轮收敛、代码配色检查通过，完整竖版三轮收敛，153 页；末轮无缺字或字体替换，仍有 3 条 Overfull 与 2 条 amsmath 警告。检查了目录、数学样张及完整 PDF 第 2、21、23、69 页；未逐页验收全文，未重编译公共接口独立样张。
