@@ -1,0 +1,30 @@
+\documentclass{article}
+\input{preamble/packages.tex}
+\input{preamble/layout-portrait.tex}
+\input{preamble/mystyle.tex}
+\begin{document}
+% 直接排版虚构目录条目，检验长标题、续行、页码与页底标题保护。
+\makeatletter
+{\cfttoctitlefont 目录样张\par}
+\vspace{16pt}
+\l@section{0x00 基础知识}{7}
+\l@subsection{常用公式}{7}
+\l@subsubsection{日期公式}{7}
+\l@subsubsection{一个用于检验长标题换行的三级目录条目：字符串匹配、前缀函数、失配指针与多种边界情况的处理方法，以及相应的复杂度分析和实现注意事项}{128}
+\l@subsection{一个用于检验二级标题换行的目录条目：组合计数、生成函数、递推关系及其在多种限制条件下的统一处理方法和实现细节}{129}
+\l@subsubsection{短标题}{130}
+\l@section{0x01 一个用于检验一级标题换行的章节名称：多项式、形式幂级数以及相关代数运算的基本性质、应用方法与代码模板}{131}
+\l@subsection{后续主题}{132}
+\l@subsubsection{后续细目}{133}
+\vspace*{\fill}
+\l@subsection{页底保护：应与下一条目同页}{150}
+\l@subsubsection{此条目跟随页底主题}{150}
+\newpage
+分页保护检验：下方剩余空间不足以容纳完整的三级标题组。
+\vspace*{\dimexpr\textheight-65pt\relax}
+\l@section{分页一级标题}{151}
+\l@subsection{分页二级标题}{151}
+\l@subsubsection{分页三级首条}{151}
+\l@subsubsection{分页三级后续}{152}
+\makeatother
+\end{document}

@@ -92,8 +92,8 @@
 
 \definecolor{PortraitMuted}{HTML}{666666}
 \setcounter{secnumdepth}{-1}
-\setcounter{tocdepth}{2}
-\hypersetup{bookmarksdepth=3,bookmarksopen=true,bookmarksopenlevel=1}
+\setcounter{tocdepth}{3}
+\hypersetup{bookmarksdepth=5,bookmarksopen=true}
 \titleformat{\section}{\sffamily\bfseries\fontsize{22}{28}\selectfont}{}{0pt}{}[\thispagestyle{plain}]
 \titleformat{\subsection}{\sffamily\bfseries\fontsize{14}{19}\selectfont}{}{0pt}{}
 \titleformat{\subsubsection}{\sffamily\bfseries\fontsize{11.5}{16}\selectfont}{}{0pt}{}
@@ -104,17 +104,78 @@
 % 在 section 解析参数前分页，兼容星号和可选短标题。
 \AddToHook{cmd/section/before}{\clearpage}
 
-% 目录只展开到二级；更深层级仍可通过 PDF 书签查阅。
+% 目录展开到三级；PDF 书签包含全部标题层级并默认全部展开。
 \renewcommand{\contentsname}{目录}
 \renewcommand{\cfttoctitlefont}{\sffamily\bfseries\fontsize{22}{28}\selectfont}
-\renewcommand{\cftsecfont}{\sffamily\bfseries}
-\renewcommand{\cftsecpagefont}{\sffamily}
-\renewcommand{\cftsubsecfont}{\normalfont\small}
-\renewcommand{\cftsubsecpagefont}{\normalfont\small}
-\setlength{\cftbeforesecskip}{8pt}
-\setlength{\cftbeforesubsecskip}{2pt}
-\setlength{\cftsubsecindent}{1em}
+% 目录字体独立于正文；按已确认的优先顺序选择可用宋体。
+\IfFontExistsTF{Source Han Serif SC}{%
+  % Regular 的完整名称就是族名，不追加不存在的 Regular 后缀。
+  \newCJKfontfamily\PortraitTOCSerif{Source Han Serif SC}
+}{\IfFontExistsTF{Noto Serif CJK SC}{%
+  \newCJKfontfamily\PortraitTOCSerif{Noto Serif CJK SC}
+}{%
+  \newCJKfontfamily\PortraitTOCSerif{Songti SC}[UprightFont={* Regular}]
+}}
+% 一级目录：思源黑体原生 SemiBold/Bold 优先，缺失时使用系统黑体。
+\IfFontExistsTF{Source Han Sans SC SemiBold}{%
+  \newfontfamily\PortraitTOCLatin{Source Han Sans SC SemiBold}
+  \newCJKfontfamily\PortraitTOCCJK{Source Han Sans SC SemiBold}
+}{\IfFontExistsTF{Source Han Sans SC Bold}{%
+  % 官方七字重集合没有 SemiBold，采用原生 Bold。
+  \newfontfamily\PortraitTOCLatin{Source Han Sans SC Bold}
+  \newCJKfontfamily\PortraitTOCCJK{Source Han Sans SC Bold}
+}{%
+  % macOS Heiti SC 只有 Light/Medium；用 Medium 轻度合成加粗。
+  \newfontfamily\PortraitTOCLatin{Heiti SC Medium}[FakeBold=1.2]
+  \newCJKfontfamily\PortraitTOCCJK{Heiti SC Medium}[FakeBold=1.2]
+}}
+\definecolor{PortraitTOCDots}{HTML}{888888}
+\newlength{\PortraitTOCUnit}
+\settowidth{\PortraitTOCUnit}{\normalfont\PortraitTOCSerif\fontsize{10}{15}\selectfont 中}
 \setlength{\cftaftertoctitleskip}{16pt}
+% 每条目录装入完整段落盒：续行保持本级缩进，页码固定在末行右端。
+% 条目间使用可丢弃的竖直间距，页首不残留标题前留白。
+% 根据前后层级禁止父标题与首个子条目之间分页，不捆绑整个章节。
+\makeatletter
+\newcount\PortraitTOCPreviousLevel
+\PortraitTOCPreviousLevel=0
+\newcommand{\PortraitTOCEntry}[4]{%
+  \par
+  \ifnum\PortraitTOCPreviousLevel=1 \penalty10000
+  \else\ifnum\PortraitTOCPreviousLevel=2
+    \ifnum#1=3 \penalty10000\else\penalty0\fi
+  \else\penalty0\fi\fi
+  \begingroup
+  \@tempdima=0pt
+  \ifnum\PortraitTOCPreviousLevel=1 \advance\@tempdima by5pt\fi
+  \ifnum#1=1 \advance\@tempdima by12pt\fi
+  \vskip\@tempdima
+  \nointerlineskip
+  \vbox{%
+    \hsize=\linewidth
+    \normalfont\PortraitTOCSerif\fontsize{10}{15}\selectfont
+    \ifnum#1=1 \PortraitTOCLatin\PortraitTOCCJK\fontsize{12}{15}\selectfont\fi
+    \leftskip=#2\relax \rightskip=30pt
+    \parfillskip=-\rightskip \parindent=0pt \parskip=0pt
+    \interlinepenalty=10000
+    \noindent\strut#3\nobreak
+    \ifnum#1=1 \hfill
+    % 9pt 是实际点中心间距；两端各留 3pt，空间不足一格时不绘点。
+    \else{\normalfont\fontsize{10}{15}\selectfont\color{PortraitTOCDots}%
+      \kern3pt\leaders\hbox to9pt{\hss.\hss}\hfill\kern3pt}\fi
+    \nobreak\hb@xt@20pt{\hfil\normalfont\PortraitTOCSerif
+      \ifnum#1=1 \fontsize{11}{15}\else\fontsize{10}{15}\fi\selectfont#4}\strut\par
+  }%
+  \endgroup
+  \global\PortraitTOCPreviousLevel=#1\relax}
+\renewcommand*{\l@section}[2]{%
+  \ifnum\c@tocdepth>0 \PortraitTOCEntry{1}{0pt}{#1}{#2}\fi}
+\renewcommand*{\l@subsection}[2]{%
+  \ifnum\c@tocdepth>1 \PortraitTOCEntry{2}{2\PortraitTOCUnit}{#1}{#2}\fi}
+\renewcommand*{\l@subsubsection}[2]{%
+  \ifnum\c@tocdepth>2 \PortraitTOCEntry{3}{4\PortraitTOCUnit}{#1}{#2}\fi}
+\AddToHook{cmd/tableofcontents/before}{\global\PortraitTOCPreviousLevel=0}
+\makeatother
 
 % 普通正文页统一显示当前一级标题，页码居中。
 \pagestyle{fancy}

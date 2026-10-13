@@ -4,7 +4,7 @@ set -euo pipefail
 cd "$(dirname "$0")/../../.."
 out=preamble/tests/build/portrait
 mkdir -p "$out"
-for test in syntax-colors code-cards symbols section-breaks preview math-stix math-latin-modern; do
+for test in toc-layout syntax-colors code-cards symbols section-breaks preview math-stix math-latin-modern; do
     previous=''
     converged=false
     for pass in 1 2 3 4 5 6 7 8; do
