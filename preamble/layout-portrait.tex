@@ -106,32 +106,13 @@
 
 % 目录展开到三级；PDF 书签包含全部标题层级并默认全部展开。
 \renewcommand{\contentsname}{目录}
-\renewcommand{\cfttoctitlefont}{\sffamily\bfseries\fontsize{22}{28}\selectfont}
-% 目录字体独立于正文；按已确认的优先顺序选择可用宋体。
-\IfFontExistsTF{Source Han Serif SC}{%
-  % Regular 的完整名称就是族名，不追加不存在的 Regular 后缀。
-  \newCJKfontfamily\PortraitTOCSerif{Source Han Serif SC}
-}{\IfFontExistsTF{Noto Serif CJK SC}{%
-  \newCJKfontfamily\PortraitTOCSerif{Noto Serif CJK SC}
-}{%
-  \newCJKfontfamily\PortraitTOCSerif{Songti SC}[UprightFont={* Regular}]
-}}
-% 一级目录：思源黑体原生 SemiBold/Bold 优先，缺失时使用系统黑体。
-\IfFontExistsTF{Source Han Sans SC SemiBold}{%
-  \newfontfamily\PortraitTOCLatin{Source Han Sans SC SemiBold}
-  \newCJKfontfamily\PortraitTOCCJK{Source Han Sans SC SemiBold}
-}{\IfFontExistsTF{Source Han Sans SC Bold}{%
-  % 官方七字重集合没有 SemiBold，采用原生 Bold。
-  \newfontfamily\PortraitTOCLatin{Source Han Sans SC Bold}
-  \newCJKfontfamily\PortraitTOCCJK{Source Han Sans SC Bold}
-}{%
-  % macOS Heiti SC 只有 Light/Medium；用 Medium 轻度合成加粗。
-  \newfontfamily\PortraitTOCLatin{Heiti SC Medium}[FakeBold=1.2]
-  \newCJKfontfamily\PortraitTOCCJK{Heiti SC Medium}[FakeBold=1.2]
-}}
+% 仅居中目录标题；不改变条目对齐或标题上下间距。
+\renewcommand{\cfttoctitlefont}{\hfill\sffamily\bfseries\fontsize{22}{28}\selectfont}
+\renewcommand{\cftaftertoctitle}{\hfill}
+% 方案 A：一级沿用苹方 Semibold；二三级沿用正文宋体与 Latin Modern Roman。
 \definecolor{PortraitTOCDots}{HTML}{888888}
 \newlength{\PortraitTOCUnit}
-\settowidth{\PortraitTOCUnit}{\normalfont\PortraitTOCSerif\fontsize{10}{15}\selectfont 中}
+\settowidth{\PortraitTOCUnit}{\normalfont\fontsize{10}{15}\selectfont 中}
 \setlength{\cftaftertoctitleskip}{16pt}
 % 每条目录装入完整段落盒：续行保持本级缩进，页码固定在末行右端。
 % 条目间使用可丢弃的竖直间距，页首不残留标题前留白。
@@ -153,8 +134,9 @@
   \nointerlineskip
   \vbox{%
     \hsize=\linewidth
-    \normalfont\PortraitTOCSerif\fontsize{10}{15}\selectfont
-    \ifnum#1=1 \PortraitTOCLatin\PortraitTOCCJK\fontsize{12}{15}\selectfont\fi
+    \normalfont\fontsize{10}{15}\selectfont
+    \ifnum#1=1 \sffamily\bfseries\fontsize{12}{15}\selectfont
+    \else\ifnum#1=2 \fontsize{10.5}{15}\selectfont\fi\fi
     \leftskip=#2\relax \rightskip=30pt
     \parfillskip=-\rightskip \parindent=0pt \parskip=0pt
     \interlinepenalty=10000
@@ -163,7 +145,7 @@
     % 9pt 是实际点中心间距；两端各留 3pt，空间不足一格时不绘点。
     \else{\normalfont\fontsize{10}{15}\selectfont\color{PortraitTOCDots}%
       \kern3pt\leaders\hbox to9pt{\hss.\hss}\hfill\kern3pt}\fi
-    \nobreak\hb@xt@20pt{\hfil\normalfont\PortraitTOCSerif
+    \nobreak\hb@xt@20pt{\hfil\normalfont
       \ifnum#1=1 \fontsize{11}{15}\else\fontsize{10}{15}\fi\selectfont#4}\strut\par
   }%
   \endgroup
