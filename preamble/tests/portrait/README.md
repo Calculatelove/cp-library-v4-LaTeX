@@ -232,3 +232,6 @@ python3 preamble/tests/portrait/check-headings.py
 竖版与代码版代码字号调整（2026-10-14）：按用户要求，两版 minted 代码正文统一为 8/10.5 pt，覆盖 InputCode 与内嵌 minted；标题栏仍为 9/12 pt，行内代码及公共接口不变。竖版九份样张各两轮收敛，代码版 code-cards、syntax-colors 两份样张各两轮收敛，无缺字、Overfull 或字体替换。两版代码配色及常规直立字形检查通过，代码版 100 行跨栏代码完整；已逐页渲染检查两版代码卡片共 4 页，长标题、折行及跨页连接正常。
 
 完整竖版与代码版分别由 ./run.sh portrait、./run.sh code 三轮收敛，竖版由 153 页变为 145 页，代码版由 53 页变为 49 页；完整 PDF 中代码字体均提取为 7.970 PDF pt（8 TeX pt）。竖版末轮保留原有 3 条 Overfull 与 2 条 amsmath 警告；代码版无 Overfull，双栏检查报告 0 项警告。两版均无缺字或字体替换。未逐页验收完整 PDF、未做打印验收；未修改正文、横版或根 README，未提交或推送。
+
+
+2026-10-14：preview.tex 新增 Maple Mono NF CN 行内代码检验，覆盖中文、易混淆字符、运算符及转义符号；字号随正文。样张两轮收敛，字体提取与所在页渲染检查通过。

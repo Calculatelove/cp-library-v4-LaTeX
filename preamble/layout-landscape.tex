@@ -53,6 +53,16 @@
   ItalicFont=*-bolditalic,BoldItalicFont=*-bolditalic
 ]
 
+% 行内等宽文字使用 Maple，字号随所在正文；与代码块采用相同字形特性。
+\setmonofont{Maple Mono NF CN}[
+  Ligatures={NoCommon,NoContextual,NoDiscretionary,NoHistoric},
+  RawFeature={-calt;-tlig;+cv01;+cv32;+cv33;+cv34;+cv35;+cv36;+cv37}
+]
+\setCJKmonofont{Maple Mono NF CN}[
+  Ligatures={NoCommon,NoContextual,NoDiscretionary,NoHistoric},
+  RawFeature={-calt;-tlig;+cv01;+cv32;+cv33;+cv34;+cv35;+cv36;+cv37}
+]
+
 % 只供 minted 使用；不改变 \texttt 或代码标题栏。
 % 禁用标准、上下文、可选、历史连字，以及 calt/TeX 字符替换。
 % cv01 去除符号间隙；cv32--cv37 将手写斜体改为常规斜体（仍保留倾斜）。
