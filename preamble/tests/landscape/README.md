@@ -1,0 +1,65 @@
+# 横版布局检验
+
+本目录仅检验 `preamble/layout-landscape.tex` 及其与公共接口的组合，不引入 `contents/` 章节。使用 A4 横向双栏、12 mm 边距（包含页眉页脚）、8 mm 栏距、132.5 mm 栏宽；正文 10/14 pt，代码 9/11.5 pt。
+
+## 依赖与运行
+
+依赖 XeLaTeX、latexminted、TeX Live 的 mwe 示例图片、公共宏包、Songti SC、PingFang SC、Maple Mono NF CN、TeX Live 的 Latin Modern 字体及项目内 Noto Emoji。PDF 检查需要 Python 3 + PyMuPDF；可用 `pdftoppm` 渲染。不需要不受限 shell escape。
+
+从项目根目录运行：
+
+```sh
+bash preamble/tests/landscape/run.sh
+python3 preamble/tests/landscape/check-layout.py
+```
+
+脚本也可从其他目录调用；自动回到项目根目录。支持将样张名作为参数，例如 `bash preamble/tests/landscape/run.sh flow toc-layout`。至少两轮、最多八轮，比较辅助文件和重编译提示；缺字、Overfull、字体替换或页眉高度不足时失败并保留日志。
+
+源码使用项目根目录相对路径。PDF、日志、缓存、渲染图片统一放在已忽略的 `preamble/tests/build/landscape/`。可按下面的命令渲染全部目录样张页：
+
+```sh
+pdftoppm -scale-to 1600 -png preamble/tests/build/landscape/toc-layout.pdf preamble/tests/build/landscape/toc-layout
+```
+
+若沙盒阻断 macOS 字体服务、已安装字体仍报找不到，应在允许访问系统字体的环境运行编译，不为此替换设计字体。完整笔记由根目录 `./run.sh landscape` 单独构建，输出 `build/landscape/main-landscape.pdf`。
+
+## 样张与检查
+
+| 文件 | 检验内容 |
+| --- | --- |
+| `flow.tex` | 同栏连续章节、左右栏跨章、连续空标题、栏底标题跟随正文或公式；页眉显示页顶所在的章（左栏顶端新章取该章，否则取页首延续的章）；含栏宽断言。 |
+| `preview.tex` | 中西文、粗体与斜体、数学算子和未分组直立上下标、Unicode 符号、五级标题、嵌套列表、多语言代码及公共接口。 |
+| `code-cards.tex` | 单个 100 行人工代码卡片从左栏底跨到右栏和下一页、标题不重复、长文件名、显示折行及内嵌 minted。 |
+| `syntax-colors.tex` | 四色高亮、C++ 类型和注释的常规直立字体，沿用竖版配色检验内容。 |
+| `interfaces.tex` | 65 段人工引用跨栏跨页，嵌套列表、公式、分隔线、高亮的范围。 |
+| `toc-layout.tex` | 两页真实目录、三级长标题、父子条目保护、通栏居中目录标题、88 个条目与 90 个五层书签。 |
+| `images.tex` | 图片按局部栏宽解释 `textwidth`，验证 106 mm 图片和整栏图、分组结束后整页宽度不变。 |
+| `check-layout.py` | 从实际 PDF 检查纸张、阅读流向、章名、代码完整性、引用段落顺序、配色及字重、目录分栏、链接目标和书签。 |
+| `check-full.py` | 检查完整横版 `build/landscape/main-landscape.pdf` 的文字越栏：左栏不得进入栏距（整个落在栏距内的文字同样计入）；右栏最多伸入外侧页边距 10 mm 且不越过纸边，允许项逐条列出。 |
+
+## 完整横版溢出检查
+
+完整笔记用 `./run.sh landscape` 构建后，从项目根目录运行：
+
+```sh
+python3 preamble/tests/landscape/check-full.py
+```
+
+优先使用 PyMuPDF，未安装时改用 pdfplumber（本机为 PyMuPDF 分支；pdfplumber 分支在下述分栏修正后未重新运行）。中文全角标点按前进宽度会虚报约 6.7 pt，脚本跳过这些字符和页眉、页脚、目录通栏标题。
+
+脚本以右栏左边界区分两栏，字框起点在右栏之前的字符都计入左栏。早先以左栏右边界分栏时，整个落在栏距内的越栏文字会被当作右栏、得到负溢出而漏报；2026-10-14 已修正，并以人工越栏样例确认可以报出。右栏行首的“等标点经 xeCJK 压缩后字框约提前 0.5 pt，留 1 pt 容差；居中的页脚页码位于栏距位置，跳过。左栏文字伸到右栏位置后，后续字符无法与右栏正文区分，此时报出的越界量只是下限，并附提示。
+
+规则由用户于 2026-10-14 确认：右栏公式在外侧页边距内的少量溢出不影响阅读，接受；左栏溢出会挤进 8 mm 栏距、碰到右栏，不接受；超过 10 mm 或越过纸边须修改。
+
+已登记接受的溢出（以 2026-10-14 17:26 构建的 101 页 PDF 为准）：
+
+| 页码 | 位置 | 溢出 | 原因 |
+| --- | --- | --- | --- |
+| 13 | `0x12` 第 73 行，右栏 | 约 13 pt（4.6 mm） | `$a^B, a^{2B}, \dots, a^{\lfloor n/B\rfloor B}$` 只有逗号，行内公式无断行点。 |
+| 76 | `0x34` 第 163 行，右栏 | 约 22 pt（7.7 mm） | Miller–Rabin 基底集合只有逗号，整体约 217 pt，无断行点。 |
+
+这两处在 TeX 日志中仍各有一条 Overfull，属于已确认例外，不代表新的问题。若因前文增删移到左栏，`check-full.py` 会报错，届时需重新处理。
+
+`\Highlight` 由不可拆分的 `\colorbox` 实现，横版栏宽约 37 个汉字；段首高亮宜控制在约 33 个汉字以内（含公式按实际宽度估算）。原第 96 页 exBSGS 高亮越过纸边 6 pt，已由用户缩短 `0x34` 中 BSGS 与 exBSGS 两处高亮的括号说明解决。
+
+人工长代码在 `../fixtures/landscape-long.cpp`，其余代码复用既有资源。测试构造的大块留白用于触发边界，并非正文版式效果。测试脚本通过后仍需渲染检查边框、字形、长标题、跨栏连接处；本目录不代替完整笔记和实物打印验收。

@@ -6,15 +6,16 @@
 | --- | --- |
 | `packages.tex` | 已加载中文、OpenType 数学、图片、颜色、删除线、布局、标题、页眉、列表、目录、minted、tcolorbox 与超链接支持。 |
 | `layout-portrait.tex` | 已实现首轮纵向布局：左右 20 mm、上下 15 mm（包含页眉页脚），宋体正文、苹方标题、Latin Modern 数学、Maple 代码；待用户审阅样张。 |
-| `layout-landscape.tex` | 横版独立布局，目前为空占位文件。 |
+| `layout-landscape.tex` | A4 横向双栏、12 mm 边距、8 mm 栏距、连续章节；独立维护字体、页眉和双栏目录。 |
+| 横版设计稿 | 见 [`../docs/superpowers/specs/2026-10-14-landscape-design.md`](../docs/superpowers/specs/2026-10-14-landscape-design.md)：A4 双栏、章节连续、参考竖版页眉与目录；设计已批准，首轮实现及验证状态见文末。 |
 | `layout-code.tex` | 仅代码版独立布局，目前为空占位文件；纸张方向、栏数等尚未确定。 |
 | `mystyle.tex` | 已实现 `\Highlight`、`\InputCode`、`quoteblock` 与 `\Separator`。 |
 | `fonts/` | 随项目保存的单色 Noto Emoji 静态字体与 OFL 许可，供纵向版两个 Unicode 符号映射使用。 |
-| `tests/` | 当前已建立 `mystyle/`、`portrait/` 与共用资源 `fixtures/`；横版及代码版检验待实现。 |
+| `tests/` | 当前已建立 `mystyle/`、`portrait/` 与共用资源 `fixtures/`；横版七份样张已建立，代码版检验待实现。 |
 
 入口仅保留文档类声明、下列三个导言区引用和标题／作者／日期等元信息；纸张、字体、字号、间距及编号等排版设置集中放在导言区文件中。ctex 加载前所需的临时字体选项由 `packages.tex` 管理。
 
-三个入口共用 `packages.tex` 和 `mystyle.tex`，中间加载本版的 `layout-<版本>.tex`；所有字体、纸张、间距等设置在各版布局文件中独立维护，不设置公共布局文件。横版与仅代码版入口目前同样为空占位文件。
+三个入口共用 `packages.tex` 和 `mystyle.tex`，中间加载本版的 `layout-<版本>.tex`；所有字体、纸张、间距等设置在各版布局文件中独立维护，不设置公共布局文件。横版入口直接引入 19 篇章节，暂不制作封面；仅代码版入口仍为空占位文件。
 
 `main-portrait.tex` 当前采用的加载顺序：
 
@@ -28,7 +29,7 @@
 
 所有路径相对于项目根目录，不能假定加载本目录文件会改变工作目录。建议 XeLaTeX；minted 依赖 `latexminted`。宏包已加载不等于自定义接口或整本文档已经可编译。
 
-完整版计划共用 `contents/chapters.tex`，代码版计划使用 `contents/code-index.tex`；内容清单不放在导言区。两个清单尚未创建，竖版仍直接引入 19 篇章节。
+按 2026-10-14 用户要求，竖版与横版分别在入口直接引入 19 篇章节，不创建 `contents/chapters.tex`。代码版计划使用 `contents/code-index.tex`，该清单尚未创建。
 
 从任意工作目录调用根目录脚本均会切换到项目根目录：
 
@@ -41,7 +42,7 @@
 ./run.sh --help
 ```
 
-产物分别为 `build/portrait/main-portrait.pdf`、`build/landscape/main-landscape.pdf`、`build/code/main-code.pdf`，辅助文件与 minted 缓存也按版本隔离。空入口提前报错；`all` 先检查三个入口，再按上述顺序构建，遇到失败停止。目前横版、代码版尚不可构建，脚本支持目标不代表该版内容已实现。
+产物分别为 `build/portrait/main-portrait.pdf`、`build/landscape/main-landscape.pdf`、`build/code/main-code.pdf`，辅助文件与 minted 缓存也按版本隔离。空入口提前报错；`all` 先检查三个入口，再按上述顺序构建，遇到失败停止。横版现可单独构建；代码版仍为空占位，`all` 会在入口预检时停止。
 
 根目录 `run.sh` 至少编译两轮，并检查主文档目录、交叉引用和书签辅助记录是否稳定及是否仍有重编译提示，最多八轮。仅稳定且生成非空 PDF 后清理本版已知辅助文件与 minted 缓存，不清理其他版本或测试目录；编译失败或达到上限仍未稳定时，返回失败并保留日志。
 
@@ -85,3 +86,9 @@ InputCode 间距修复（2026-10-13）：内部 minted 的 vspace、topsep、par
 
 
 目录标题居中（2026-10-13）：按用户要求，仅为“目录”标题添加左右对称伸缩间距，字体、字号及上下间距不变，条目继续左对齐。目录样张同步使用标题后置设置，并保留末端对齐胶。样张两轮通过，无缺字、Overfull 或字体替换，已渲染检查第一页；完整竖版三轮收敛，仍为 153 页，已渲染检查第 2 页。PDF 坐标核对确认标题水平中心与纸张中心一致，纵向位置不变；除该标题外，全书文字位置、字体、字号与修改前一致。末轮仍有 3 条 Overfull 与 2 条 amsmath 警告，无缺字或字体替换。未重新逐页视觉验收正文或重编译其他样张；未修改正文，未提交或推送。
+
+
+横版首轮实现（2026-10-14）：`layout-landscape.tex` 独立实现 A4 横向标准双栏（四边 12 mm 含页眉页脚，栏距 8 mm，栏宽 132.5 mm）、正文 10/14 pt、代码 9/11.5 pt、章节栏内连续、页眉显示页顶所在的一级标题（左栏顶端恰为新章时取该章，否则取页首延续的章）、通栏居中标题的双栏目录，以及沿用竖版的字体、数学、符号与代码配色。窄栏 `emergencystretch` 为 6em（曾讨论改回 3em，用户决定保持）；横版内 `\includegraphics` 将 `textwidth` 解释为当前栏宽（用户批准）。公共 `packages.tex`、`mystyle.tex` 未修改。
+
+样张与检查见 `tests/landscape/README.md`。完整横版经 `./run.sh landscape` 三轮收敛，101 页（目录 4 页）；197 个目录链接目标有效，208 个书签默认展开。第 13、76 页右栏行内公式少量伸入外侧页边距，经用户确认接受并登记；`tests/landscape/check-full.py` 检查完整 PDF，左栏越栏或右栏超过 10 mm 即失败。全部页面已做缩略图检查，重点页面高分辨率检查；未做实物打印验收。
+

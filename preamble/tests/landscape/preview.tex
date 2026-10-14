@@ -1,0 +1,40 @@
+\documentclass{article}
+\input{preamble/packages.tex}
+\input{preamble/layout-landscape.tex}
+\input{preamble/mystyle.tex}
+\begin{document}
+\section{0x00 横版综合样张⭐}
+本样张用于检查横版的正文、标题和数学字体。中文正文采用宋体，Western text uses Latin Modern Roman。\textbf{粗体强调 Bold}，\emph{斜体 emphasis}，行内代码 \texttt{std::vector<int>} 保持原有语义。
+
+第二段用于比较段落间距。公式 $f(n)=\sum_{i=1}^n i$ 与正文应当协调，\Highlight{标记与 $a+b$} 的颜色只在框内生效。
+\subsection{数学与符号🚩}
+\[
+  F(x)=\sum_{n=0}^{\infty}a_nx^n,\qquad
+  \log n+\min(a,b)+\operatorname{lcp}(i,j)
+\]
+\[
+ a^\mathrm{mid}+b_\mathrm{base}+\mathrm{base}+\text{base}
+ \qquad \boldsymbol{\log n+\mathrm{base}}
+\]
+\subsubsection{列表与较小层级}
+\begin{itemize}
+\item 一级列表，含行内数学 $O(n\log n)$。
+\begin{itemize}\item 二级列表与中文说明。\item 另一个二级条目。\end{itemize}
+\item 后续一级条目。
+\end{itemize}
+\paragraph{四级标题}正文跟随标题，不增加自动编号。
+\subparagraph{五级标题}保留原层级，字号不超过三级。
+\begin{quoteblock}
+引用块的第一段，包含\textbf{强调}与 $\mathbb{N}$。
+
+引用块的第二段继承横版段间距。
+\Separator{}
+分隔线适应引用块内部宽度。
+\end{quoteblock}
+\InputCode{cpp}{preamble/tests/fixtures/示例 文件_1.cpp}
+\section{0x01 后续章节}
+新章在当前栏自然衔接。无需另起页，也不清除该页页眉。
+\InputCode{python}{preamble/tests/fixtures/sample.py}
+\InputCode{bash}{preamble/tests/fixtures/sample.sh}
+\InputCode{makefile}{preamble/tests/fixtures/Makefile test}
+\end{document}

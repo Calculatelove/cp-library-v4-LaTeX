@@ -1,0 +1,23 @@
+\documentclass{article}
+\input{preamble/packages.tex}
+\input{preamble/layout-landscape.tex}
+\input{preamble/mystyle.tex}
+\newsavebox{\ImageProbe}
+\begin{document}
+\section{图片宽度}
+% TeX Live 自带 mwe 的占位图；只检验 includegraphics，不引用章节资源。
+\sbox{\ImageProbe}{\includegraphics[width=0.8\textwidth]{example-image-a.pdf}}
+\ifdim\dimexpr\wd\ImageProbe-106mm\relax>0.01pt
+  \errmessage{Image width must use current column}\fi
+\ifdim\dimexpr106mm-\wd\ImageProbe\relax>0.01pt
+  \errmessage{Image width must use current column}\fi
+\usebox{\ImageProbe}
+
+局部分组结束后，整页正文宽度仍为 273 mm。
+\ifdim\dimexpr\textwidth-273mm\relax>0.01pt
+  \errmessage{Image leaked column width into page width}\fi
+\ifdim\dimexpr273mm-\textwidth\relax>0.01pt
+  \errmessage{Image leaked column width into page width}\fi
+\newpage
+\includegraphics[width=\textwidth]{example-image-b.pdf}
+\end{document}
