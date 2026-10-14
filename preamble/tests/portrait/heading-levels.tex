@@ -1,0 +1,103 @@
+\documentclass{article}
+\input{preamble/packages.tex}
+\input{preamble/layout-portrait.tex}
+\input{preamble/mystyle.tex}
+% 四、五级标题：独立成行，苹方 Semibold，与正文同为 10.5/15 pt。
+% 检验与三级标题、正文粗体、行间公式、引用块、高亮、列表及五级标题的衔接，
+% 长标题换行，以及页底只容得下标题本身时，标题随后文移到下一页。
+% PDF 断言见 check-headings.py。
+% 把正文推向页底：空白之后保留 #1（含下一行正文）。
+\newcommand{\FillPageExcept}[1]{%
+  \par\vspace{\dimexpr\pagegoal-\pagetotal-#1\relax}}
+% 下一标题之前的剩余空间须放得下标题本身（约 24 pt），
+% 放不下标题加后文首行（约 44 pt），否则页底边界未被检验。
+\newcommand{\CheckRemaining}[2]{%
+  \par
+  \ifdim\dimexpr\pagegoal-\pagetotal\relax<#1\relax
+    \errmessage{Page-bottom heading: remaining space is below #1}%
+  \fi
+  \ifdim\dimexpr\pagegoal-\pagetotal\relax>#2\relax
+    \errmessage{Page-bottom heading: remaining space is above #2}%
+  \fi}
+\begin{document}
+\section{0x00 四、五级标题样张}
+本文件仅检验导言区的标题排版，不属于算法笔记正文。
+
+\subsection{二级标题}
+
+\subsubsection{三级标题：其后直接接四级}
+
+\paragraph{四级标题：紧接三级}
+
+三级与四级标题相邻时，两者之间的距离大于正文行距，小于普通四级标题上方的距离。
+
+\paragraph{四级标题：正文之间}
+
+设 $f_i$ 表示满足条件的方案数，$g_i$ 表示\textbf{不加限制的方案数}。四级标题使用苹方
+Semibold，应与正文中的粗体强调明显区分。
+
+\subsubsection{三级标题：正文之后}
+
+三级标题与上下文的距离均大于四级标题。
+
+\paragraph{四级标题：后接行间公式}
+
+\[
+f(n) = \sum_{d \mid n} g(d)
+\]
+
+\paragraph{四级标题：行间公式之后}
+
+\[
+\varphi(n) = n \prod_{i = 1}^{t} \left( 1 - \frac{1}{p_i} \right)
+\]
+
+行间公式之后的正文。
+
+\begin{quoteblock}
+引用块之后紧接四级标题。
+\end{quoteblock}
+
+\paragraph{四级标题：引用块之后}
+
+\Highlight{高亮短语}：标题后接以高亮开头的正文。
+
+\paragraph{四级标题：后接列表}
+
+\begin{itemize}
+\item 列表第一项。
+\item 列表第二项。
+\end{itemize}
+
+\paragraph{四级标题：后接五级标题}
+
+\subparagraph{五级标题：与四级同字号}
+
+五级标题之后的正文。
+
+\paragraph{一个用于检验四级标题换行的长标题：分治 NTT、多项式求逆与 EGF 组合意义的实现细节，以及各种边界情况的处理方法}
+
+长标题的续行与首行对齐，之后接正文。
+
+\newpage
+页底边界一：四级标题后接正文。
+\FillPageExcept{49pt}
+边界一：本行之后的剩余空间只够放下四级标题本身。
+\CheckRemaining{26pt}{42pt}
+
+\paragraph{页底四级标题：后接正文}
+
+页底四级标题之后的正文，必须与标题位于同一页。
+
+\newpage
+页底边界二：四级标题后接行间公式。
+\FillPageExcept{49pt}
+边界二：本行之后的剩余空间只够放下四级标题本身。
+\CheckRemaining{26pt}{42pt}
+
+\paragraph{页底四级标题：后接行间公式}
+
+\[
+\sum_{i = 1}^{n} i = \frac{n (n + 1)}{2}
+\]
+\end{document}

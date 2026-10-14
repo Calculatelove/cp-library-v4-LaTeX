@@ -100,6 +100,11 @@
 \titlespacing*{\section}{0pt}{8mm}{6mm}
 \titlespacing*{\subsection}{0pt}{12pt plus 2pt minus 2pt}{5pt}
 \titlespacing*{\subsubsection}{0pt}{8pt plus 2pt minus 1pt}{3pt}
+% 四、五级与正文同字号、独立成行；间距按横版比例放大，小于三级标题。
+\titleformat{\paragraph}{\sffamily\bfseries\fontsize{10.5}{15}\selectfont}{}{0pt}{}
+\titleformat{\subparagraph}{\sffamily\bfseries\fontsize{10.5}{15}\selectfont}{}{0pt}{}
+\titlespacing*{\paragraph}{0pt}{6pt}{2pt}
+\titlespacing*{\subparagraph}{0pt}{5pt}{2pt}
 % titlesec 在空标题后的 nobreak 状态下会跳过 sectionbreak。
 % 在 section 解析参数前分页，兼容星号和可选短标题。
 \AddToHook{cmd/section/before}{\clearpage}
