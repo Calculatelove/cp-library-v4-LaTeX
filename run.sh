@@ -20,6 +20,17 @@ esac
 project_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 cd -- "$project_dir"
 
+# 代码版先生成入口；生成器失败时不启动任何版本的编译。
+for target in "${targets[@]}"; do
+    if [[ "$target" == code ]]; then
+        if ! command -v python3 >/dev/null 2>&1; then
+            printf '缺少依赖：python3。\n' >&2
+            exit 1
+        fi
+        python3 scripts/generate-code.py
+    fi
+done
+
 # all 在编译前检查全部入口，避免空占位文件导致无意义的部分构建。
 for target in "${targets[@]}"; do
     source_file="main-$target.tex"

@@ -1,0 +1,34 @@
+\documentclass{article}
+\input{preamble/packages.tex}
+\input{preamble/layout-code.tex}
+\input{preamble/mystyle.tex}
+\begin{document}
+\ifdim\dimexpr\columnwidth-132.5mm\relax>0.01pt
+  \errmessage{Landscape column width incorrect}\fi
+\ifdim\dimexpr132.5mm-\columnwidth\relax>0.01pt
+  \errmessage{Landscape column width incorrect}\fi
+\section{Alpha 章}
+Alpha-body：两个章节应当连续排在同一栏。
+\section{Beta 章}
+Beta-body：不强制另起页或另起栏。
+\newpage
+\section{Gamma 章}
+Gamma-body：右栏新章节，页眉仍为页顶的 Alpha 章。
+\clearpage
+\section{Delta 章}
+Delta-body：次页的新章不能提前进入上一页页眉。
+\subsection{Empty-title}
+\subsubsection{Empty-child}
+\section{Epsilon 章}
+Epsilon-body：空标题后仍连续排版；本页页眉为左栏顶端的 Delta 章。
+\clearpage
+\noindent 栏底标题边界：下方只剩很小空间。
+\vspace*{\dimexpr\textheight-58pt\relax}
+\section{Boundary-title}
+Boundary-body：标题必须和本段一起移入右栏。
+\clearpage
+\noindent 栏底公式边界。
+\vspace*{\dimexpr\textheight-58pt\relax}
+\section{Formula-title}
+\[\mathrm{FormulaBody}=a^\mathrm{mid}+\log n\]
+\end{document}

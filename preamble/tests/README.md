@@ -43,3 +43,6 @@ done
 纵向版检验（2026-10-12）：三份样张编译收敛，综合样张 6 页、两份数学样张各 1 页；全部 8 页已渲染检查。既有五个接口检验重新两轮编译通过。完整笔记尚未验证。
 
 InputCode 卡片样式与语言图标的纵向检验见 `portrait/code-cards.tex`，由 `portrait/run.sh` 一同编译。公共 `mystyle.tex` 使用 Maple Mono NF CN 的 Nerd Font 字形，因此独立接口检验也需要该字体。
+
+
+代码版新增 `code/`：连续章节、代码卡片、配色和目录四份独立样张；运行方式见 `code/README.md`。
