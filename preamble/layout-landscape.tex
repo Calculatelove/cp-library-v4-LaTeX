@@ -158,9 +158,9 @@
 \renewcommand*{\l@section}[2]{%
   \ifnum\c@tocdepth>0 \LandscapeTOCEntry{1}{0pt}{#1}{#2}\fi}
 \renewcommand*{\l@subsection}[2]{%
-  \ifnum\c@tocdepth>1 \LandscapeTOCEntry{2}{\LandscapeTOCUnit}{#1}{#2}\fi}
+  \ifnum\c@tocdepth>1 \LandscapeTOCEntry{2}{2\LandscapeTOCUnit}{#1}{#2}\fi}
 \renewcommand*{\l@subsubsection}[2]{%
-  \ifnum\c@tocdepth>2 \LandscapeTOCEntry{3}{2\LandscapeTOCUnit}{#1}{#2}\fi}
+  \ifnum\c@tocdepth>2 \LandscapeTOCEntry{3}{4\LandscapeTOCUnit}{#1}{#2}\fi}
 % tocloft 在 begindocument 中重定义入口，此处在其初始化结束后安装。
 % 标准双栏的可选通栏头只用于目录首张；条目仍按栏自然流动。
 \AddToHook{begindocument/end}{%
