@@ -39,7 +39,14 @@ pdftoppm -scale-to 1600 -png preamble/tests/build/landscape/toc-layout.pdf pream
 
 ## 完整横版溢出检查
 
-完整笔记用 `./run.sh landscape` 构建后，从项目根目录运行：
+完整笔记用 `./run.sh landscape` 构建。根目录 `run.sh` 成功后会删除日志；需要核对末轮缺字、Overfull 等警告时，将控制台输出保存到已忽略的测试构建目录：
+
+```sh
+mkdir -p preamble/tests/build/landscape
+./run.sh landscape > preamble/tests/build/landscape/full-build-console.txt 2>&1
+```
+
+构建后从项目根目录运行：
 
 ```sh
 python3 preamble/tests/landscape/check-full.py
@@ -49,7 +56,7 @@ python3 preamble/tests/landscape/check-full.py
 
 脚本以右栏左边界区分两栏，字框起点在右栏之前的字符都计入左栏。早先以左栏右边界分栏时，整个落在栏距内的越栏文字会被当作右栏、得到负溢出而漏报；2026-10-14 已修正，并以人工越栏样例确认可以报出。右栏行首的“等标点经 xeCJK 压缩后字框约提前 0.5 pt，留 1 pt 容差；居中的页脚页码位于栏距位置，跳过。左栏文字伸到右栏位置后，后续字符无法与右栏正文区分，此时报出的越界量只是下限，并附提示。
 
-规则由用户于 2026-10-14 确认：右栏公式在外侧页边距内的少量溢出不影响阅读，接受；左栏溢出会挤进 8 mm 栏距、碰到右栏，不接受；超过 10 mm 或越过纸边须修改。
+规则由用户于 2026-10-14 确认：右栏公式在外侧页边距内的少量溢出不影响阅读，接受；左栏溢出会挤进 8 mm 栏距、碰到右栏，不接受；超过 10 mm 或越过纸边须修改。出现新的超宽公式、图片或代码时，先实际试排并记录章节、页码和超宽量，再提出局部方案；不改写正文公式、不整体缩小内容，也不预先加入通栏机制。
 
 已登记接受的溢出（以 2026-10-14 17:26 构建的 101 页 PDF 为准）：
 
