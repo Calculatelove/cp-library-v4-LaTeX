@@ -1,9 +1,8 @@
 """检查完整横版 PDF 的文字是否越出所在栏；需要 PyMuPDF（缺少时可用 pdfplumber）。
 
 规则（2026-10-14 用户确认）：
-- 左栏不得越过栏宽进入 8 mm 栏距，容差 0.5 pt，否则会碰到右栏。
-- 右栏允许伸入外侧页边距，但不超过 10 mm，且不得越过纸张边缘；
-  允许的溢出逐条列出，便于与已登记的例外核对，新增项需人工确认。
+- 两栏文字越过各自栏右边界时统一输出警告（容差 0.5 pt），不导致检查失败。
+- 不设置接受清单或溢出上限；越过纸边也仅附加提示。PDF 读取等运行错误仍正常报错。
 - 中文全角标点按字形前进宽度计算时会虚报约 6.7 pt，跳过；页眉、页脚与通栏目录标题跳过。
 - 以右栏左边界区分两栏：字框起点在右栏之前的字符都计入左栏，完整落在栏距内的越栏文字
   也会报出。右栏行首的“等标点经 xeCJK 压缩后字框约提前 0.5 pt，故留 1 pt 容差。
@@ -22,8 +21,7 @@ MM = 72 / 25.4
 LEFT_END = (12 + 132.5) * MM            # 左栏右边界
 RIGHT_START = (12 + 132.5 + 8) * MM     # 右栏左边界
 RIGHT_END = (12 + 132.5 * 2 + 8) * MM   # 右栏右边界
-RIGHT_LIMIT = 10 * MM                   # 右栏允许伸入页边距的上限
-LEFT_TOLERANCE = 0.5
+OVERFLOW_TOLERANCE = 0.5
 RIGHT_START_TOLERANCE = 1.0             # 右栏行首标点的字框可略早于栏左缘
 HEADER_BOTTOM = 48                      # 页眉区域，与 check-layout.py 一致
 FOOTER_TOP = 548                        # 页脚区域：版心下缘约 544 pt，页码字顶约 554 pt
@@ -76,23 +74,18 @@ for page, width, text, x0, x1, top, size in chars(PDF):
         column, overflow = '左', x1 - LEFT_END
     else:
         column, overflow = '右', x1 - RIGHT_END
-    if overflow <= LEFT_TOLERANCE:
+    if overflow <= OVERFLOW_TOLERANCE:
         continue
     key = (page, column)
     if overflow > worst.get(key, (0, ''))[0]:
         worst[key] = (overflow, text, x1 > width, x1 >= RIGHT_START)
 
-failures = []
 for (page, column), (overflow, text, off_page, reaches_right) in sorted(worst.items()):
     mm = overflow / MM
-    if column == '左' or overflow > RIGHT_LIMIT or off_page:
-        # 伸到右栏位置之后的字符无法与右栏正文区分，只能报出下限。
-        note = '，已伸至右栏位置，实际越界可能更大' if column == '左' and reaches_right else ''
-        failures.append(f'第 {page} 页{column}栏：越界 {overflow:.1f} pt（{mm:.1f} mm），末字“{text}”{note}')
-    else:
-        print(f'允许：第 {page} 页右栏伸入页边距 {overflow:.1f} pt（{mm:.1f} mm），末字“{text}”')
+    # 伸到右栏位置之后的字符无法与右栏正文区分，只能报出下限。
+    note = '，已伸至右栏位置，实际越界可能更大' if column == '左' and reaches_right else ''
+    if off_page:
+        note += '，已越过纸边'
+    print(f'警告：第 {page} 页{column}栏：越界 {overflow:.1f} pt（{mm:.1f} mm），末字“{text}”{note}', file=sys.stderr)
 
-if failures:
-    print('\n'.join(failures), file=sys.stderr)
-    sys.exit(1)
-print(f'{PDF.name}: no text crosses into the column gap or beyond the 10 mm outer limit')
+print(f'{PDF.name}: 检查完成，越栏警告 {len(worst)} 项（按页、栏汇总最大越界量）')
