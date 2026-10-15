@@ -1,0 +1,25 @@
+\documentclass{article}
+\input{preamble/packages.tex}
+\input{preamble/layout-portrait.tex}
+\input{preamble/mystyle.tex}
+\title{算法竞赛小记}
+\author{Calculatelove}
+\date{}
+\EnglishTitle{Competitive Programming Library}
+\begin{document}
+% 第 1 页：横向配图；提交说明含全部 TeX 特殊字符，状态 clean。
+\TitlePageImage{preamble/tests/fixtures/titlepage-wide.png}
+\PortraitTitlePageReadCommit{preamble/tests/fixtures/titlepage-special.commit}
+\maketitle
+% 第 2 页：纵向配图；超长提交说明换行，状态 dirty。
+\TitlePageImage{preamble/tests/fixtures/titlepage-tall.png}
+\PortraitTitlePageReadCommit{preamble/tests/fixtures/titlepage-long-dirty.commit}
+\maketitle
+% 第 3 页：不设配图，提交信息文件不存在。
+\TitlePageImage{}
+\PortraitTitlePageReadCommit{preamble/tests/fixtures/missing.commit}
+\maketitle
+% 第 4 页：扉页之后的正文页照常显示页码。
+\section{扉页之后}
+本页用于确认扉页不影响后续页面的页码。
+\end{document}

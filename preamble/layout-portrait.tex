@@ -229,14 +229,5 @@
 % coltext 同时保证 tcolorbox 续页恢复深灰，而非默认纯黑。
 \tcbset{input-code-title/.style={coltext=PortraitCodeText,fonttitle=\mdseries\upshape\PortraitCodeTitleLatin\PortraitCodeTitleCJK\fontsize{9}{12}\selectfont}}
 
-% 保留入口的书名、作者、日期，仅在此定义标题页外观。
-\makeatletter
-\renewcommand{\maketitle}{%
-  \clearpage\thispagestyle{empty}%
-  \vspace*{35mm}%
-  {\sffamily\bfseries\fontsize{30}{40}\selectfont\@title\par}%
-  \vspace{8mm}%
-  {\sffamily\fontsize{12}{17}\selectfont\color{PortraitMuted}\@author\par}%
-  {\sffamily\small\color{PortraitMuted}\@date\par}%
-}
-\makeatother
+% 扉页外观与提交信息读取见 titlepage-portrait.tex；入口只提供元信息。
+\input{preamble/titlepage-portrait.tex}

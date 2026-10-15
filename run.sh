@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 依赖：XeLaTeX、latexminted 及项目导言区使用的 TeX 宏包。
+# 依赖：XeLaTeX、latexminted 及项目导言区使用的 TeX 宏包；扉页提交信息另需 git（可选）。
 # 用法：./run.sh [portrait|landscape|code|all]；默认 portrait。
 set -euo pipefail
 
@@ -50,8 +50,19 @@ build_target() {
     local target="$1"
     local job="main-$target" output_dir="build/$target"
     local max_passes=8 previous_state='' current_state converged=false
-    local pass extension record
+    local pass extension record commit_info
     mkdir -p "$output_dir"
+
+    # 扉页提交信息：在代码版入口生成之后读取 Git 状态；不在 Git 仓库中时不生成文件。
+    commit_info="$(bash scripts/commit-info.sh)"
+    if [[ -n "$commit_info" ]]; then
+        printf '%s\n' "$commit_info" > "$output_dir/$job.commit"
+        if [[ "${commit_info##*$'\n'}" == dirty ]]; then
+            printf '提示：build/ 以外有未提交修改，扉页将标注“含未提交修改”。\n' >&2
+        fi
+    else
+        rm -f -- "$output_dir/$job.commit"
+    fi
 
     # 至少两轮，最多八轮；从根目录编译，使用默认受限 shell escape。
     for ((pass = 1; pass <= max_passes; pass++)); do
@@ -89,8 +100,8 @@ build_target() {
     fi
 
     printf '\n目录与交叉引用已稳定（共 %s 轮）。\n' "$pass"
-    # 仅清理当前版本的已知辅助文件及 minted 缓存。
-    for extension in aux log out toc lof lot fls fdb_latexmk xdv synctex.gz; do
+    # 仅清理当前版本的已知辅助文件、提交信息文件及 minted 缓存。
+    for extension in aux log out toc lof lot fls fdb_latexmk xdv synctex.gz commit; do
         rm -f -- "$output_dir/$job.$extension"
     done
     rm -rf -- "$output_dir/_minted" "$output_dir/_minted-$job"

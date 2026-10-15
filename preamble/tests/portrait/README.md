@@ -6,6 +6,8 @@
 
 | 源码 | 用途 | PDF（位于 `preamble/tests/build/portrait/`） |
 | --- | --- | --- |
+| `titlepage.tex` | 扉页：横、竖两种配图与无配图，提交说明含特殊字符、超长换行、dirty 标注及提交信息缺失，扉页后正文页码 | `titlepage.pdf` |
+| `check-titlepage.py` | 检查上述 PDF 的标题区字体、颜色与固定位置，配图区域尺寸，提交信息原样输出、换行与底边，PDF 文档属性及页码；需要 PyMuPDF | — |
 | `toc-layout.tex` | 单栏三级目录、长标题续行、页码对齐与页底主题 | `toc-layout.pdf` |
 | `code-cards.tex` | 语言图标、通用图标、长标题换行、短代码与跨页卡片 | `code-cards.pdf` |
 | `symbols.tex` | 单色符号的标题、目录、页眉、正文、字号、字重、引用块、文字提取与书签 | `symbols.pdf` |
@@ -235,3 +237,19 @@ python3 preamble/tests/portrait/check-headings.py
 
 
 2026-10-14：preview.tex 新增 Maple Mono NF CN 行内代码检验，覆盖中文、易混淆字符、运算符及转义符号；字号随正文。样张两轮收敛，字体提取与所在页渲染检查通过。
+
+
+## 扉页（2026-10-15）
+
+`titlepage.tex` 共 4 页：前 3 页为扉页，分别使用横向配图与含全部 TeX 特殊字符的提交说明、纵向配图与超长 dirty 提交说明、无配图且提交信息文件不存在；第 4 页为普通正文页。样张用 `\PortraitTitlePageReadCommit{<文件>}` 在 `\maketitle` 前改读 `fixtures/` 中的提交信息，不依赖本仓库的 Git 状态。资源说明见 `../fixtures/README.md`。
+
+`check-titlepage.py` 断言：PDF 标题、作者为入口元信息；三页扉页的书名、英文书名、作者分别为苹方 Semibold 44 pt、Regular 15 pt、Medium 12 pt，基线位于纸张中心上方 80、66.5、55 mm，水平居中，三页位置一致；配图在 130 × 110 mm 区域内等比缩放，中心位于纸张中心下方 20 mm，不与文字重叠；提交信息为眉题式三行：眉题“LAST COMMIT”为苹方 Medium 6.5 pt 且居中，第二行只有日期与哈希（Maple Mono，哈希为 `506B82`），各行均不含“·”；提交说明为苹方且与资源逐字一致（`--` 不被替换为连接号）；dirty 时第二行末尾有深色 6.5 pt“含未提交修改”，外有唯一一个 0.4 pt `D1D1D6` 细框包住文字，连同细框整行居中，clean 时没有细框；相邻汉字的步进等于字号，居中不拉开字距；超长说明居中换行并向上增长，末行贴近距纸张中心下方 131.5 mm 的底边，不进入 15 mm 下边距；提交信息缺失时只显示标题区；扉页不显示页码，其后正文页照常显示页码。
+
+```sh
+preamble/tests/portrait/run.sh
+python3 preamble/tests/portrait/check-titlepage.py
+```
+
+验证：十份纵向样张各两轮收敛，日志无缺字、Overfull 或字体替换；扉页、标题与配色三个检查脚本均通过。已渲染检查扉页样张全部 4 页。首版使用 TikZ 的 `align=center`，其居中胶只有有限伸缩（`plus 2em`），会连带拉开 xeCJK 的字间胶，汉字步进约为字号的 1.1—1.2 倍；改为 `align=flush center`（`fil` 胶）后步进等于字号。在临时副本中分别改回 `align=center`、把提交说明改回启用 TeX 连字的字体，`check-titlepage.py` 均报错，确认检查有效。
+
+提交信息改为眉题式后（2026-10-15），按新的行结构更新断言：眉题、日期与哈希、提交说明分行检查，并核对未提交修改标签的细框。十份样张各两轮收敛，日志无缺字、Overfull 或字体替换，三个检查脚本通过，已渲染检查扉页样张。在临时副本中去掉标签细框，`check-titlepage.py` 报错，确认新断言有效。
