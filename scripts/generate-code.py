@@ -120,8 +120,10 @@ def generate(root):
     output = ['% 自动生成：python3 scripts/generate-code.py；请修改章节源文件后重新生成。',
               r'\documentclass{article}', '', r'\input{preamble/packages.tex}',
               r'\input{preamble/layout-code.tex}', r'\input{preamble/mystyle.tex}', '',
-              r'\title{算法竞赛小记}', r'\author{Calculatelove}', r'\date{}', '',
-              r'\begin{document}', '', r'\tableofcontents', '']
+              r'\title{算法竞赛小记}', r'\author{Calculatelove}', r'\date{}',
+              r'\EnglishTitle{Competitive Programming Library}',
+              r'\TitlePageImage{assets/CL-logo-c4.png}', r'\EditionLabel{代码版}', '',
+              r'\begin{document}', '', r'\maketitle', '', r'\tableofcontents', '']
     counts, references = [], set()
     for chapter in chapters:
         stack, emitted = [], set()

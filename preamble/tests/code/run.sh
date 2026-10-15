@@ -5,7 +5,7 @@ cd "$(dirname "$0")/../../.."
 out=preamble/tests/build/code
 mkdir -p "$out"
 if (( $# == 0 )); then
-    set -- flow code-cards syntax-colors toc-layout
+    set -- titlepage flow code-cards syntax-colors toc-layout
 fi
 for test in "$@"; do
     previous=''

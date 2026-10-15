@@ -11,6 +11,7 @@
 ```sh
 bash preamble/tests/landscape/run.sh
 python3 preamble/tests/landscape/check-layout.py
+python3 preamble/tests/landscape/check-titlepage.py
 ```
 
 脚本也可从其他目录调用；自动回到项目根目录。支持将样张名作为参数，例如 `bash preamble/tests/landscape/run.sh flow toc-layout`。至少两轮、最多八轮，比较辅助文件和重编译提示；缺字、Overfull、字体替换或页眉高度不足时失败并保留日志。
@@ -27,6 +28,7 @@ pdftoppm -scale-to 1600 -png preamble/tests/build/landscape/toc-layout.pdf pream
 
 | 文件 | 检验内容 |
 | --- | --- |
+| `titlepage.tex` | 4 页扉页样张：横向配图与含 TeX 特殊字符的提交说明（clean）；纵向配图与超长提交说明（dirty）；无配图且提交信息文件不存在；扉页后的双栏正文页。提交信息与配图取自 `../fixtures/`。 |
 | `flow.tex` | 同栏连续章节、左右栏跨章、连续空标题、栏底标题跟随正文或公式；页眉显示页顶所在的章（左栏顶端新章取该章，否则取页首延续的章）；含栏宽断言。 |
 | `preview.tex` | 中西文、粗体与斜体、数学算子和未分组直立上下标、Unicode 符号、五级标题、嵌套列表、多语言代码及公共接口。 |
 | `code-cards.tex` | 单个 100 行人工代码卡片从左栏底跨到右栏和下一页、标题不重复、长文件名、显示折行及内嵌 minted。 |
@@ -35,7 +37,8 @@ pdftoppm -scale-to 1600 -png preamble/tests/build/landscape/toc-layout.pdf pream
 | `toc-layout.tex` | 两页真实目录、三级长标题、父子条目保护、通栏居中目录标题、88 个条目与 90 个五层书签。 |
 | `images.tex` | 图片按局部栏宽解释 `textwidth`，验证 106 mm 图片和整栏图、分组结束后整页宽度不变。 |
 | `check-layout.py` | 从实际 PDF 检查纸张、阅读流向、章名、代码完整性、引用段落顺序、配色及字重、目录分栏、链接目标和书签。 |
-| `check-full.py` | 检查完整横版的两栏文字越界，统一输出警告，按页、栏汇总最大越界量；不维护接受清单，不因溢出失败。 |
+| `check-titlepage.py` | 检查扉页样张的书名区位置与居中、110 × 70 mm 配图区域、眉题式提交信息、未提交修改标签、原样输出、换行与底边、页眉页码及 PDF 文档属性；加参数 `code` 检查代码版样张，另查书名后悬挂的“（代码版）”。 |
+| `check-full.py` | 检查完整横版的两栏文字越界，统一输出警告，按页、栏汇总最大越界量；不维护接受清单，不因溢出失败。扉页通栏居中，以 44 pt 书名识别并整页跳过。 |
 
 ## 完整横版溢出检查
 
@@ -74,3 +77,11 @@ python3 preamble/tests/landscape/check-full.py
 
 
 2026-10-14：preview.tex 新增 Maple Mono NF CN 行内代码检验，覆盖中文、易混淆字符、运算符及转义符号；字号随正文。样张两轮收敛，字体提取与所在页渲染检查通过。
+
+横版与代码版扉页（2026-10-15）：
+
+- 新增 `titlepage.tex` 与 `check-titlepage.py`，`run.sh` 默认列表加入 titlepage。检查脚本两版共用，代码版样张见 `../code/README.md`。
+- 检查脚本对九种人工错误均报错：书名偏离中轴、标记字号、标记颜色、标记与书名的间距、PDF 标题、日期字体、配图位置、提交信息位置，以及标记与英文书名同时改色。
+- `check-full.py` 改为整页跳过扉页：修改前的脚本对扉页样张 3 页各误报约 28.9 pt。修改后的脚本检查修改前构建的 PDF，结果不变。
+- 八份样张各两轮收敛，无缺字、Overfull 或字体替换；`check-layout.py` 与扉页检查通过。已渲染检查扉页样张 4 页。
+- 完整横版 97 页（原 96 页），越栏检查报告第 14、73 页两项，即原第 13、72 页。设计与完整验证见 `../../README.md`“横版与代码版扉页”。

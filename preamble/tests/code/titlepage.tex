@@ -1,0 +1,27 @@
+\documentclass{article}
+\input{preamble/packages.tex}
+\input{preamble/layout-code.tex}
+\input{preamble/mystyle.tex}
+\title{算法竞赛小记}
+\author{Calculatelove}
+\date{}
+\EnglishTitle{Competitive Programming Library}
+\EditionLabel{代码版}
+\begin{document}
+% 第 1 页：版本标记；横向配图；提交说明含全部 TeX 特殊字符，状态 clean。
+\TitlePageImage{preamble/tests/fixtures/titlepage-wide.png}
+\CodeTitlePageReadCommit{preamble/tests/fixtures/titlepage-special.commit}
+\maketitle
+% 第 2 页：版本标记；纵向配图；超长提交说明换行，状态 dirty。
+\TitlePageImage{preamble/tests/fixtures/titlepage-tall.png}
+\CodeTitlePageReadCommit{preamble/tests/fixtures/titlepage-long-dirty.commit}
+\maketitle
+% 第 3 页：不设版本标记与配图，提交信息文件不存在。
+\EditionLabel{}
+\TitlePageImage{}
+\CodeTitlePageReadCommit{preamble/tests/fixtures/missing.commit}
+\maketitle
+% 第 4 页：扉页之后的双栏正文页照常显示页眉与页码。
+\section{扉页之后}
+本页用于确认扉页不影响后续页面的分栏、页眉与页码。
+\end{document}

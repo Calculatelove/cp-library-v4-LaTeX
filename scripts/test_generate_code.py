@@ -1,6 +1,7 @@
 """生成器边界及真实内容回归；不编译算法片段。"""
 import importlib.util
 from pathlib import Path
+import re
 import tempfile
 import unittest
 
@@ -61,6 +62,16 @@ class GeneratorTests(unittest.TestCase):
         generated, _, _ = g.generate(g.ROOT)
         actual = [e[2] for e in g.scan(generated, 'generated') if e[0] in ('file', 'inline')]
         self.assertEqual(actual, expected)
+
+    def test_title_page_metadata_matches_landscape(self):
+        """模板中的扉页元信息与横版入口逐行一致，另有版本标记，且扉页在目录之前。"""
+        pattern = r'(?m)^\\(?:title|author|date|EnglishTitle|TitlePageImage)\{.*\}$'
+        generated, _, _ = g.generate(g.ROOT)
+        landscape = (g.ROOT / 'main-landscape.tex').read_text()
+        self.assertEqual(re.findall(pattern, generated), re.findall(pattern, landscape))
+        self.assertEqual(len(re.findall(pattern, generated)), 5)
+        self.assertIn('\n\\EditionLabel{代码版}\n', generated)
+        self.assertLess(generated.index('\n\\maketitle\n'), generated.index('\n\\tableofcontents\n'))
 
 
 if __name__ == '__main__':

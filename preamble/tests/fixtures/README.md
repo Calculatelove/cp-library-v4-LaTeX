@@ -22,4 +22,6 @@
 | `titlepage-long-dirty.commit` | 中西文混排的超长提交说明，检验居中换行与底边对齐；状态 dirty。 |
 | `titlepage-wide.png`、`titlepage-tall.png` | 800 × 300 与 300 × 800 像素的人工配图（ImageMagick 生成），分别检验配图区域的宽度与高度约束。 |
 
+横版、代码版扉页样张 `landscape/titlepage.tex`、`code/titlepage.tex` 复用上表资源（2026-10-15）；两版配图区域为 110 × 70 mm，宽、高约束同样分别由两张人工配图检验。
+
 `.commit` 文件逐行原样读取，修改时保持四行结构，不要加入 TeX 转义。

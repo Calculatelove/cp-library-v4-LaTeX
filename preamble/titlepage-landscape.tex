@@ -1,0 +1,137 @@
+% 横版扉页：沿用竖版扉页的元素、字体、字号与配色，仅按 A4 横向重新安排纵向位置。
+% 由 layout-landscape.tex 末尾加载，沿用其字体与颜色；书名、作者、英文书名与配图路径由入口提供。
+% 路径均相对于项目根目录；绝对定位依赖 TikZ 的 remember picture，至少编译两轮（根目录 run.sh 已保证）。
+
+\definecolor{LandscapeTitlePageInk}{HTML}{1D1D1F}
+\definecolor{LandscapeTitlePageSecondary}{HTML}{6E6E73}
+\definecolor{LandscapeTitlePageHairline}{HTML}{D1D1D6}
+% 唯一强调色与代码高亮的蓝灰一致。
+\colorlet{LandscapeTitlePageAccent}{LandscapeCodeBlue}
+\newfontfamily\LandscapeTitlePageMediumLatin{PingFang SC Medium}
+\newCJKfontfamily\LandscapeTitlePageMediumCJK{PingFang SC Medium}
+% 提交信息的眉题：小号大写，加宽字距。
+\newfontfamily\LandscapeTitlePageEyebrow{PingFang SC Medium}[LetterSpace=14]
+% 提交说明原样输出：此字体族不启用 TeX 连字，-- 等不会被替换。
+\newfontfamily\LandscapeTitlePagePlainLatin{PingFang SC}
+
+% 配图区域：等比缩放后居中；标题区与提交信息的位置不随图片比例变化。
+% 页高只有 210 mm，区域由竖版的 130 × 110 mm 收紧为 110 × 70 mm。
+\newlength{\LandscapeTitlePageImageWidth}
+\newlength{\LandscapeTitlePageImageHeight}
+\setlength{\LandscapeTitlePageImageWidth}{110mm}
+\setlength{\LandscapeTitlePageImageHeight}{70mm}
+
+\makeatletter
+% 元信息：英文书名与配图路径；不写或参数为空时省略对应内容。
+\newcommand*{\EnglishTitle}[1]{\gdef\LandscapeTitlePage@EnglishTitle{#1}}
+\newcommand*{\TitlePageImage}[1]{\gdef\LandscapeTitlePage@Image{#1}}
+\let\LandscapeTitlePage@EnglishTitle\@empty
+\let\LandscapeTitlePage@Image\@empty
+% PDF 文档属性同步入口的书名与作者；入口未设置时不写入。
+\let\LandscapeTitlePage@DefaultTitle\@title
+\let\LandscapeTitlePage@DefaultAuthor\@author
+\AtBeginDocument{%
+  \ifx\@title\LandscapeTitlePage@DefaultTitle\else\hypersetup{pdftitle={\@title}}\fi
+  \ifx\@author\LandscapeTitlePage@DefaultAuthor\else\hypersetup{pdfauthor={\@author}}\fi}
+\makeatother
+
+% 提交信息文件由 scripts/commit-info.sh 经根目录 run.sh 写入编译输出目录，
+% 四行依次为日期、短哈希、提交说明、clean 或 dirty。按原样逐行读取，
+% 不经 TeX 转义；文件不存在或缺少日期、哈希时不显示提交信息。
+\ExplSyntaxOn
+\ior_new:N \g__landscape_titlepage_ior
+\str_new:N \g__landscape_titlepage_date_str
+\str_new:N \g__landscape_titlepage_hash_str
+\str_new:N \g__landscape_titlepage_subject_str
+\str_new:N \g__landscape_titlepage_state_str
+\bool_new:N \g__landscape_titlepage_commit_bool
+\cs_new_protected:Npn \__landscape_titlepage_get:N #1
+  {
+    \ior_if_eof:NTF \g__landscape_titlepage_ior
+      { \str_gclear:N #1 }
+      {
+        \ior_str_get:NN \g__landscape_titlepage_ior \l_tmpa_str
+        \str_gset_eq:NN #1 \l_tmpa_str
+      }
+  }
+\NewDocumentCommand \LandscapeTitlePageReadCommit { m }
+  {
+    \bool_gset_false:N \g__landscape_titlepage_commit_bool
+    \file_if_exist:nT {#1}
+      {
+        \ior_open:Nn \g__landscape_titlepage_ior {#1}
+        \__landscape_titlepage_get:N \g__landscape_titlepage_date_str
+        \__landscape_titlepage_get:N \g__landscape_titlepage_hash_str
+        \__landscape_titlepage_get:N \g__landscape_titlepage_subject_str
+        \__landscape_titlepage_get:N \g__landscape_titlepage_state_str
+        \ior_close:N \g__landscape_titlepage_ior
+        \bool_lazy_or:nnF
+          { \str_if_empty_p:N \g__landscape_titlepage_date_str }
+          { \str_if_empty_p:N \g__landscape_titlepage_hash_str }
+          { \bool_gset_true:N \g__landscape_titlepage_commit_bool }
+      }
+  }
+% 默认读取本次编译的 <jobname>.commit；样张可在 \maketitle 前改读其他文件。
+\AtBeginDocument { \LandscapeTitlePageReadCommit { \c_sys_jobname_str .commit } }
+\NewDocumentCommand \LandscapeTitlePageIfCommitTF { +m +m }
+  { \bool_if:NTF \g__landscape_titlepage_commit_bool {#1} {#2} }
+% 眉题式三行：眉题“LAST COMMIT”；日期与哈希，dirty 时附圆角细框标签；提交说明。
+% 不用分隔符串联，依靠换行、留白及字体差异区分标签与数值。
+\NewDocumentCommand \LandscapeTitlePageCommitText { }
+  {
+    { \LandscapeTitlePageEyebrow \fontsize { 6.5 } { 8 } \selectfont LAST ~ COMMIT } \\ [ 1.5pt ]
+    { \ttfamily \str_use:N \g__landscape_titlepage_date_str }
+    \hspace { 0.8em }
+    { \ttfamily \color { LandscapeTitlePageAccent } \str_use:N \g__landscape_titlepage_hash_str }
+    \str_if_eq:VnT \g__landscape_titlepage_state_str { dirty }
+      { \hspace { 0.6em } \usebox \LandscapeTitlePageDirtyBox }
+    \str_if_empty:NF \g__landscape_titlepage_subject_str
+      { \\ \LandscapeTitlePagePlainLatin \str_use:N \g__landscape_titlepage_subject_str }
+  }
+\ExplSyntaxOff
+% 未提交修改标签：0.4 pt 浅灰圆角细框，与代码卡片同一视觉语言。
+% 在扉页的 tikzpicture 之外预先排入盒子，避免嵌套 TikZ。
+\newsavebox{\LandscapeTitlePageDirtyBox}
+\newcommand*{\LandscapeTitlePageMakeDirtyBox}{%
+  \sbox{\LandscapeTitlePageDirtyBox}{\tikz[baseline=(tag.base)]
+    \node[draw=LandscapeTitlePageHairline,line width=0.4pt,rounded corners=1.1mm,
+      inner xsep=1.3mm,inner ysep=0.45mm,text=LandscapeTitlePageInk,
+      font=\sffamily\fontsize{6.5}{8}\selectfont] (tag) {含未提交修改};}}
+
+% 版面以纸张中心为原点，元素顺序与竖版相同：标题区在上，配图居中偏下，提交信息贴近底边。
+% 标题区三行的间距与竖版相同；书名基线距页顶 48 mm，提交信息底边距纸边 17 mm（同竖版）。
+% 横版正文为双栏；扉页内容全部绝对定位，不受分栏影响。
+\makeatletter
+\renewcommand{\maketitle}{%
+  \clearpage
+  \thispagestyle{empty}%
+  \LandscapeTitlePageMakeDirtyBox
+  \null
+  \begin{tikzpicture}[remember picture,overlay]
+    \begin{scope}[shift={(current page.center)}]
+      \node[anchor=base,inner sep=0pt,text=LandscapeTitlePageInk,
+        font=\sffamily\bfseries\fontsize{44}{52}\selectfont] at (0,57mm) {\@title};
+      \ifx\LandscapeTitlePage@EnglishTitle\@empty\else
+        \node[anchor=base,inner sep=0pt,text=LandscapeTitlePageSecondary,
+          font=\sffamily\fontsize{15}{18}\selectfont] at (0,43.5mm)
+          {\LandscapeTitlePage@EnglishTitle};
+      \fi
+      \node[anchor=base,inner sep=0pt,text=LandscapeTitlePageInk,
+        font=\LandscapeTitlePageMediumLatin\LandscapeTitlePageMediumCJK\fontsize{12}{15}\selectfont]
+        at (0,32mm) {\@author};
+      \ifx\LandscapeTitlePage@Image\@empty\else
+        \node[inner sep=0pt] at (0,-17mm) {\includegraphics[
+          width=\LandscapeTitlePageImageWidth,height=\LandscapeTitlePageImageHeight,
+          keepaspectratio]{\LandscapeTitlePage@Image}};
+      \fi
+      % 底边对齐：提交说明换行时向上增长，不进入下边距。
+      % flush center 使用 fil 胶居中；align=center 的有限伸缩会拉开 xeCJK 字距。
+      \LandscapeTitlePageIfCommitTF{%
+        \node[anchor=south,inner sep=0pt,text width=150mm,align=flush center,
+          text=LandscapeTitlePageSecondary,font=\sffamily\fontsize{8}{11}\selectfont]
+          at (0,-88mm) {\LandscapeTitlePageCommitText};
+      }{}%
+    \end{scope}
+  \end{tikzpicture}%
+  \clearpage}
+\makeatother

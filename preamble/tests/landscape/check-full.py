@@ -6,6 +6,7 @@
 - 中文全角标点按字形前进宽度计算时会虚报约 6.7 pt，跳过；页眉、页脚与通栏目录标题跳过。
 - 以右栏左边界区分两栏：字框起点在右栏之前的字符都计入左栏，完整落在栏距内的越栏文字
   也会报出。右栏行首的“等标点经 xeCJK 压缩后字框约提前 0.5 pt，故留 1 pt 容差。
+- 扉页通栏居中、不分栏，以 44 pt 书名识别并整页跳过（2026-10-15 起横版、代码版均有扉页）。
 
 用法（从任意目录）：python3 preamble/tests/landscape/check-full.py [PDF 路径]
 默认检查 build/landscape/main-landscape.pdf，即 ./run.sh landscape 的产物。
@@ -26,6 +27,7 @@ RIGHT_START_TOLERANCE = 1.0             # 右栏行首标点的字框可略早�
 HEADER_BOTTOM = 48                      # 页眉区域，与 check-layout.py 一致
 FOOTER_TOP = 548                        # 页脚区域：版心下缘约 544 pt，页码字顶约 554 pt
 TITLE_SIZE = 20                         # 目录通栏标题为 22 pt
+TITLEPAGE_SIZE = 40                     # 扉页书名为 44 pt，所在页整页跳过
 
 
 def chars_pymupdf(path):
@@ -65,9 +67,11 @@ def ignored(text, top, size):
     return ord(c) >= 0x2E80 and unicodedata.category(c).startswith('P')
 
 
+records = list(chars(PDF))
+title_pages = sorted({page for page, *_, size in records if size >= TITLEPAGE_SIZE})
 worst = {}
-for page, width, text, x0, x1, top, size in chars(PDF):
-    if ignored(text, top, size):
+for page, width, text, x0, x1, top, size in records:
+    if page in title_pages or ignored(text, top, size):
         continue
     # 不能以左栏右边界分栏：越栏文字可能整个落在栏距内，按右栏计算会得到负溢出而漏报。
     if x0 < RIGHT_START - RIGHT_START_TOLERANCE:
@@ -88,4 +92,5 @@ for (page, column), (overflow, text, off_page, reaches_right) in sorted(worst.it
         note += '，已越过纸边'
     print(f'警告：第 {page} 页{column}栏：越界 {overflow:.1f} pt（{mm:.1f} mm），末字“{text}”{note}', file=sys.stderr)
 
-print(f'{PDF.name}: 检查完成，越栏警告 {len(worst)} 项（按页、栏汇总最大越界量）')
+skipped = f'；跳过扉页：第 {"、".join(map(str, title_pages))} 页' if title_pages else ''
+print(f'{PDF.name}: 检查完成，越栏警告 {len(worst)} 项（按页、栏汇总最大越界量{skipped}）')

@@ -10,6 +10,7 @@ bash preamble/tests/code/run.sh
 
 也可从任意目录调用该脚本。产物在被忽略的 `preamble/tests/build/code/`。脚本至少两轮、最多八轮，检查收敛、缺字、溢出与字体替换。
 
+- `titlepage.tex`：4 页扉页样张，内容同横版样张；前两页带版本标记，第 3 页不设版本标记。用 `python3 preamble/tests/landscape/check-titlepage.py code` 检查，另查书名后悬挂的“（代码版）”及其同基线、不参与居中。
 - `flow.tex`：连续章节、空标题、页顶章页眉与分页边界。
 - `code-cards.tex`：代码跨栏跨页、长文件名及内嵌代码折行。
 - `syntax-colors.tex`：四色配色、直立代码字体。
@@ -26,3 +27,10 @@ bash preamble/tests/code/run.sh
 竖版与代码版代码字号调整（2026-10-14）：按用户要求，两版 minted 代码正文统一为 8/10.5 pt，覆盖 InputCode 与内嵌 minted；标题栏仍为 9/12 pt，行内代码及公共接口不变。竖版九份样张各两轮收敛，代码版 code-cards、syntax-colors 两份样张各两轮收敛，无缺字、Overfull 或字体替换。两版代码配色及常规直立字形检查通过，代码版 100 行跨栏代码完整；已逐页渲染检查两版代码卡片共 4 页，长标题、折行及跨页连接正常。
 
 完整竖版与代码版分别由 ./run.sh portrait、./run.sh code 三轮收敛，竖版由 153 页变为 145 页，代码版由 53 页变为 49 页；完整 PDF 中代码字体均提取为 7.970 PDF pt（8 TeX pt）。竖版末轮保留原有 3 条 Overfull 与 2 条 amsmath 警告；代码版无 Overfull，双栏检查报告 0 项警告。两版均无缺字或字体替换。未逐页验收完整 PDF、未做打印验收；未修改正文、横版或根 README，未提交或推送。
+
+
+代码版扉页（2026-10-15）：
+
+- 新增 `titlepage.tex`，`run.sh` 默认列表加入 titlepage；检查复用 `../landscape/check-titlepage.py code`。
+- 五份样张各两轮收敛，无缺字、Overfull 或字体替换，扉页检查通过；已渲染检查扉页样张 4 页及标记局部。
+- 完整代码版 50 页（原 49 页），越栏检查报告 0 项（扉页整页跳过）。设计与完整验证见 `../../README.md`“横版与代码版扉页”。
