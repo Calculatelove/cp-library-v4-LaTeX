@@ -26,6 +26,6 @@ bash scripts/commit-info.sh
 python3 -B scripts/test_commit_info.py
 ```
 
-输出四行：提交日期（按提交自身时区，`YYYY-MM-DD`）、短哈希、提交说明首行、`clean` 或 `dirty`。取 `build/` 以外最后一次提交，只改构建产物的提交不计入；`build/` 以外有未提交修改（含未跟踪文件）时为 `dirty`。不在 Git 仓库中、找不到 git 或尚无提交时不输出内容，在标准错误说明原因并返回 0，扉页随之省略提交信息。根目录 `run.sh` 在每个版本编译前调用它，写入 `build/<版本>/main-<版本>.commit`，成功后随辅助文件清理；读取与排版见 `preamble/titlepage-portrait.tex`。
+输出四行：提交日期（按提交自身时区，`YYYY-MM-DD`）、短哈希、提交说明首行、`clean` 或 `dirty`。取最新提交（HEAD），只改 `build/` 的提交同样计入；`build/` 以外有未提交修改（含未跟踪文件）时为 `dirty`。不在 Git 仓库中、找不到 git 或尚无提交时不输出内容，在标准错误说明原因并返回 0，扉页随之省略提交信息。根目录 `run.sh` 在每个版本编译前调用它，写入 `build/<版本>/main-<版本>.commit`，成功后随辅助文件清理；读取与排版见 `preamble/titlepage-portrait.tex`。
 
-提交说明原样输出，不做 TeX 转义；扉页按原样逐行读取。测试在临时仓库中运行并屏蔽用户 Git 配置，覆盖非仓库、无提交、提交时区、特殊字符、只改 `build/` 的提交，以及 `build/` 内外的修改与未跟踪文件；改用本地时区、`log` 或 `status` 不排除 `build/`、忽略未跟踪文件四种错误实现均会被测试发现。
+提交说明原样输出，不做 TeX 转义；扉页按原样逐行读取。测试在临时仓库中运行并屏蔽用户 Git 配置，覆盖非仓库、无提交、提交时区、特殊字符、只改 `build/` 的提交（如取消跟踪 PDF），以及 `build/` 内外的修改与未跟踪文件；改用本地时区、`log` 仍排除 `build/`、`status` 不排除 `build/`、忽略未跟踪文件四种错误实现均会被测试发现。

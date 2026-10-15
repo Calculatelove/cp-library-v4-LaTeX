@@ -65,11 +65,16 @@ class CommitInfoTests(unittest.TestCase):
         short = self.commit('a.tex', 'a', SUBJECT)
         self.assertEqual(self.info()[0], ['2026-10-15', short, SUBJECT, 'clean'])
 
-    def test_build_only_commit_is_skipped(self):
+    def test_build_only_commit_is_head(self):
+        # 对应取消跟踪 PDF 的提交：只改 build/，扉页仍应显示这次最新提交。
         self.git('init', '-q')
-        short = self.commit('a.tex', 'a', 'feat: 内容')
-        self.commit('build/portrait/main-portrait.pdf', 'pdf', 'build: 更新 PDF')
-        self.assertEqual(self.info()[0], ['2026-10-15', short, 'feat: 内容', 'clean'])
+        self.write('a.tex', 'a')
+        self.commit('build/portrait/main-portrait.pdf', 'pdf', 'feat: 内容')
+        self.commit('.gitignore', '/build/\n', 'chore: 忽略 build/')
+        self.git('rm', '-q', '-r', '--cached', 'build')
+        self.git('commit', '-q', '-m', 'refactor: 取消 PDF 跟踪', date='2026-10-15T01:00:00+08:00')
+        short = self.git('rev-parse', '--short', 'HEAD')
+        self.assertEqual(self.info()[0], ['2026-10-15', short, 'refactor: 取消 PDF 跟踪', 'clean'])
 
     def test_dirty_ignores_build_changes_only(self):
         self.git('init', '-q')
