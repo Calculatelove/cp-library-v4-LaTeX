@@ -6,7 +6,7 @@
 
 | 源码 | 用途 | PDF（位于 `preamble/tests/build/portrait/`） |
 | --- | --- | --- |
-| `titlepage.tex` | 扉页：横、竖两种配图与无配图，提交说明含特殊字符、超长换行、dirty 标注及提交信息缺失，扉页后正文页码 | `titlepage.pdf` |
+| `titlepage.tex` | 扉页：横、竖两种配图与无配图，提交说明含特殊字符、超长换行、dirty 标注及提交信息缺失，扉页后正文页码；用 `\TitlePageReadCommit{<文件>}` 改读 `fixtures/` 中的提交信息（2026-10-16 起三版共用此命令） | `titlepage.pdf` |
 | `check-titlepage.py` | 检查上述 PDF 的标题区字体、颜色与固定位置，配图区域尺寸，提交信息原样输出、换行与底边，PDF 文档属性及页码；需要 PyMuPDF | — |
 | `toc-layout.tex` | 单栏三级目录、长标题续行、页码对齐与页底主题 | `toc-layout.pdf` |
 | `code-cards.tex` | 语言图标、通用图标、长标题换行、短代码与跨页卡片 | `code-cards.pdf` |
@@ -18,7 +18,11 @@
 | `math-stix.tex` | STIX Two Math 对照样张 | `math-stix.pdf` |
 | `math-latin-modern.tex` | Latin Modern Math 默认数学样张 | `math-latin-modern.pdf` |
 | `math-content.tex` | 上述两份数学样张共用的内容，不能独立编译 | — |
-| `run.sh` | 至少两轮、最多八轮编译，检查辅助文件收敛、缺字、溢出及字体替换 | — |
+| `syntax-colors.tex` | 代码四色配色与常规直立字形；正文在 `../fixtures/syntax-colors-body.tex`，与横版、代码版共用，本文件只载入竖版布局 | `syntax-colors.pdf` |
+| `check-syntax-colors.py` | 检查 `syntax-colors.pdf` 与 `code-cards.pdf` 的代码配色、字重与直立字形；需要 PyMuPDF | — |
+| `run.sh` | 调用 `scripts/xelatex-converge.sh` 编译全部或指定样张：至少两轮、最多八轮，检查辅助文件收敛、缺字、溢出、字体替换及页眉高度 | — |
+
+三个检查脚本共用 `../pdfcheck.py`，失败时列出全部未通过项并返回 1；也可用 `scripts/check.sh --full` 一并运行。
 
 两份数学样张的正文均使用 Latin Modern Roman，除标识文字外只改变数学字体；包含行内公式、黑板粗体、花体、粗体希腊字母、求和、积分、分式、矩阵与引用块。代码引用复用 `preamble/tests/fixtures/` 的五个原样资源。
 
@@ -34,7 +38,7 @@
 preamble/tests/portrait/run.sh
 ```
 
-脚本也支持从其他目录启动。无需不受限的 `-shell-escape`；PDF、日志、辅助文件与 minted 缓存全部保留在已忽略的 `preamble/tests/build/portrait/`，便于检查。不会调用根目录 `run.sh` 或清理其他测试产物。
+脚本也支持从其他目录启动，可只传入样张名，例如 `preamble/tests/portrait/run.sh titlepage symbols`；编译循环与根目录 `run.sh` 共用 `scripts/xelatex-converge.sh`。无需不受限的 `-shell-escape`；PDF、日志、辅助文件与 minted 缓存全部保留在已忽略的 `preamble/tests/build/portrait/`，便于检查。不会调用根目录 `run.sh` 或清理其他测试产物。
 
 macOS 沙箱中的 XeLaTeX 可能无法通过名称访问苹方和用户安装的 Maple 字体，即使系统能够列出它们。本轮在允许访问 macOS 字体服务的编译环境中验证成功；未复制字体、修改系统字体缓存或硬编码用户字体路径。
 

@@ -1,17 +1,8 @@
+% 从项目根目录编译；代码版布局，正文与横版共用，见 preamble/tests/fixtures/twocolumn-code-cards-body.tex。
 \documentclass{article}
 \input{preamble/packages.tex}
 \input{preamble/layout-code.tex}
 \input{preamble/mystyle.tex}
 \begin{document}
-\section{跨栏代码}
-此卡片从左栏接近底部开始，应连续覆盖右栏与下一页。
-\vspace*{\dimexpr\textheight-160pt\relax}
-\subsection{Card-boundary}
-\InputCode[Landscape-long-card]{cpp}{preamble/tests/fixtures/landscape-long.cpp}
-\InputCode[一个完整保留的很长文件名称：用于验证标题在横版栏内自然换行、续行与文件名对齐，同时保留中文、空格以及标点符号的显示效果.cpp]{cpp}{preamble/tests/fixtures/示例 文件_1.cpp}
-\subsection{显示折行}
-\begin{minted}{cpp}
-// This deliberately long comment should wrap inside the column while keeping every word in the original order for careful reading and verification.
-int result = calculate(first_argument, second_argument, third_argument, fourth_argument, fifth_argument, sixth_argument);
-\end{minted}
+\input{preamble/tests/fixtures/twocolumn-code-cards-body.tex}%
 \end{document}

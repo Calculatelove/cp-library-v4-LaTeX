@@ -1,0 +1,159 @@
+% 三版共用的扉页：书名、英文书名、作者、配图与 Last commit；设了版本标记时悬挂在书名右侧。
+% 由各版布局在 shared/fonts.tex、shared/colors.tex 之后 \input，再用 \TitlePageSetup 给出本版的版面参数。
+% 书名、作者、英文书名、配图路径与版本标记由入口提供；路径均相对于项目根目录。
+% 绝对定位依赖 TikZ 的 remember picture，至少编译两轮（根目录 run.sh 已保证）。
+
+\newfontfamily\BookTitlePageMediumLatin{PingFang SC Medium}
+\newCJKfontfamily\BookTitlePageMediumCJK{PingFang SC Medium}
+% 提交信息的眉题：小号大写，加宽字距。
+\newfontfamily\BookTitlePageEyebrow{PingFang SC Medium}[LetterSpace=14]
+% 提交说明原样输出：此字体族不启用 TeX 连字，-- 等不会被替换。
+\newfontfamily\BookTitlePagePlainLatin{PingFang SC}
+
+% 版面参数：以纸张中心为原点，书名、英文书名、作者的基线，配图区中心，提交信息底边的纵向位置，
+% 以及配图区的宽和高。配图在配图区内等比缩放后居中；标题区与提交信息的位置不随图片比例变化。
+% 各版布局须给出全部 7 项，缺少时编译报错；数值按原文交给 TikZ 与 \setlength，不预先换算。
+\newlength{\BookTitlePageImageWidth}
+\newlength{\BookTitlePageImageHeight}
+\pgfkeys{
+  /book/titlepage/.is family,
+  /book/titlepage/title/.store in=\BookTitlePageTitleY,
+  /book/titlepage/english/.store in=\BookTitlePageEnglishY,
+  /book/titlepage/author/.store in=\BookTitlePageAuthorY,
+  /book/titlepage/image/.store in=\BookTitlePageImageY,
+  /book/titlepage/stamp/.store in=\BookTitlePageStampY,
+  /book/titlepage/image-width/.code={\setlength{\BookTitlePageImageWidth}{#1}},
+  /book/titlepage/image-height/.code={\setlength{\BookTitlePageImageHeight}{#1}},
+}
+\newcommand{\TitlePageSetup}[1]{\pgfkeys{/book/titlepage/.cd,#1}}
+
+\makeatletter
+% 元信息：英文书名、配图路径与版本标记；不写或参数为空时省略对应内容。
+% 版本标记只写文字（如“代码版”），全角括号与样式由扉页添加。
+\newcommand*{\EnglishTitle}[1]{\gdef\BookTitlePage@EnglishTitle{#1}}
+\newcommand*{\TitlePageImage}[1]{\gdef\BookTitlePage@Image{#1}}
+\newcommand*{\EditionLabel}[1]{\gdef\BookTitlePage@Edition{#1}}
+\let\BookTitlePage@EnglishTitle\@empty
+\let\BookTitlePage@Image\@empty
+\let\BookTitlePage@Edition\@empty
+% PDF 文档属性同步入口的书名与作者；有版本标记时标题附上，如“算法竞赛小记（代码版）”。
+% 入口未设置书名或作者时不写入。
+\let\BookTitlePage@DefaultTitle\@title
+\let\BookTitlePage@DefaultAuthor\@author
+\AtBeginDocument{%
+  \ifx\@title\BookTitlePage@DefaultTitle\else
+    \ifx\BookTitlePage@Edition\@empty
+      \hypersetup{pdftitle={\@title}}%
+    \else
+      \hypersetup{pdftitle={\@title（\BookTitlePage@Edition）}}%
+    \fi
+  \fi
+  \ifx\@author\BookTitlePage@DefaultAuthor\else\hypersetup{pdfauthor={\@author}}\fi}
+\makeatother
+
+% 提交信息文件由 scripts/commit-info.sh 经根目录 run.sh 写入编译输出目录，
+% 四行依次为日期、短哈希、提交说明、clean 或 dirty。按原样逐行读取，
+% 不经 TeX 转义；文件不存在或缺少日期、哈希时不显示提交信息。
+\ExplSyntaxOn
+\ior_new:N \g__book_titlepage_ior
+\str_new:N \g__book_titlepage_date_str
+\str_new:N \g__book_titlepage_hash_str
+\str_new:N \g__book_titlepage_subject_str
+\str_new:N \g__book_titlepage_state_str
+\bool_new:N \g__book_titlepage_commit_bool
+\cs_new_protected:Npn \__book_titlepage_get:N #1
+  {
+    \ior_if_eof:NTF \g__book_titlepage_ior
+      { \str_gclear:N #1 }
+      {
+        \ior_str_get:NN \g__book_titlepage_ior \l_tmpa_str
+        \str_gset_eq:NN #1 \l_tmpa_str
+      }
+  }
+\NewDocumentCommand \TitlePageReadCommit { m }
+  {
+    \bool_gset_false:N \g__book_titlepage_commit_bool
+    \file_if_exist:nT {#1}
+      {
+        \ior_open:Nn \g__book_titlepage_ior {#1}
+        \__book_titlepage_get:N \g__book_titlepage_date_str
+        \__book_titlepage_get:N \g__book_titlepage_hash_str
+        \__book_titlepage_get:N \g__book_titlepage_subject_str
+        \__book_titlepage_get:N \g__book_titlepage_state_str
+        \ior_close:N \g__book_titlepage_ior
+        \bool_lazy_or:nnF
+          { \str_if_empty_p:N \g__book_titlepage_date_str }
+          { \str_if_empty_p:N \g__book_titlepage_hash_str }
+          { \bool_gset_true:N \g__book_titlepage_commit_bool }
+      }
+  }
+% 默认读取本次编译的 <jobname>.commit；样张可在 \maketitle 前改读其他文件。
+\AtBeginDocument { \TitlePageReadCommit { \c_sys_jobname_str .commit } }
+\NewDocumentCommand \BookTitlePageIfCommitTF { +m +m }
+  { \bool_if:NTF \g__book_titlepage_commit_bool {#1} {#2} }
+% 眉题式三行：眉题“LAST COMMIT”；日期与哈希，dirty 时附圆角细框标签；提交说明。
+% 不用分隔符串联，依靠换行、留白及字体差异区分标签与数值。
+\NewDocumentCommand \BookTitlePageCommitText { }
+  {
+    { \BookTitlePageEyebrow \fontsize { 6.5 } { 8 } \selectfont LAST ~ COMMIT } \\ [ 1.5pt ]
+    { \ttfamily \str_use:N \g__book_titlepage_date_str }
+    \hspace { 0.8em }
+    { \ttfamily \color { BookTitlePageAccent } \str_use:N \g__book_titlepage_hash_str }
+    \str_if_eq:VnT \g__book_titlepage_state_str { dirty }
+      { \hspace { 0.6em } \usebox \BookTitlePageDirtyBox }
+    \str_if_empty:NF \g__book_titlepage_subject_str
+      { \\ \BookTitlePagePlainLatin \str_use:N \g__book_titlepage_subject_str }
+  }
+\ExplSyntaxOff
+% 未提交修改标签：0.4 pt 浅灰圆角细框，与代码卡片同一视觉语言。
+% 在扉页的 tikzpicture 之外预先排入盒子，避免嵌套 TikZ。
+\newsavebox{\BookTitlePageDirtyBox}
+\newcommand*{\BookTitlePageMakeDirtyBox}{%
+  \sbox{\BookTitlePageDirtyBox}{\tikz[baseline=(tag.base)]
+    \node[draw=BookTitlePageHairline,line width=0.4pt,rounded corners=1.1mm,
+      inner xsep=1.3mm,inner ysep=0.45mm,text=BookTitlePageInk,
+      font=\sffamily\fontsize{6.5}{8}\selectfont] (tag) {含未提交修改};}}
+
+% 版面以纸张中心为原点：标题区在上，配图居中偏下，提交信息贴近底边；双栏正文不影响绝对定位的扉页。
+% 版本标记（用户确认，2026-10-15）：全角括号、苹方常规体 22 pt（书名字号的一半）、
+% 次要灰，与书名同基线，悬挂在书名右侧、不参与居中；书名仍以页面中轴居中，
+% 与英文书名、作者对齐。
+\makeatletter
+\renewcommand{\maketitle}{%
+  \clearpage
+  \thispagestyle{empty}%
+  \BookTitlePageMakeDirtyBox
+  \null
+  \begin{tikzpicture}[remember picture,overlay]
+    \begin{scope}[shift={(current page.center)}]
+      \node[anchor=base,inner sep=0pt,text=BookTitlePageInk,
+        font=\sffamily\bfseries\fontsize{44}{52}\selectfont] (title) at (0,\BookTitlePageTitleY) {\@title};
+      \ifx\BookTitlePage@Edition\@empty\else
+        \node[anchor=base west,inner sep=0pt,text=BookTitlePageSecondary,
+          font=\sffamily\mdseries\fontsize{22}{26}\selectfont] at (title.base east)
+          {（\BookTitlePage@Edition）};
+      \fi
+      \ifx\BookTitlePage@EnglishTitle\@empty\else
+        \node[anchor=base,inner sep=0pt,text=BookTitlePageSecondary,
+          font=\sffamily\fontsize{15}{18}\selectfont] at (0,\BookTitlePageEnglishY)
+          {\BookTitlePage@EnglishTitle};
+      \fi
+      \node[anchor=base,inner sep=0pt,text=BookTitlePageInk,
+        font=\BookTitlePageMediumLatin\BookTitlePageMediumCJK\fontsize{12}{15}\selectfont]
+        at (0,\BookTitlePageAuthorY) {\@author};
+      \ifx\BookTitlePage@Image\@empty\else
+        \node[inner sep=0pt] at (0,\BookTitlePageImageY) {\includegraphics[
+          width=\BookTitlePageImageWidth,height=\BookTitlePageImageHeight,
+          keepaspectratio]{\BookTitlePage@Image}};
+      \fi
+      % 底边对齐：提交说明换行时向上增长，不进入下边距。
+      % flush center 使用 fil 胶居中；align=center 的有限伸缩会拉开 xeCJK 字距。
+      \BookTitlePageIfCommitTF{%
+        \node[anchor=south,inner sep=0pt,text width=150mm,align=flush center,
+          text=BookTitlePageSecondary,font=\sffamily\fontsize{8}{11}\selectfont]
+          at (0,\BookTitlePageStampY) {\BookTitlePageCommitText};
+      }{}%
+    \end{scope}
+  \end{tikzpicture}%
+  \clearpage}
+\makeatother

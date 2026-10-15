@@ -14,7 +14,9 @@ python3 preamble/tests/landscape/check-layout.py
 python3 preamble/tests/landscape/check-titlepage.py
 ```
 
-脚本也可从其他目录调用；自动回到项目根目录。支持将样张名作为参数，例如 `bash preamble/tests/landscape/run.sh flow toc-layout`。至少两轮、最多八轮，比较辅助文件和重编译提示；缺字、Overfull、字体替换或页眉高度不足时失败并保留日志。
+两个检查脚本加参数 `code` 时检查代码版样张，见 `../code/README.md`。它们共用 `../pdfcheck.py`，失败时列出全部未通过项并返回 1。`flow`、`code-cards`、`toc-layout` 的正文在 `../fixtures/twocolumn-*-body.tex`，与代码版共用；`syntax-colors` 的正文在 `../fixtures/syntax-colors-body.tex`，与竖版、代码版共用。本目录的这四份样张只保留载入横版布局的包装。
+
+脚本也可从其他目录调用；自动回到项目根目录。支持将样张名作为参数，例如 `bash preamble/tests/landscape/run.sh flow toc-layout`。编译由 `scripts/xelatex-converge.sh` 完成（与根目录 `run.sh` 共用）：至少两轮、最多八轮，比较辅助文件和重编译提示；缺字、Overfull、字体替换或页眉高度不足时失败并保留日志。
 
 源码使用项目根目录相对路径。PDF、日志、缓存、渲染图片统一放在已忽略的 `preamble/tests/build/landscape/`。可按下面的命令渲染全部目录样张页：
 
@@ -38,28 +40,9 @@ pdftoppm -scale-to 1600 -png preamble/tests/build/landscape/toc-layout.pdf pream
 | `images.tex` | 图片按局部栏宽解释 `textwidth`，验证 106 mm 图片和整栏图、分组结束后整页宽度不变。 |
 | `check-layout.py` | 从实际 PDF 检查纸张、阅读流向、章名、代码完整性、引用段落顺序、配色及字重、目录分栏、链接目标和书签。 |
 | `check-titlepage.py` | 检查扉页样张的书名区位置与居中、110 × 70 mm 配图区域、眉题式提交信息、未提交修改标签、原样输出、换行与底边、页眉页码及 PDF 文档属性；加参数 `code` 检查代码版样张，另查书名后悬挂的“（代码版）”。 |
-| `check-full.py` | 检查完整横版的两栏文字越界，统一输出警告，按页、栏汇总最大越界量；不维护接受清单，不因溢出失败。扉页通栏居中，以 44 pt 书名识别并整页跳过。 |
-
 ## 完整横版溢出检查
 
-完整笔记用 `./run.sh landscape` 构建。根目录 `run.sh` 成功后会删除日志；需要核对末轮缺字、Overfull 等警告时，将控制台输出保存到已忽略的测试构建目录：
-
-```sh
-mkdir -p preamble/tests/build/landscape
-./run.sh landscape > preamble/tests/build/landscape/full-build-console.txt 2>&1
-```
-
-构建后从项目根目录运行：
-
-```sh
-python3 preamble/tests/landscape/check-full.py
-```
-
-优先使用 PyMuPDF，未安装时改用 pdfplumber（本机为 PyMuPDF 分支；pdfplumber 分支在下述分栏修正后未重新运行）。中文全角标点按前进宽度会虚报约 6.7 pt，脚本跳过这些字符和页眉、页脚、目录通栏标题。
-
-脚本以右栏左边界区分两栏，字框起点在右栏之前的字符都计入左栏。早先以左栏右边界分栏时，整个落在栏距内的越栏文字会被当作右栏、得到负溢出而漏报；2026-10-14 已修正，并以人工越栏样例确认可以报出。右栏行首的“等标点经 xeCJK 压缩后字框约提前 0.5 pt，留 1 pt 容差；居中的页脚页码位于栏距位置，跳过。左栏文字伸到右栏位置后，后续字符无法与右栏正文区分，此时报出的越界量只是下限，并附提示。
-
-规则由用户于 2026-10-14 更新：左栏进入栏距、右栏进入外侧页边距均输出警告；超过纸边时附加提示。不维护“登记接受”的溢出清单，不设置 10 mm 上限，不要求为警告修改正文。警告包含页码、栏位、越界量和末字，每页每栏汇总最大越界量。无论是否存在溢出，正常完成检查均返回 0；PDF 不存在、无法读取等运行错误仍报错。
+完整笔记用 `./run.sh landscape` 构建。完整 PDF 的越栏检查不属于导言区检验，脚本已于 2026-10-16 由本目录移到 `scripts/check-full.py`；用法、保存完整构建控制台输出的方法及判定规则见 `scripts/README.md`。
 
 `\Highlight` 由不可拆分的 `\colorbox` 实现，横版栏宽约 37 个汉字；段首高亮宜控制在约 33 个汉字以内（含公式按实际宽度估算）。原第 96 页 exBSGS 高亮越过纸边 6 pt，已由用户缩短 `0x34` 中 BSGS 与 exBSGS 两处高亮的括号说明解决。
 

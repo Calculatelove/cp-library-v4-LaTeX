@@ -8,7 +8,7 @@
 bash preamble/tests/code/run.sh
 ```
 
-也可从任意目录调用该脚本。产物在被忽略的 `preamble/tests/build/code/`。脚本至少两轮、最多八轮，检查收敛、缺字、溢出与字体替换。
+也可从任意目录调用该脚本，或只传入样张名。产物在被忽略的 `preamble/tests/build/code/`。编译由 `scripts/xelatex-converge.sh` 完成（与根目录 `run.sh` 共用）：至少两轮、最多八轮，检查收敛、缺字、溢出、字体替换与页眉高度。
 
 - `titlepage.tex`：4 页扉页样张，内容同横版样张；前两页带版本标记，第 3 页不设版本标记。用 `python3 preamble/tests/landscape/check-titlepage.py code` 检查，另查书名后悬挂的“（代码版）”及其同基线、不参与居中。
 - `flow.tex`：连续章节、空标题、页顶章页眉与分页边界。
@@ -16,7 +16,9 @@ bash preamble/tests/code/run.sh
 - `syntax-colors.tex`：四色配色、直立代码字体。
 - `toc-layout.tex`：双栏目录、长条目及标题组分页。
 
-生成器测试在 `scripts/test_generate_code.py`，与布局检验分开。完整代码版使用 `./run.sh code`，可用 `python3 preamble/tests/landscape/check-full.py build/code/main-code.pdf` 检查相同几何参数下的栏边界（依赖 PyMuPDF 或 pdfplumber）；两栏越界统一输出警告，不维护接受清单或溢出上限，不因溢出返回失败。
+后四份的正文与横版共用（`syntax-colors` 还与竖版共用），放在 `../fixtures/` 的 `*-body.tex`；本目录只保留载入代码版布局的包装。用 `python3 preamble/tests/landscape/check-layout.py code` 检查这四份样张，断言与横版相同（2026-10-16 起，此前这四份没有检查脚本）。
+
+生成器测试在 `scripts/tests/test_generate_code.py`，与布局检验分开。完整代码版使用 `./run.sh code`，可用 `python3 scripts/check-full.py build/code/main-code.pdf` 检查相同几何参数下的栏边界（依赖 PyMuPDF；先核对纸张与栏边几何，不符时报错）；两栏越界统一输出警告，不维护接受清单或溢出上限，不因溢出返回失败。
 
 
 代码版验证（2026-10-14）：生成器四项测试通过，真实章节提取与输出中的 99 个代码块逐段、按序一致，--check 通过。四份布局样张各 2—3 轮收敛，无缺字、Overfull 或字体替换。完整代码版通过 ./run.sh code 三轮收敛，53 页（目录 2 页），112 个书签、111 个目录链接目标可解析；栏边界检查通过。全部 53 页已做缩略图检查，完整 PDF 第 3 页及代码卡片样张第 1 页高分辨率检查，无裁切遮挡；其余样张未逐页视觉验收，未做实物打印验收。完整编译无缺字、Overfull 或字体替换，保留 xeCJK 字体族重定义与 tcolorbox nobreak 警告。git diff --check 仅报告生成入口第 497 行的原始内嵌代码空白行，按代码保真要求保留。公共接口、原章节与原代码、竖版和横版未修改，未重复构建；未提交或推送。

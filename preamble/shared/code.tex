@@ -1,0 +1,41 @@
+% 三版共用的代码块样式：Pygments 词法配色、minted 默认设置与代码卡片标题。
+% 由各版布局在 shared/fonts.tex、shared/colors.tex 之后 \input。
+% 某版需要不同的代码字号时，在 \input 之后用 \setminted{fontsize=…} 覆盖。
+
+% 使用 bw 提供 Pygments 转义与分词接口，在每次加载样式后替换 token 外观。
+% 兼容目标：minted 3.x / Pygments 2.x；不安装系统 Python 插件。
+% 未列出的 token 不增加颜色、粗体、下划线或错误边框。
+\makeatletter
+\newcommand{\BookCodeBlueText}[1]{\textcolor{BookCodeBlue}{#1}}
+\newcommand{\BookCodeGreenText}[1]{\textcolor{BookCodeGreen}{#1}}
+\newcommand{\BookCodeCommentText}[1]{\textcolor{BookCodeComment}{#1}}
+\def\BookToken@k{\let\PYG@tc\BookCodeBlueText}
+\let\BookToken@m\BookToken@k
+\let\BookToken@no\BookToken@k
+\let\BookToken@ow\BookToken@k
+\def\BookToken@s{\let\PYG@tc\BookCodeGreenText}
+\def\BookToken@c{\let\PYG@tc\BookCodeCommentText}
+\def\BookToken@cp{\let\PYG@tc\BookCodeBlueText\let\PYG@it\relax}
+\def\BookToken@cpf{\let\PYG@tc\BookCodeGreenText\let\PYG@it\relax}
+\AddToHook{cmd/minted@defstyle/after}{%
+  \edef\BookCodeStyle{\mintedtexoptvalueof{style}}%
+  \ifdefstring{\BookCodeStyle}{bw}{%
+    \def\PYG@tok#1{\ifcsname BookToken@#1\endcsname
+      \csname BookToken@#1\endcsname\fi}%
+  }{}%
+}
+\makeatother
+\setminted{
+  fontfamily=bookcode,fontsize=\fontsize{8}{10.5}\selectfont,
+  baselinestretch=1,style=bw,linenos=false,
+  formatcom=\color{BookCodeText}\mdseries\upshape,
+  breaklines=true,breakanywhere=false,tabsize=4
+}
+% 词法高亮并非 C++ 语义分析；仅补充明确要求的三个标准库类型名称。
+\setminted[cpp]{extrakeywordstype={vector,string,pair}}
+\setminted[c++]{extrakeywordstype={vector,string,pair}}
+\setminted[cxx]{extrakeywordstype={vector,string,pair}}
+\newfontfamily\BookCodeTitleLatin{PingFang SC Medium}
+\newCJKfontfamily\BookCodeTitleCJK{PingFang SC Medium}
+% coltext 同时保证 tcolorbox 续页恢复深灰，而非默认纯黑。
+\tcbset{input-code-title/.style={coltext=BookCodeText,fonttitle=\mdseries\upshape\BookCodeTitleLatin\BookCodeTitleCJK\fontsize{9}{12}\selectfont}}

@@ -1,0 +1,17 @@
+% 三版共用的配色，由各版布局在 shared/fonts.tex 之后 \input。
+% 页眉页脚、目录、代码样式与扉页引用这里的颜色；mystyle.tex 中各接口自带的颜色不在此处。
+
+% 页眉、页脚与次要文字。
+\definecolor{BookMuted}{HTML}{666666}
+% 目录二、三级条目的点线。
+\definecolor{BookTOCDots}{HTML}{888888}
+% 代码阅读 / 打印配色：仅两种彩色；名称、调用与标点保持深灰。
+\definecolor{BookCodeText}{HTML}{30343B}
+\definecolor{BookCodeBlue}{HTML}{506B82}
+\definecolor{BookCodeGreen}{HTML}{58715D}
+\definecolor{BookCodeComment}{HTML}{70757D}
+% 扉页：主要文字、次要文字与细框；唯一强调色与代码高亮的蓝灰一致。
+\definecolor{BookTitlePageInk}{HTML}{1D1D1F}
+\definecolor{BookTitlePageSecondary}{HTML}{6E6E73}
+\definecolor{BookTitlePageHairline}{HTML}{D1D1D6}
+\colorlet{BookTitlePageAccent}{BookCodeBlue}

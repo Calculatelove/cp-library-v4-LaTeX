@@ -1,0 +1,91 @@
+% 横版与代码版共用的双栏机制：启动双栏、通栏目录标题、页顶所在章的页眉、图片按栏宽解释 \textwidth。
+% 由两版布局在 shared/toc.tex 之后 \input；栏距等版面参数由各版布局设置，
+% 一级标题格式须在标题文字处调用 \BookChapterAnchor。
+
+% 入口无排版选项；启动标准双栏输出，章节自然连续，不平衡章末。
+\setlength{\columnseprule}{0pt}
+\AddToHook{begindocument/end}{\twocolumn\raggedbottom}
+
+% 目录标题由下方重写的 \tableofcontents 以通栏居中排出（22/28 pt，后接 16pt），
+% 不使用 tocloft 的标题设置。
+\makeatletter
+% tocloft 在 begindocument 中重定义入口，此处在其初始化结束后安装。
+% 标准双栏的可选通栏头只用于目录首张；条目仍按栏自然流动。
+\AddToHook{begindocument/end}{%
+  \renewcommand{\tableofcontents}{%
+    \clearpage
+    \markboth{}{}%
+    \global\BookTOCPreviousLevel=0
+    \twocolumn[{%
+      \centering\sffamily\bfseries\fontsize{22}{28}\selectfont
+      \contentsname\par\vspace{16pt}%
+    }]%
+    \@starttoc{toc}%
+    \clearpage
+  }%
+}
+\makeatother
+
+% 页眉显示页顶所在的一级标题（用户确认，2026-10-14）：
+% 本页没有新章，或新章不在左栏顶端时，取页首延续的章（TopMark）；
+% 本页第一个新章恰好位于左栏顶端时，取该章。章节连续排版，
+% 一页可含多章，不能沿用竖版取本页最后标记的 \leftmark。
+% 位置由标题文字内的 \pdfsavepos 记录，需两轮编译；run.sh 至少两轮。
+\makeatletter
+\NewMarkClass{book-chapter}
+\newcounter{BookChapter}
+\AddToHook{cmd/section/before}{\stepcounter{BookChapter}}
+% 置于标题文字内部，保证位置与标题同在一栏，不会因断页与标题分离。
+\newcommand{\BookChapterAnchor}[1]{%
+  \leavevmode\pdfsavepos
+  \RecordProperties{BookChapter@\the\value{BookChapter}}{xpos,ypos}#1}
+\newdimen\BookChapterTopLimit
+\newcommand{\BookHeaderChapter}{%
+  \begingroup
+  \edef\BookTop{\TopMark{book-chapter}}%
+  \edef\BookFirst{\FirstMark{book-chapter}}%
+  \let\BookShown\BookTop
+  \ifx\BookTop\BookFirst\else
+    \ifx\BookTop\@empty\let\BookShown\BookFirst\fi
+    % 左栏顶端标题的基线距版心顶约一个 topskip；留 20pt 容差，
+    % 上方哪怕只有一行正文，标题基线也会再低约 30pt。
+    \BookChapterTopLimit=\dimexpr\paperheight-1in-\voffset-\topmargin
+      -\headheight-\headsep-\topskip-20pt\relax
+    \ifdim\RefProperty{BookChapter@\BookFirst}{xpos}sp<.5\paperwidth
+      \ifdim\RefProperty{BookChapter@\BookFirst}{ypos}sp>\BookChapterTopLimit
+        \let\BookShown\BookFirst
+      \fi
+    \fi
+  \fi
+  \ifx\BookShown\@empty\else
+    \csname BookChapterName@\BookShown\endcsname
+  \fi
+  \endgroup}
+\makeatother
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\sffamily\fontsize{8}{10}\selectfont\color{BookMuted}%
+  \BookHeaderChapter}
+\fancyfoot[C]{\sffamily\fontsize{8}{10}\selectfont\color{BookMuted}\thepage}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+% 保留标准标记，另记章号及章名供页眉判断页顶所在的章。
+\renewcommand{\sectionmark}[1]{%
+  \markboth{#1}{}%
+  \expandafter\gdef\csname BookChapterName@\the\value{BookChapter}\endcsname{#1}%
+  \InsertMark{book-chapter}{\the\value{BookChapter}}}
+\renewcommand{\subsectionmark}[1]{\markright{#1}}
+\fancypagestyle{plain}{\fancyhf{}\fancyfoot[C]{\sffamily\fontsize{8}{10}\selectfont\color{BookMuted}\thepage}}
+
+% 双栏图片按当前容器计算正文宽度；保持原路径、可选参数和长宽比。
+% 用户已批准将现有 0.8\textwidth / \textwidth 分别解释为 0.8 / 1 栏宽。
+% 局部分组避免改变双栏输出的整页 textwidth。
+\NewCommandCopy{\BookIncludeGraphics}{\includegraphics}
+\RenewDocumentCommand{\includegraphics}{s O{} m}{%
+  \begingroup
+  \setlength{\textwidth}{\linewidth}%
+  \IfBooleanTF{#1}
+    {\BookIncludeGraphics*[#2]{#3}}
+    {\BookIncludeGraphics[#2]{#3}}%
+  \endgroup
+}

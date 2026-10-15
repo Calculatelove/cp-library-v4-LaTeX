@@ -1,0 +1,79 @@
+% 三版共用的字体：正文与导航、单色符号、数学、行内等宽与代码块。
+% 由各版布局在 \geometry 之后 \input；字号、行距等参数由各版布局设置。
+% 本机字体须可供 XeLaTeX 访问，不静默替换。
+
+% 正文与导航字体：使用与已确认样张一致的 Latin Modern Roman 10 pt 静态字形。
+\setmainfont{lmroman10}[
+  Extension=.otf,UprightFont=*-regular,BoldFont=*-bold,
+  ItalicFont=*-italic,BoldItalicFont=*-bolditalic
+]
+\setsansfont{PingFang SC}[BoldFont={PingFang SC Semibold}]
+\setCJKmainfont{Songti SC}[BoldFont={Songti SC Bold},ItalicFont={Songti SC}]
+\setCJKsansfont{PingFang SC}[BoldFont={PingFang SC Semibold}]
+% 单色符号使用项目内的静态字体；标题中也保持常规直立字重。
+% 只映射原稿实际使用的两个字符，不更改正文或全局字符分类。
+\newfontfamily\BookSymbolFont{NotoEmoji-Regular.ttf}[
+  Path=preamble/fonts/,
+  BoldFont=NotoEmoji-Regular.ttf,
+  ItalicFont=NotoEmoji-Regular.ttf,
+  BoldItalicFont=NotoEmoji-Regular.ttf
+]
+% xeCJK 默认借用当前字体空格；Noto Emoji 的空格宽达 1.27em。
+% 仅在符号局部分组内固定中西文间距，避免中文后的符号被推远。
+\DeclareRobustCommand{\BookStar}{{%
+  \xeCJKsetup{CJKecglue={\hskip .25em\relax}}%
+  \BookSymbolFont\char"2B50\relax}}
+\DeclareRobustCommand{\BookFlag}{{%
+  \xeCJKsetup{CJKecglue={\hskip .25em\relax}}%
+  \BookSymbolFont\char"1F6A9\relax}}
+\newunicodechar{⭐}{\BookStar}
+\newunicodechar{🚩}{\BookFlag}
+% 书签保留原 Unicode，避免把字体命令写入 PDF 字符串。
+\pdfstringdefDisableCommands{%
+  \def⭐{\string⭐}%
+  \def🚩{\string🚩}%
+}
+\setmathfont{Latin Modern Math}
+% 直立数学字母与算子均使用数学字体；\text 仍使用正文字体。
+% 显式外层分组兼容原稿的 ^\mathrm{mid}、_\mathrm{mid} 写法。
+% 直接使用 mathrm=sym 时，unicode-math 的内部组命令不能充当上下标组。
+% 在 unicode-math 完成文档起始初始化后设置，避免被其默认定义覆盖。
+\AddToHook{begindocument/end}{\renewcommand{\mathrm}[1]{{\symup{#1}}}}
+\setoperatorfont{\symup}
+% 保留 \boldsymbol 对完整表达式（含算子和定界符）的语义。
+% 数学字体没有独立粗体文件，bold 版本采用轻度合成加粗。
+\setmathfont{Latin Modern Math}[version=bold,FakeBold=1.2]
+% 保留文本类数学字母（如 \mathbf、\mathit）的 bold 版本字体映射。
+% \mathrm 已由上方定义改用数学字形，不走此文本映射。
+\setboldmathrm{lmroman10}[
+  Extension=.otf,UprightFont=*-bold,BoldFont=*-bold,
+  ItalicFont=*-bolditalic,BoldItalicFont=*-bolditalic
+]
+
+% 行内等宽文字使用 Maple，字号随所在正文；与代码块采用相同字形特性。
+\setmonofont{Maple Mono NF CN}[
+  Ligatures={NoCommon,NoContextual,NoDiscretionary,NoHistoric},
+  RawFeature={-calt;-tlig;+cv01;+cv32;+cv33;+cv34;+cv35;+cv36;+cv37}
+]
+\setCJKmonofont{Maple Mono NF CN}[
+  Ligatures={NoCommon,NoContextual,NoDiscretionary,NoHistoric},
+  RawFeature={-calt;-tlig;+cv01;+cv32;+cv33;+cv34;+cv35;+cv36;+cv37}
+]
+
+% 只供 minted 使用（fontfamily=bookcode）；不改变 \texttt 或代码标题栏。
+% 禁用标准、上下文、可选、历史连字，以及 calt/TeX 字符替换。
+% cv01 去除符号间隙；cv32--cv37 将手写斜体改为常规斜体（仍保留倾斜）。
+\newfontfamily\BookCodeLatin{Maple Mono NF CN}[
+  Ligatures={NoCommon,NoContextual,NoDiscretionary,NoHistoric},
+  RawFeature={-calt;-tlig;+cv01;+cv32;+cv33;+cv34;+cv35;+cv36;+cv37}
+]
+\newCJKfontfamily\BookCodeCJK{Maple Mono NF CN}[
+  Ligatures={NoCommon,NoContextual,NoDiscretionary,NoHistoric},
+  RawFeature={-calt;-tlig;+cv01;+cv32;+cv33;+cv34;+cv35;+cv36;+cv37}
+]
+\makeatletter
+\@namedef{FV@fontfamily@bookcode}{%
+  \def\FV@FontScanPrep{}%
+  \def\FV@FontFamily{\BookCodeLatin\BookCodeCJK}%
+}
+\makeatother

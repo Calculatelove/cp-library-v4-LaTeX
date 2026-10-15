@@ -1,75 +1,15 @@
-% 代码版独立布局；初始参数与横版一致。
+% 代码版布局：只放本版参数，目前取值与横版相同但单独维护；三版共用的实现及双栏机制见 preamble/shared/。
 % A4 横向双栏；四边 12 mm，上下包含页眉、页脚及其间距。
 \geometry{
   a4paper,landscape,left=12mm,right=12mm,top=12mm,bottom=12mm,
   includeheadfoot,headheight=12pt,headsep=4mm,footskip=6mm
 }
 
-% 正文与导航字体：本机字体须可供 XeLaTeX 访问，不静默替换。
-% 使用与已确认样张一致的 Latin Modern Roman 10 pt 静态字形。
-\setmainfont{lmroman10}[
-  Extension=.otf,UprightFont=*-regular,BoldFont=*-bold,
-  ItalicFont=*-italic,BoldItalicFont=*-bolditalic
-]
-\setsansfont{PingFang SC}[BoldFont={PingFang SC Semibold}]
-\setCJKmainfont{Songti SC}[BoldFont={Songti SC Bold},ItalicFont={Songti SC}]
-\setCJKsansfont{PingFang SC}[BoldFont={PingFang SC Semibold}]
-% 单色符号使用项目内的静态字体；标题中也保持常规直立字重。
-% 只映射原稿实际使用的两个字符，不更改正文或全局字符分类。
-\newfontfamily\CodeSymbolFont{NotoEmoji-Regular.ttf}[
-  Path=preamble/fonts/,
-  BoldFont=NotoEmoji-Regular.ttf,
-  ItalicFont=NotoEmoji-Regular.ttf,
-  BoldItalicFont=NotoEmoji-Regular.ttf
-]
-% xeCJK 默认借用当前字体空格；Noto Emoji 的空格宽达 1.27em。
-% 仅在符号局部分组内固定中西文间距，避免中文后的符号被推远。
-\DeclareRobustCommand{\CodeStar}{{%
-  \xeCJKsetup{CJKecglue={\hskip .25em\relax}}%
-  \CodeSymbolFont\char"2B50\relax}}
-\DeclareRobustCommand{\CodeFlag}{{%
-  \xeCJKsetup{CJKecglue={\hskip .25em\relax}}%
-  \CodeSymbolFont\char"1F6A9\relax}}
-\newunicodechar{⭐}{\CodeStar}
-\newunicodechar{🚩}{\CodeFlag}
-% 书签保留原 Unicode，避免把字体命令写入 PDF 字符串。
-\pdfstringdefDisableCommands{%
-  \def⭐{\string⭐}%
-  \def🚩{\string🚩}%
-}
-\setmathfont{Latin Modern Math}
-% 直立数学字母与算子均使用数学字体；\text 仍使用正文字体。
-% 显式外层分组兼容原稿的 ^\mathrm{mid}、_\mathrm{mid} 写法。
-% 直接使用 mathrm=sym 时，unicode-math 的内部组命令不能充当上下标组。
-% 在 unicode-math 完成文档起始初始化后设置，避免被其默认定义覆盖。
-\AddToHook{begindocument/end}{\renewcommand{\mathrm}[1]{{\symup{#1}}}}
-\setoperatorfont{\symup}
-% 保留 \boldsymbol 对完整表达式（含算子和定界符）的语义。
-% 数学字体没有独立粗体文件，bold 版本采用轻度合成加粗。
-\setmathfont{Latin Modern Math}[version=bold,FakeBold=1.2]
-% 保留文本类数学字母（如 \mathbf、\mathit）的 bold 版本字体映射。
-% \mathrm 已由上方定义改用数学字形，不走此文本映射。
-\setboldmathrm{lmroman10}[
-  Extension=.otf,UprightFont=*-bold,BoldFont=*-bold,
-  ItalicFont=*-bolditalic,BoldItalicFont=*-bolditalic
-]
-
-% 只供 minted 使用；不改变 \texttt 或代码标题栏。
-% 禁用标准、上下文、可选、历史连字，以及 calt/TeX 字符替换。
-% cv01 去除符号间隙；cv32--cv37 将手写斜体改为常规斜体（仍保留倾斜）。
-\newfontfamily\CodeCodeLatin{Maple Mono NF CN}[
-  Ligatures={NoCommon,NoContextual,NoDiscretionary,NoHistoric},
-  RawFeature={-calt;-tlig;+cv01;+cv32;+cv33;+cv34;+cv35;+cv36;+cv37}
-]
-\newCJKfontfamily\CodeCodeCJK{Maple Mono NF CN}[
-  Ligatures={NoCommon,NoContextual,NoDiscretionary,NoHistoric},
-  RawFeature={-calt;-tlig;+cv01;+cv32;+cv33;+cv34;+cv35;+cv36;+cv37}
-]
+% 正文、数学、行内等宽与代码块字体及单色符号见共用文件。
+\input{preamble/shared/fonts.tex}
+% 页眉页脚、目录点线与代码配色见共用文件。
+\input{preamble/shared/colors.tex}
 \makeatletter
-\@namedef{FV@fontfamily@codeonly}{%
-  \def\FV@FontScanPrep{}%
-  \def\FV@FontFamily{\CodeCodeLatin\CodeCodeCJK}%
-}
 % 固定正文及常用相对字号，数学上下间距随正常字号一起恢复。
 \renewcommand\normalsize{%
   \@setfontsize\normalsize{10pt}{14pt}%
@@ -93,11 +33,7 @@
 \displaywidowpenalty=10000
 \setlist{topsep=3pt,itemsep=1pt,parsep=1pt,partopsep=0pt,leftmargin=*}
 
-\definecolor{CodeMuted}{HTML}{666666}
-\setcounter{secnumdepth}{-1}
-\setcounter{tocdepth}{3}
-\hypersetup{bookmarksdepth=5,bookmarksopen=true}
-\titleformat{\section}{\sffamily\bfseries\fontsize{16}{21}\selectfont}{}{0pt}{\CodeChapterAnchor}
+\titleformat{\section}{\sffamily\bfseries\fontsize{16}{21}\selectfont}{}{0pt}{\BookChapterAnchor}
 \titleformat{\subsection}{\sffamily\bfseries\fontsize{12}{17}\selectfont}{}{0pt}{}
 \titleformat{\subsubsection}{\sffamily\bfseries\fontsize{10.5}{15}\selectfont}{}{0pt}{}
 \titlespacing*{\section}{0pt}{10pt}{5pt}
@@ -107,185 +43,19 @@
 \titleformat{\subparagraph}{\sffamily\bfseries\fontsize{10}{14}\selectfont}{}{0pt}{}
 \titlespacing*{\paragraph}{0pt}{5pt}{2pt}
 \titlespacing*{\subparagraph}{0pt}{4pt}{2pt}
-% 入口无排版选项；启动标准双栏输出，章节自然连续，不平衡章末。
+% 栏距；启动双栏、通栏目录标题、页顶所在章的页眉与图片按栏宽见 shared/twocolumn.tex。
 \setlength{\columnsep}{8mm}
-\setlength{\columnseprule}{0pt}
-\AddToHook{begindocument/end}{\twocolumn\raggedbottom}
 
-% 目录展开到三级；PDF 书签包含全部标题层级并默认全部展开。
-\renewcommand{\contentsname}{目录}
-% 目录标题由下方重写的 \tableofcontents 以通栏居中排出（22/28 pt，后接 16pt），
-% 不使用 tocloft 的标题设置。
-% 方案 A：一级沿用苹方 Semibold；二三级沿用正文宋体与 Latin Modern Roman。
-\definecolor{CodeTOCDots}{HTML}{888888}
-\newlength{\CodeTOCUnit}
-\settowidth{\CodeTOCUnit}{\normalfont\fontsize{10}{15}\selectfont 中}
-% 每条目录装入完整段落盒：续行保持本级缩进，页码固定在末行右端。
-% 条目间使用可丢弃的竖直间距，页首不残留标题前留白。
-% 根据前后层级禁止父标题与首个子条目之间分页，不捆绑整个章节。
-\makeatletter
-\newcount\CodeTOCPreviousLevel
-\CodeTOCPreviousLevel=0
-\newcommand{\CodeTOCEntry}[4]{%
-  \par
-  \ifnum\CodeTOCPreviousLevel=1 \penalty10000
-  \else\ifnum\CodeTOCPreviousLevel=2
-    \ifnum#1=3 \penalty10000\else\penalty0\fi
-  \else\penalty0\fi\fi
-  \begingroup
-  \@tempdima=0pt
-  \ifnum\CodeTOCPreviousLevel=1 \advance\@tempdima by5pt\fi
-  \ifnum#1=1 \advance\@tempdima by12pt\fi
-  \vskip\@tempdima
-  \nointerlineskip
-  \vbox{%
-    \hsize=\linewidth
-    \normalfont\fontsize{10}{15}\selectfont
-    \ifnum#1=1 \sffamily\bfseries\fontsize{12}{15}\selectfont
-    \else\ifnum#1=2 \fontsize{10.5}{15}\selectfont\fi\fi
-    \leftskip=#2\relax \rightskip=30pt
-    \parfillskip=-\rightskip \parindent=0pt \parskip=0pt
-    \interlinepenalty=10000
-    \noindent\strut#3\nobreak
-    \ifnum#1=1 \hfill
-    % 9pt 是实际点中心间距；两端各留 3pt，空间不足一格时不绘点。
-    \else{\normalfont\fontsize{10}{15}\selectfont\color{CodeTOCDots}%
-      \kern3pt\leaders\hbox to9pt{\hss.\hss}\hfill\kern3pt}\fi
-    \nobreak\hb@xt@20pt{\hfil\normalfont
-      \ifnum#1=1 \fontsize{11}{15}\else\fontsize{10}{15}\fi\selectfont#4}\strut\par
-  }%
-  \endgroup
-  \global\CodeTOCPreviousLevel=#1\relax}
-\renewcommand*{\l@section}[2]{%
-  \ifnum\c@tocdepth>0 \CodeTOCEntry{1}{0pt}{#1}{#2}\fi}
-\renewcommand*{\l@subsection}[2]{%
-  \ifnum\c@tocdepth>1 \CodeTOCEntry{2}{2\CodeTOCUnit}{#1}{#2}\fi}
-\renewcommand*{\l@subsubsection}[2]{%
-  \ifnum\c@tocdepth>2 \CodeTOCEntry{3}{4\CodeTOCUnit}{#1}{#2}\fi}
-% tocloft 在 begindocument 中重定义入口，此处在其初始化结束后安装。
-% 标准双栏的可选通栏头只用于目录首张；条目仍按栏自然流动。
-\AddToHook{begindocument/end}{%
-  \renewcommand{\tableofcontents}{%
-    \clearpage
-    \markboth{}{}%
-    \global\CodeTOCPreviousLevel=0
-    \twocolumn[{%
-      \centering\sffamily\bfseries\fontsize{22}{28}\selectfont
-      \contentsname\par\vspace{16pt}%
-    }]%
-    \@starttoc{toc}%
-    \clearpage
-  }%
-}
-\makeatother
+% 标题编号、目录条目与书签设置，以及双栏机制见共用文件。
+\input{preamble/shared/toc.tex}
+\input{preamble/shared/twocolumn.tex}
 
-% 页眉显示页顶所在的一级标题（用户确认，2026-10-14）：
-% 本页没有新章，或新章不在左栏顶端时，取页首延续的章（TopMark）；
-% 本页第一个新章恰好位于左栏顶端时，取该章。章节连续排版，
-% 一页可含多章，不能沿用竖版取本页最后标记的 \leftmark。
-% 位置由标题文字内的 \pdfsavepos 记录，需两轮编译；run.sh 至少两轮。
-\makeatletter
-\NewMarkClass{code-chapter}
-\newcounter{CodeChapter}
-\AddToHook{cmd/section/before}{\stepcounter{CodeChapter}}
-% 置于标题文字内部，保证位置与标题同在一栏，不会因断页与标题分离。
-\newcommand{\CodeChapterAnchor}[1]{%
-  \leavevmode\pdfsavepos
-  \RecordProperties{CodeChapter@\the\value{CodeChapter}}{xpos,ypos}#1}
-\newdimen\CodeChapterTopLimit
-\newcommand{\CodeHeaderChapter}{%
-  \begingroup
-  \edef\CodeTop{\TopMark{code-chapter}}%
-  \edef\CodeFirst{\FirstMark{code-chapter}}%
-  \let\CodeShown\CodeTop
-  \ifx\CodeTop\CodeFirst\else
-    \ifx\CodeTop\@empty\let\CodeShown\CodeFirst\fi
-    % 左栏顶端标题的基线距版心顶约一个 topskip；留 20pt 容差，
-    % 上方哪怕只有一行正文，标题基线也会再低约 30pt。
-    \CodeChapterTopLimit=\dimexpr\paperheight-1in-\voffset-\topmargin
-      -\headheight-\headsep-\topskip-20pt\relax
-    \ifdim\RefProperty{CodeChapter@\CodeFirst}{xpos}sp<.5\paperwidth
-      \ifdim\RefProperty{CodeChapter@\CodeFirst}{ypos}sp>\CodeChapterTopLimit
-        \let\CodeShown\CodeFirst
-      \fi
-    \fi
-  \fi
-  \ifx\CodeShown\@empty\else
-    \csname CodeChapterName@\CodeShown\endcsname
-  \fi
-  \endgroup}
-\makeatother
-\pagestyle{fancy}
-\fancyhf{}
-\fancyhead[L]{\sffamily\fontsize{8}{10}\selectfont\color{CodeMuted}%
-  \CodeHeaderChapter}
-\fancyfoot[C]{\sffamily\fontsize{8}{10}\selectfont\color{CodeMuted}\thepage}
-\renewcommand{\headrulewidth}{0pt}
-\renewcommand{\footrulewidth}{0pt}
-% 保留标准标记，另记章号及章名供页眉判断页顶所在的章。
-\renewcommand{\sectionmark}[1]{%
-  \markboth{#1}{}%
-  \expandafter\gdef\csname CodeChapterName@\the\value{CodeChapter}\endcsname{#1}%
-  \InsertMark{code-chapter}{\the\value{CodeChapter}}}
-\renewcommand{\subsectionmark}[1]{\markright{#1}}
-\fancypagestyle{plain}{\fancyhf{}\fancyfoot[C]{\sffamily\fontsize{8}{10}\selectfont\color{CodeMuted}\thepage}}
+% 代码块的词法配色、minted 默认设置与代码卡片标题见共用文件。
+\input{preamble/shared/code.tex}
 
-% 阅读 / 打印配色：仅两种彩色；名称、调用与标点保持深灰。
-\definecolor{CodeCodeText}{HTML}{30343B}
-\definecolor{CodeCodeBlue}{HTML}{506B82}
-\definecolor{CodeCodeGreen}{HTML}{58715D}
-\definecolor{CodeCodeComment}{HTML}{70757D}
-% 使用 bw 提供 Pygments 转义与分词接口，在每次加载样式后替换 token 外观。
-% 兼容目标：minted 3.x / Pygments 2.x；不安装系统 Python 插件。
-% 未列出的 token 不增加颜色、粗体、下划线或错误边框。
-\makeatletter
-\newcommand{\CodeCodeBlueText}[1]{\textcolor{CodeCodeBlue}{#1}}
-\newcommand{\CodeCodeGreenText}[1]{\textcolor{CodeCodeGreen}{#1}}
-\newcommand{\CodeCodeCommentText}[1]{\textcolor{CodeCodeComment}{#1}}
-\def\CodeToken@k{\let\PYG@tc\CodeCodeBlueText}
-\let\CodeToken@m\CodeToken@k
-\let\CodeToken@no\CodeToken@k
-\let\CodeToken@ow\CodeToken@k
-\def\CodeToken@s{\let\PYG@tc\CodeCodeGreenText}
-\def\CodeToken@c{\let\PYG@tc\CodeCodeCommentText}
-\def\CodeToken@cp{\let\PYG@tc\CodeCodeBlueText\let\PYG@it\relax}
-\def\CodeToken@cpf{\let\PYG@tc\CodeCodeGreenText\let\PYG@it\relax}
-\AddToHook{cmd/minted@defstyle/after}{%
-  \edef\CodeCodeStyle{\mintedtexoptvalueof{style}}%
-  \ifdefstring{\CodeCodeStyle}{bw}{%
-    \def\PYG@tok#1{\ifcsname CodeToken@#1\endcsname
-      \csname CodeToken@#1\endcsname\fi}%
-  }{}%
-}
-\makeatother
-\setminted{
-  fontfamily=codeonly,fontsize=\fontsize{8}{10.5}\selectfont,
-  baselinestretch=1,style=bw,linenos=false,
-  formatcom=\color{CodeCodeText}\mdseries\upshape,
-  breaklines=true,breakanywhere=false,tabsize=4
-}
-% 词法高亮并非 C++ 语义分析；仅补充明确要求的三个标准库类型名称。
-\setminted[cpp]{extrakeywordstype={vector,string,pair}}
-\setminted[c++]{extrakeywordstype={vector,string,pair}}
-\setminted[cxx]{extrakeywordstype={vector,string,pair}}
-\newfontfamily\CodeCodeTitleLatin{PingFang SC Medium}
-\newCJKfontfamily\CodeCodeTitleCJK{PingFang SC Medium}
-% coltext 同时保证 tcolorbox 续页恢复深灰，而非默认纯黑。
-\tcbset{input-code-title/.style={coltext=CodeCodeText,fonttitle=\mdseries\upshape\CodeCodeTitleLatin\CodeCodeTitleCJK\fontsize{9}{12}\selectfont}}
-
-
-% 横版图片按当前容器计算正文宽度；保持原路径、可选参数和长宽比。
-% 用户已批准将现有 0.8\textwidth / \textwidth 分别解释为 0.8 / 1 栏宽。
-% 局部分组避免改变双栏输出的整页 textwidth。
-\NewCommandCopy{\CodeIncludeGraphics}{\includegraphics}
-\RenewDocumentCommand{\includegraphics}{s O{} m}{%
-  \begingroup
-  \setlength{\textwidth}{\linewidth}%
-  \IfBooleanTF{#1}
-    {\CodeIncludeGraphics*[#2]{#3}}
-    {\CodeIncludeGraphics[#2]{#3}}%
-  \endgroup
-}
-
-% 扉页外观、版本标记与提交信息读取见 titlepage-code.tex；入口只提供元信息。
-\input{preamble/titlepage-code.tex}
+% 扉页：外观与提交信息读取见共用文件；入口提供书名、作者、英文书名、配图路径与版本标记（书名后悬挂“（代码版）”）。
+% 版面沿用竖版的元素与间距，按 A4 横向重排：书名基线距页顶 48 mm，提交信息底边距纸边 17 mm；
+% 页高只有 210 mm，配图区由竖版的 130 × 110 mm 收紧为 110 × 70 mm。
+\input{preamble/shared/titlepage.tex}
+\TitlePageSetup{title=57mm, english=43.5mm, author=32mm, image=-17mm, stamp=-88mm,
+  image-width=110mm, image-height=70mm}

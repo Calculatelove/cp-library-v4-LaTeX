@@ -2,3 +2,4 @@
 AGENTS.md
 /preamble/tests/build/
 /build/
+__pycache__/

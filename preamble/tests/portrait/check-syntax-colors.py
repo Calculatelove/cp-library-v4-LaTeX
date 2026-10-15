@@ -1,32 +1,17 @@
-"""检查实际 PDF 中的代码颜色、字重、注释与跨页；需 PyMuPDF。"""
+"""检查竖版代码配色与卡片：只用四种配色、常规直立字形；需要 PyMuPDF。
+
+用法（从任意目录）：python3 preamble/tests/portrait/check-syntax-colors.py
+横版、代码版的同类检查在 preamble/tests/landscape/check-layout.py。
+"""
 from pathlib import Path
-import fitz
+import sys
 
-root = Path(__file__).resolve().parents[3]
-out = root / "preamble/tests/build/portrait"
-palette = {0x30343B, 0x506B82, 0x58715D, 0x70757D}
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+import pdfcheck as pc  # noqa: E402
 
-for name in ("syntax-colors", "code-cards"):
-    spans = []
-    with fitz.open(out / f"{name}.pdf") as doc:
-        for page in doc:
-            for block in page.get_text("dict")["blocks"]:
-                for line in block.get("lines", []):
-                    for span in line["spans"]:
-                        if "Maple" not in span["font"]:
-                            continue
-                        # 卡片标题中的 Nerd Font 图标不是代码。
-                        if all(c.isspace() or 0xE000 <= ord(c) <= 0xF8FF
-                               or 0xF0000 <= ord(c) <= 0x10FFFD
-                               for c in span["text"]):
-                            continue
-                        spans.append(span)
-                        assert span["color"] in palette, (name, span)
-                        assert "Bold" not in span["font"], (name, span)
-                        assert "Italic" not in span["font"], (name, span)
-    assert spans, f"No code found: {name}"
-    if name == "syntax-colors":
-        assert {s["color"] for s in spans} == palette
-        for word in ("vector", "string", "pair", "return", "42", "3.14159"):
-            assert any(s["text"].strip() == word and s["color"] == 0x506B82 for s in spans), word
-    print(f"{name}: palette, regular weight and upright code verified")
+c = pc.Checker('竖版代码配色')
+for name in ('syntax-colors', 'code-cards'):
+    with c.section(name):
+        with c.open(pc.BUILD / f'portrait/{name}.pdf', '请先运行 bash preamble/tests/portrait/run.sh') as doc:
+            pc.check_code_palette(c, doc, name, sample_tokens=(name == 'syntax-colors'))
+sys.exit(c.finish())

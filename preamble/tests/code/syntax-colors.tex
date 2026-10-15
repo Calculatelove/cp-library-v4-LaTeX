@@ -1,50 +1,8 @@
-% 从项目根目录编译；仅检验纵向代码配色。
+% 从项目根目录编译；代码版布局，正文与竖版、横版共用，见 preamble/tests/fixtures/syntax-colors-body.tex。
 \documentclass{article}
 \input{preamble/packages.tex}
 \input{preamble/layout-code.tex}
 \input{preamble/mystyle.tex}
 \begin{document}
-\section{代码配色：阅读与打印}
-白色背景，深灰正文，灰蓝关键字与数字，灰绿字符串，灰色直立注释。
-\subsection{C++：类型、模板与表达式}
-\begin{minted}{cpp}
-#include <bits/stdc++.h>
-#define LIMIT 100000
-#pragma once
-using namespace std;
-// 中文注释：保持 9pt 下的清晰度；upright f i j k l x y
-template<class T> struct Fenwick {
-    vector<T> tree;
-    explicit Fenwick(int n) : tree(n + 1, 0) {}
-    void add(int i, T delta) {
-        for (; i < (int)tree.size(); i += i & -i)
-            tree[i] += delta;
-    }
-    T sum(int i) const {
-        T result = 0;
-        while (i > 0) { result += tree[i]; i -= i & -i; }
-        return result;
-    }
-};
-long long count = 42;
-double ratio = 3.14159;
-const int INF = 0x3f3f3f3f;
-string label = "answer\n";
-pair<int, int> edge = {1, 2};
-char delimiter = '\n';
-if (count > 0) cout << label; else cout << "empty";
-/* 多行注释：operator + - * / & | ^ % */
-\end{minted}
-\subsection{Python：名称、字符串与注释}
-\begin{minted}{python}
-# 中文注释：与 C++ 保持同一颜色层级
-def prefix_sum(values):
-    total = 0
-    for value in values:
-        total += value
-    return total
-message = "answer"
-print(f"{message}: {prefix_sum([1, 2, 3])}")
-\end{minted}
-代码之后的正文与数学公式 $\sum_{i=1}^{n} a_i$ 应恢复原有字体与颜色。
+\input{preamble/tests/fixtures/syntax-colors-body.tex}%
 \end{document}

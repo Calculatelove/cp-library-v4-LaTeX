@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # 依赖：XeLaTeX、latexminted 及项目导言区使用的 TeX 宏包；扉页提交信息另需 git（可选）。
 # 用法：./run.sh [portrait|landscape|code|all]；默认 portrait。
+# 编译收敛循环在 scripts/xelatex-converge.sh，与 preamble/tests 的运行脚本共用。
 set -euo pipefail
 
 usage() {
@@ -49,8 +50,7 @@ done
 build_target() {
     local target="$1"
     local job="main-$target" output_dir="build/$target"
-    local max_passes=8 previous_state='' current_state converged=false
-    local pass extension record commit_info
+    local extension commit_info
     mkdir -p "$output_dir"
 
     # 扉页提交信息：在代码版入口生成之后读取 Git 状态；不在 Git 仓库中时不生成文件。
@@ -64,42 +64,12 @@ build_target() {
         rm -f -- "$output_dir/$job.commit"
     fi
 
-    # 至少两轮，最多八轮；从根目录编译，使用默认受限 shell escape。
-    for ((pass = 1; pass <= max_passes; pass++)); do
-        printf '\n正在编译 %s.tex（第 %s/%s 轮）……\n' "$job" "$pass" "$max_passes"
-        if ! xelatex -interaction=nonstopmode -halt-on-error -file-line-error \
-            -output-directory="$output_dir" "$job.tex"; then
-            printf '\n编译失败；已保留本版辅助文件，请检查 %s/%s.log。\n' "$output_dir" "$job" >&2
-            return 1
-        fi
-        current_state="$(
-            for extension in aux toc out lof lot; do
-                record="$output_dir/$job.$extension"
-                if [[ -f "$record" ]]; then
-                    cksum "$record"
-                else
-                    printf '%s missing\n' "$record"
-                fi
-            done
-        )"
-        if ((pass >= 2)) && [[ "$current_state" == "$previous_state" ]] &&
-            [[ -f "$output_dir/$job.log" ]] &&
-            ! grep -Eq 'Rerun to get|Rerun LaTeX|Please rerun LaTeX|Label\(s\) may have changed' "$output_dir/$job.log"; then
-            converged=true
-            break
-        fi
-        previous_state="$current_state"
-    done
-    if [[ "$converged" != true ]]; then
-        printf '\n%s 编译 %s 轮后仍未稳定；已保留辅助文件和日志：%s/%s.log。\n' "$job" "$max_passes" "$output_dir" "$job" >&2
-        return 1
-    fi
-    if [[ ! -s "$output_dir/$job.pdf" ]]; then
-        printf '\n未生成非空 PDF：%s/%s.pdf；已保留辅助文件和日志。\n' "$output_dir" "$job" >&2
+    # 编译至收敛（至少两轮、最多八轮）由共用脚本负责；从根目录编译，使用默认受限 shell escape。
+    if ! bash scripts/xelatex-converge.sh "$job.tex" "$output_dir"; then
+        printf '已保留本版辅助文件和日志：%s/。\n' "$output_dir" >&2
         return 1
     fi
 
-    printf '\n目录与交叉引用已稳定（共 %s 轮）。\n' "$pass"
     # 仅清理当前版本的已知辅助文件、提交信息文件及 minted 缓存。
     for extension in aux log out toc lof lot fls fdb_latexmk xdv synctex.gz commit; do
         rm -f -- "$output_dir/$job.$extension"

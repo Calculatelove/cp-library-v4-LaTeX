@@ -6,7 +6,7 @@ import subprocess
 import tempfile
 import unittest
 
-SCRIPT = Path(__file__).with_name('commit-info.sh')
+SCRIPT = Path(__file__).resolve().parents[1] / 'commit-info.sh'
 SUBJECT = r'fix: a_b & c% #1 $x^2$ {y} \LaTeX ~ ^^41 -- 中文“引号”——破折号'
 
 

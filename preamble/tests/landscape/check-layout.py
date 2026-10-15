@@ -1,121 +1,157 @@
-"""检查真实横版样张中的几何、流向和页眉；需要 PyMuPDF。"""
-from pathlib import Path
-import fitz
+"""检查横版或代码版样张的纸张、阅读流向、页眉、代码配色与跨栏、引用跨栏、目录及图片；需要 PyMuPDF。
 
-ROOT = Path(__file__).resolve().parents[3]
-OUT = ROOT / 'preamble/tests/build/landscape'
+用法（从任意目录）：python3 preamble/tests/landscape/check-layout.py [landscape|code]
+默认检查 preamble/tests/build/landscape/ 的样张；code 检查 preamble/tests/build/code/ 的样张。
+代码版布局参数与横版相同，样张正文共用，只是没有 interfaces、images 两份样张。
+"""
+from pathlib import Path
+import re
+import sys
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+import pdfcheck as pc  # noqa: E402
+from pdfcheck import fitz  # noqa: E402
+
+SAMPLES = {
+    'landscape': ('flow', 'code-cards', 'syntax-colors', 'interfaces', 'toc-layout', 'images'),
+    'code': ('flow', 'code-cards', 'syntax-colors', 'toc-layout'),
+}
+edition = sys.argv[1] if len(sys.argv) > 1 else 'landscape'
+if edition not in SAMPLES:
+    sys.exit(f'未知版本：{edition}（可用 landscape 或 code）')
+OUT = pc.BUILD / edition
+HINT = f'请先运行 bash preamble/tests/{edition}/run.sh'
+c = pc.Checker({'landscape': '横版布局', 'code': '代码版布局'}[edition])
 
 
 def locate(doc, text):
-    found = [(i, r) for i, p in enumerate(doc) for r in p.search_for(text) if r.y0 > 48]
-    assert len(found) == 1, (text, found)
+    """正文区内唯一一处 text 的 (页码, 矩形)。"""
+    found = [(i, r) for i, p in enumerate(doc) for r in p.search_for(text) if r.y0 > pc.HEADER_BOTTOM]
+    c.require(len(found) == 1, f'应恰好找到一处“{text}”', found)
     return found[0]
 
 
 def column(pos):
-    return pos[0], int(pos[1].x0 > 420)
+    """(页码, 栏)：栏 0 为左栏，1 为右栏。"""
+    return pos[0], int(pos[1].x0 > pc.COLUMN_SPLIT)
 
 
-with fitz.open(OUT / 'flow.pdf') as doc:
-    for p in doc:
-        assert abs(p.rect.width - 297 * 72 / 25.4) < .1
-        assert abs(p.rect.height - 210 * 72 / 25.4) < .1
-    assert column(locate(doc, 'Alpha-body')) == (0, 0)
-    assert column(locate(doc, 'Beta-body')) == (0, 0)
-    assert column(locate(doc, 'Gamma-body')) == (0, 1)
-    assert column(locate(doc, 'Delta-body')) == (1, 0)
-    assert column(locate(doc, 'Epsilon-body')) == (1, 0)
-    # 页眉显示页顶所在的章：左栏顶端新章取该章，否则取页首延续的章。
-    for p, title in zip(doc, ['Alpha 章', 'Delta 章', 'Epsilon 章', 'Boundary-title']):
-        assert title in p.get_text(clip=fitz.Rect(0, 0, p.rect.width, 48)), title
-    for title, body in [('Boundary-title', 'Boundary-body'), ('Formula-title', 'FormulaBody')]:
-        assert column(locate(doc, title)) == column(locate(doc, body))
-        assert column(locate(doc, body))[1] == 1
-print('flow: geometry, continuous chapters, column boundaries and headers verified')
+def column_texts(page):
+    """按栏裁剪正文区文字，返回 [(栏, 文字)]。"""
+    half = page.rect.width / 2
+    return [(col, page.get_text(clip=fitz.Rect(left, pc.HEADER_BOTTOM, right, pc.BODY_BOTTOM)))
+            for col, (left, right) in enumerate([(0, half), (half, page.rect.width)])]
 
-PALETTE = {0x30343B, 0x506B82, 0x58715D, 0x70757D}
+
+with c.section('flow：纸张、连续章节、栏边界与页眉'):
+    with c.open(OUT / 'flow.pdf', HINT) as doc:
+        for p in doc:
+            c.check(abs(p.rect.width - pc.A4_LONG) < .1 and abs(p.rect.height - pc.A4_SHORT) < .1,
+                    f'第 {p.number + 1} 页应为 A4 横向', p.rect)
+        for text, expected in (('Alpha-body', (0, 0)), ('Beta-body', (0, 0)), ('Gamma-body', (0, 1)),
+                               ('Delta-body', (1, 0)), ('Epsilon-body', (1, 0))):
+            actual = column(locate(doc, text))
+            c.check(actual == expected, f'“{text}”应位于第 {expected[0] + 1} 页{"左右"[expected[1]]}栏', actual)
+        # 页眉显示页顶所在的章：左栏顶端新章取该章，否则取页首延续的章。
+        for p, title in zip(doc, ['Alpha 章', 'Delta 章', 'Epsilon 章', 'Boundary-title']):
+            header = p.get_text(clip=fitz.Rect(0, 0, p.rect.width, pc.HEADER_BOTTOM))
+            c.check(title in header, f'第 {p.number + 1} 页页眉应为“{title}”', header.strip())
+        for title, body in [('Boundary-title', 'Boundary-body'), ('Formula-title', 'FormulaBody')]:
+            title_pos, body_pos = column(locate(doc, title)), column(locate(doc, body))
+            c.check(title_pos == body_pos, f'“{title}”应与后文同栏', title_pos, body_pos)
+            c.check(body_pos[1] == 1, f'“{body}”应移入右栏', body_pos)
+
 for name in ('code-cards', 'syntax-colors'):
-    with fitz.open(OUT / f'{name}.pdf') as doc:
-        spans = [s for p in doc for b in p.get_text('dict')['blocks']
-                 for line in b.get('lines', []) for s in line['spans']
-                 if 'Maple' in s['font'] and any(ord(c) < 0xE000 and not c.isspace() for c in s['text'])]
-        assert spans
-        assert all(s['color'] in PALETTE and 'Bold' not in s['font'] and 'Italic' not in s['font'] for s in spans)
-        if name == 'syntax-colors':
-            assert {s['color'] for s in spans} == PALETTE
-            for token in ('vector', 'string', 'pair', 'return', '42', '3.14159'):
-                assert any(s['text'].strip() == token and s['color'] == 0x506B82 for s in spans), token
-        else:
-            import re
-            segments, lines = [], []
+    with c.section(f'{name}：代码配色与内容'):
+        with c.open(OUT / f'{name}.pdf', HINT) as doc:
+            pc.check_code_palette(c, doc, name, sample_tokens=(name == 'syntax-colors'))
+            if name == 'code-cards':
+                segments, lines = [], []
+                for i, page in enumerate(doc):
+                    for col, text in column_texts(page):
+                        numbers = re.findall(r'int landscape_value_(\d{3}) = (\d+);', text)
+                        if numbers:
+                            segments.append((i, col))
+                            lines.extend(numbers)
+                c.check(lines == [(f'{i:03d}', str(i)) for i in range(1, 101)], '100 行人工代码应完整、按序',
+                        len(lines), lines[:3])
+                c.check(segments[:3] == [(0, 0), (0, 1), (1, 0)], '代码卡片应从左栏跨到右栏、再到下一页',
+                        segments[:3])
+                c.check(sum(p.get_text().count('Landscape-long-card') for p in doc) == 1,
+                        '跨栏跨页的卡片标题只应出现一次')
+                c.check(column(locate(doc, 'Card-boundary')) == (0, 0), '“Card-boundary”应位于第 1 页左栏')
+
+if 'interfaces' in SAMPLES[edition]:
+    with c.section('interfaces：引用跨栏跨页'):
+        with c.open(OUT / 'interfaces.pdf', HINT) as doc:
+            numbers, segments = [], []
             for i, page in enumerate(doc):
-                for col, (left, right) in enumerate([(0, page.rect.width / 2), (page.rect.width / 2, page.rect.width)]):
-                    text = page.get_text(clip=fitz.Rect(left, 48, right, 560))
-                    numbers = re.findall(r'int landscape_value_(\d{3}) = (\d+);', text)
-                    if numbers:
+                for col, text in column_texts(page):
+                    found = re.findall(r'Quote-(\d{3})', text)
+                    if found:
+                        numbers.extend(found)
                         segments.append((i, col))
-                        lines.extend(numbers)
-            assert lines == [(f'{i:03d}', str(i)) for i in range(1, 101)], lines
-            assert segments[:3] == [(0, 0), (0, 1), (1, 0)], segments
-            assert sum(p.get_text().count('Landscape-long-card') for p in doc) == 1
-            assert column(locate(doc, 'Card-boundary')) == (0, 0)
-    print(f'{name}: code palette, upright regular fonts and content verified')
+            c.check(numbers == [f'{i:03d}' for i in range(1, 66)], '65 段引用应完整、按序', len(numbers), numbers[:3])
+            c.check(segments[:3] == [(0, 0), (0, 1), (1, 0)], '引用应从左栏跨到右栏、再到下一页', segments[:3])
 
-with fitz.open(OUT / 'interfaces.pdf') as doc:
-    import re
-    numbers, segments = [], []
-    for i, page in enumerate(doc):
-        for col, (left, right) in enumerate([(0, page.rect.width / 2), (page.rect.width / 2, page.rect.width)]):
-            text = page.get_text(clip=fitz.Rect(left, 48, right, 560))
-            found = re.findall(r'Quote-(\d{3})', text)
-            if found:
-                numbers.extend(found)
-                segments.append((i, col))
-    assert numbers == [f'{i:03d}' for i in range(1, 66)], numbers
-    assert segments[:3] == [(0, 0), (0, 1), (1, 0)], segments
-print('interfaces: quote content and three-fragment continuation verified')
+with c.section('toc-layout：目录'):
+    with c.open(OUT / 'toc-layout.pdf', HINT) as doc:
+        toc_pages = [p for p in doc if p.get_links()]
+        c.require(len(toc_pages) >= 2, '目录应至少两页', len(toc_pages))
+        heading = [r for r in doc[0].search_for('目录') if r.y0 < 100]
+        c.require(len(heading) == 1, '首页应有一个“目录”标题', heading)
+        c.check(abs((heading[0].x0 + heading[0].x1) / 2 - doc[0].rect.width / 2) < 1, '“目录”标题应通栏居中',
+                heading[0])
+        bookmarks = doc.get_toc(simple=False)
+        c.require(bookmarks, '应有书签')
+        c.check(len(bookmarks) == 90, '应有 90 个书签', len(bookmarks))
+        c.check({b[0] for b in bookmarks} == {1, 2, 3, 4, 5}, '书签应有 5 个层级', sorted({b[0] for b in bookmarks}))
+        c.check(all(not b[3].get('collapse', False) for b in bookmarks), '书签应全部展开')
+        body_first = bookmarks[0][2] - 1
+        c.check(body_first == len(toc_pages), '正文应紧接目录页', body_first, len(toc_pages))
+        c.check(any(r.x0 < 100 and r.y0 > pc.HEADER_BOTTOM for r in doc[body_first].search_for('TOC-Chapter-01')),
+                '正文首章应位于左栏')
+        expected = {b[1].split()[0]: b[2] - 1 for b in bookmarks if b[0] <= 3}
+        positions = {}
+        for page in toc_pages:
+            text = page.get_text()
+            c.check('Fourth-only' not in text and 'Fifth-only' not in text,
+                    f'目录第 {page.number + 1} 页不应出现四、五级标题')
+            c.check(not page.get_text(clip=fitz.Rect(0, 0, page.rect.width, pc.HEADER_BOTTOM)).strip(),
+                    f'目录第 {page.number + 1} 页不应有页眉')
+            for token in expected:
+                for rect in page.search_for(token):
+                    c.check(token not in positions, f'目录条目“{token}”只应出现一次')
+                    positions[token] = (page.number, int(rect.x0 > pc.COLUMN_SPLIT))
+                    links = [link for link in page.get_links() if link['from'].intersects(rect)]
+                    c.check(links and all(link.get('page') == expected[token] for link in links),
+                            f'目录条目“{token}”应链接到第 {expected[token] + 1} 页',
+                            [link.get('page') for link in links])
+            for link in page.get_links():
+                c.check(0 <= link.get('page', -1) < len(doc), '链接目标应在文档范围内', link.get('page'))
+                r = link['from']
+                c.check(r.x0 >= 30 and r.x1 <= page.rect.width - 30, '链接区域应在页边距以内', r)
+                c.check(r.x1 < pc.COLUMN_SPLIT or r.x0 > pc.COLUMN_SPLIT, '链接区域不应跨栏', r)
+        c.check(positions.keys() == expected.keys(), '每个目录条目都应出现', sorted(set(expected) - set(positions)))
 
-with fitz.open(OUT / 'toc-layout.pdf') as doc:
-    toc_pages = [p for p in doc if p.get_links()]
-    assert len(toc_pages) >= 2
-    heading = [r for r in doc[0].search_for('目录') if r.y0 < 100]
-    assert len(heading) == 1
-    assert abs((heading[0].x0 + heading[0].x1) / 2 - doc[0].rect.width / 2) < 1
-    bookmarks = doc.get_toc(simple=False)
-    assert len(bookmarks) == 90
-    assert {b[0] for b in bookmarks} == {1, 2, 3, 4, 5}
-    assert all(not b[3].get('collapse', False) for b in bookmarks)
-    body_first = bookmarks[0][2] - 1
-    assert body_first == len(toc_pages)
-    assert any(r.x0 < 100 and r.y0 > 48 for r in doc[body_first].search_for('TOC-Chapter-01'))
-    expected = {b[1].split()[0]: b[2] - 1 for b in bookmarks if b[0] <= 3}
-    positions = {}
-    for page in toc_pages:
-        assert 'Fourth-only' not in page.get_text() and 'Fifth-only' not in page.get_text()
-        assert not page.get_text(clip=fitz.Rect(0, 0, page.rect.width, 48)).strip()
-        for token in expected:
-            hits = page.search_for(token)
-            for rect in hits:
-                assert token not in positions, token
-                positions[token] = (page.number, int(rect.x0 > 420))
-                links = [l for l in page.get_links() if l['from'].intersects(rect)]
-                assert links and all(l.get('page') == expected[token] for l in links), token
-        for link in page.get_links():
-            assert 0 <= link.get('page', -1) < len(doc)
-            r = link['from']
-            assert r.x0 >= 30 and r.x1 <= page.rect.width - 30
-            assert r.x1 < 421 or r.x0 > 421, r
-    assert positions.keys() == expected.keys()
-    for i in range(1, 9):
-        assert positions[f'TOC-Chapter-{i:02d}'] == positions[f'TOC-Topic-{i:02d}-1']
-        for j in (1, 2):
-            assert positions[f'TOC-Topic-{i:02d}-{j}'] == positions[f'TOC-Item-{i:02d}-{j}-1']
-print('toc-layout: centered heading, column groups, 88 linked entries and 90 expanded bookmarks verified')
+        def same_column(a, b):
+            return a in positions and b in positions and positions[a] == positions[b]
 
-with fitz.open(OUT / 'images.pdf') as doc:
-    assert len(doc) == 1
-    # mwe 提供矢量 PDF；通过 image 字母的左右位置及 TeX 盒宽断言检验两栏。
-    page = doc[0]
-    assert any(r.x0 < 420 for r in page.search_for('A'))
-    assert any(r.x0 > 420 for r in page.search_for('B'))
-print('images: column-relative widths and local page-width isolation verified')
+        # 父标题与首个子条目同栏，不捆绑整个章节。
+        for i in range(1, 9):
+            c.check(same_column(f'TOC-Chapter-{i:02d}', f'TOC-Topic-{i:02d}-1'),
+                    f'TOC-Chapter-{i:02d} 应与首个二级条目同栏')
+            for j in (1, 2):
+                c.check(same_column(f'TOC-Topic-{i:02d}-{j}', f'TOC-Item-{i:02d}-{j}-1'),
+                        f'TOC-Topic-{i:02d}-{j} 应与首个三级条目同栏')
+
+if 'images' in SAMPLES[edition]:
+    with c.section('images：图片按栏宽'):
+        with c.open(OUT / 'images.pdf', HINT) as doc:
+            c.require(len(doc) == 1, '图片样张应为 1 页', len(doc))
+            # mwe 提供矢量 PDF；通过 image 字母的左右位置及 TeX 盒宽断言检验两栏。
+            page = doc[0]
+            c.check(any(r.x0 < pc.COLUMN_SPLIT for r in page.search_for('A')), '图片 A 应位于左栏')
+            c.check(any(r.x0 > pc.COLUMN_SPLIT for r in page.search_for('B')), '图片 B 应位于右栏')
+
+sys.exit(c.finish())

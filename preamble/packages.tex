@@ -1,5 +1,5 @@
 % 在主文件的 \documentclass 之后加载；建议使用 XeLaTeX 编译。
-% 此文件集中加载宏包，具体版式与自定义命令分别放在 layout-portrait.tex 和 mystyle.tex 中。
+% 此文件集中加载宏包；各版参数放在 layout-<版本>.tex，三版共用的排版实现放在 shared/，自定义命令放在 mystyle.tex。
 
 % 中文支持；不采用 ctex 的中文标题名称与版式方案。
 % 暂用 Fandol；字体选项必须在加载 ctex 前传入，最终字体方案尚未实现。
@@ -21,7 +21,7 @@
 % 删除线；normalem 保留 \emph 的原有强调语义。
 \usepackage[normalem]{ulem}
 
-% 页面尺寸、边距与多栏排版；具体参数在 layout-portrait.tex 中设置。
+% 页面尺寸、边距与多栏排版；具体参数在各版 layout-<版本>.tex 中设置。
 \usepackage{geometry}
 \usepackage{multicol}
 \usepackage{titlesec}

@@ -1,0 +1,56 @@
+% 三版共用的标题编号、目录条目与书签设置，由各版布局在设置字号之后 \input。
+% 目录标题及目录前后的分页由各版负责：竖版用 tocloft 的标题设置，双栏版本见 shared/twocolumn.tex。
+% 每次排目录前须把 \BookTOCPreviousLevel 清零：竖版在布局中挂钩，双栏版本在重定义的 \tableofcontents 中清零。
+
+% 保留原文的 0xPQ 编号：只关闭章节标题的自动编号。
+\setcounter{secnumdepth}{-1}
+% 目录展开到三级；PDF 书签包含全部标题层级并默认全部展开。
+\setcounter{tocdepth}{3}
+\hypersetup{bookmarksdepth=5,bookmarksopen=true}
+\renewcommand{\contentsname}{目录}
+% 方案 A：一级沿用苹方 Semibold；二三级沿用正文宋体与 Latin Modern Roman。
+\newlength{\BookTOCUnit}
+\settowidth{\BookTOCUnit}{\normalfont\fontsize{10}{15}\selectfont 中}
+% 每条目录装入完整段落盒：续行保持本级缩进，页码固定在末行右端。
+% 条目间使用可丢弃的竖直间距，页首不残留标题前留白。
+% 根据前后层级禁止父标题与首个子条目之间分页，不捆绑整个章节。
+\makeatletter
+\newcount\BookTOCPreviousLevel
+\BookTOCPreviousLevel=0
+\newcommand{\BookTOCEntry}[4]{%
+  \par
+  \ifnum\BookTOCPreviousLevel=1 \penalty10000
+  \else\ifnum\BookTOCPreviousLevel=2
+    \ifnum#1=3 \penalty10000\else\penalty0\fi
+  \else\penalty0\fi\fi
+  \begingroup
+  \@tempdima=0pt
+  \ifnum\BookTOCPreviousLevel=1 \advance\@tempdima by5pt\fi
+  \ifnum#1=1 \advance\@tempdima by12pt\fi
+  \vskip\@tempdima
+  \nointerlineskip
+  \vbox{%
+    \hsize=\linewidth
+    \normalfont\fontsize{10}{15}\selectfont
+    \ifnum#1=1 \sffamily\bfseries\fontsize{12}{15}\selectfont
+    \else\ifnum#1=2 \fontsize{10.5}{15}\selectfont\fi\fi
+    \leftskip=#2\relax \rightskip=30pt
+    \parfillskip=-\rightskip \parindent=0pt \parskip=0pt
+    \interlinepenalty=10000
+    \noindent\strut#3\nobreak
+    \ifnum#1=1 \hfill
+    % 9pt 是实际点中心间距；两端各留 3pt，空间不足一格时不绘点。
+    \else{\normalfont\fontsize{10}{15}\selectfont\color{BookTOCDots}%
+      \kern3pt\leaders\hbox to9pt{\hss.\hss}\hfill\kern3pt}\fi
+    \nobreak\hb@xt@20pt{\hfil\normalfont
+      \ifnum#1=1 \fontsize{11}{15}\else\fontsize{10}{15}\fi\selectfont#4}\strut\par
+  }%
+  \endgroup
+  \global\BookTOCPreviousLevel=#1\relax}
+\renewcommand*{\l@section}[2]{%
+  \ifnum\c@tocdepth>0 \BookTOCEntry{1}{0pt}{#1}{#2}\fi}
+\renewcommand*{\l@subsection}[2]{%
+  \ifnum\c@tocdepth>1 \BookTOCEntry{2}{2\BookTOCUnit}{#1}{#2}\fi}
+\renewcommand*{\l@subsubsection}[2]{%
+  \ifnum\c@tocdepth>2 \BookTOCEntry{3}{4\BookTOCUnit}{#1}{#2}\fi}
+\makeatother
