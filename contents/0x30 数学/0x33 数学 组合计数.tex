@@ -4,12 +4,10 @@
 \subsection{排列组合}
 
 \Highlight{排列数}：$A_{n}^m$，从 $n$ 个有标号元素中，取出 $m$ 个元素排成一列的方案数（需要考虑取数顺序）。
-
 \[
 A_n^m = \frac{n!}{(n - m)!} = n^{\underline{m}}
 \]
 \Highlight{组合数}：$C_n^m$ 或 $\binom{n}{m}$，从 $n$ 个有标号元素中，取出 $m$ 个元素组成集合的方案数（不需要考虑取数顺序）。
-
 \[
 \binom{n}{m} = \begin{cases}
 \frac{n^{\underline{m}}}{m!} & m \in \mathbb{Z}, m \geq 0 \\
@@ -20,22 +18,18 @@ A_n^m = \frac{n!}{(n - m)!} = n^{\underline{m}}
 \subsubsection{组合数常见恒等式}
 
 \Highlight{阶乘展开式}：$n, m \in \mathbb{Z}$，$n \geq m \geq 0$
-
 \[
 \binom{n}{m} = \frac{n!}{m!(n - m)!}
 \]
 \Highlight{归纳恒等式}：$m \in \mathbb{Z}$
-
 \[
 \binom{n}{m} = \binom{n - 1}{m} + \binom{n - 1}{m - 1}
 \]
 \Highlight{对称恒等式}：$n, m \in \mathbb{Z}$，$n \geq 0$
-
 \[
 \binom{n}{m} = \binom{n}{n - m}
 \]
 \Highlight{吸收恒等式}：$m \in \mathbb{Z}$
-
 \[
 \begin{aligned}
 \binom{n}{m} & = \frac{n}{m}\binom{n - 1}{m - 1} \\
@@ -43,17 +37,14 @@ A_n^m = \frac{n!}{(n - m)!} = n^{\underline{m}}
 \end{aligned}
 \]
 \Highlight{上指标反转}：$m \in \mathbb{Z}$
-
 \[
 \binom{n}{m} = (-1)^m \binom{m - n - 1}{m}
 \]
 \Highlight{三项式版恒等式}：$m, k \in \mathbb{Z}$
-
 \[
 \binom{n}{m}\binom{m}{k} = \binom{n}{k}\binom{n - k}{m - k}
 \]
 \Highlight{二项式定理}：$n \in \mathbb{N}$
-
 \[
 (x + y)^n = \sum_{i = 0}^n \binom{n}{i}x^{i}y^{n - i}
 \]
@@ -63,13 +54,11 @@ A_n^m = \frac{n!}{(n - m)!} = n^{\underline{m}}
 
 \begin{itemize}
 \item $x = 1$ 且 $y = a$：
-
 \[
 \sum_{i = 0}^{n} \binom{n}{i}a^i = (1 + a)^n
 \]
 
 \item $x = 1$ 且 $y = -1$：
-
 \[
 \sum_{i = 0}^n (-1)^i \binom{n}{i} = [n = 0]
 \]
@@ -77,32 +66,26 @@ A_n^m = \frac{n!}{(n - m)!} = n^{\underline{m}}
 \end{quoteblock}
 
 \Highlight{广义二项式定理}：$r \in \mathbb{R}$
-
 \[
 (x + y)^r = \sum_{k = 0}^{\infty} \frac{r^{\underline{k}}}{k!} x^{k}y^{r - k}
 \]
 \Highlight{平行求和法}：$m \in \mathbb{Z}$
-
 \[
 \sum_{0 \leq k \leq m} \binom{n + k}{k} = \binom{n + m + 1}{m}
 \]
 \Highlight{上指标求和法}：$m \in \mathbb{Z}$，$n \geq 0$
-
 \[
 \sum_{0 \leq k \leq n}\binom{k}{m} = \binom{n + 1}{m + 1}
 \]
 \Highlight{范德蒙德卷积}：$m \in \mathbb{Z}$
-
 \[
 \sum_k \binom{s}{k}\binom{t}{m - k} = \binom{s + t}{m}
 \]
 \Highlight{范德蒙德卷积变式}：$m \in \mathbb{Z}$
-
 \[
 \sum_k \binom{k}{s}\binom{m - k}{t} = \binom{m + 1}{s + t + 1}
 \]
 \Highlight{斜对角线求和法}：$n \in \mathbb{Z}$
-
 \[
 \sum_{i = 0}^n \binom{n - i}{i} = \mathrm{Fib}_{n + 1}
 \]
@@ -112,12 +95,10 @@ A_n^m = \frac{n!}{(n - m)!} = n^{\underline{m}}
 \end{quoteblock}
 
 \Highlight{组合数带权和}：$n \in \mathbb{Z}$
-
 \[
 \sum_{i = 0}^n i\binom{n}{i} = n2^{n - 1}
 \]
 \Highlight{组合数带权平方和}：$n \in \mathbb{Z}$
-
 \[
 \sum_{i = 0}^n i^2\binom{n}{i} = n(n + 1)2^{n - 2}
 \]
@@ -127,21 +108,18 @@ A_n^m = \frac{n!}{(n - m)!} = n^{\underline{m}}
 \Highlight{问题 1}：将 $n$ 个完全相同的元素分成 $k$ 组，保证每组至少有一个元素。等价于 $\sum_{i = 1}^k x_i = n$ 且 $\forall x_i \geq 1$ 的整数解个数。
 
 相当于将 $k - 1$ 块板，插入 $n - 1$ 个间隙中。
-
 \[
 \binom{n - 1}{k - 1}
 \]
 \Highlight{问题 2}：将 $n$ 个完全相同的元素分成 $k$ 组，允许组内元素为空。等价于 $\sum_{i = 1}^k x_i = n$ 且 $\forall x_i \geq 0$ 的整数解个数。
 
 给 $k$ 组分别补一个元素，转化为问题 1。
-
 \[
 \binom{n + k - 1}{k - 1}
 \]
 \Highlight{问题 3}：给 $n$ 个完全相同的元素分成 $k$ 组，保证第 $i$ 组至少分到 $a_i$ 个元素。
 
 给第 $i$ 组提前安排 $a_i$ 个元素，转化为问题 2。
-
 \[
 \binom{n - \sum a_i + k - 1}{k - 1}
 \]
@@ -149,7 +127,6 @@ A_n^m = \frac{n!}{(n - m)!} = n^{\underline{m}}
 \subsubsection{Lucas 定理}
 
 \Highlight{Lucas 定理}：对于质数 $p$
-
 \[
 \binom{n}{m} \equiv \binom{\lfloor n / p \rfloor}{\lfloor m / p \rfloor}\binom{n \bmod p}{m \bmod p} \pmod p
 \]
@@ -189,7 +166,6 @@ for (int i = 0; i <= n; i ++) {
 \end{quoteblock}
 
 将组合数使用阶乘形式表达
-
 \[
 \binom{n}{m} = \frac{n!}{m!(n - m)!}
 \]
@@ -212,7 +188,6 @@ for (int i = 0; i <= n; i ++) {
 \end{quoteblock}
 
 将组合数表达为
-
 \[
 \binom{n}{m} = \frac{n^{\underline{m}}}{m!}
 \]
@@ -229,7 +204,6 @@ for (int i = 0; i <= n; i ++) {
 \end{quoteblock}
 
 由 Lucas 定理，得
-
 \[
 \binom{n}{m} \equiv \binom{\lfloor n / p \rfloor}{\lfloor m / p \rfloor}\binom{n \bmod p}{m \bmod p} \pmod p
 \]
@@ -278,7 +252,6 @@ for (int i = 0; i <= n; i ++) {
 仍然将组合数使用阶乘形式表达，我们考虑 $1 \sim n$ 中的每个质数出现的次数。
 
 先将 $1 \sim n$ 中所有的质数提前筛出来，大约有 $\frac{n}{\ln n}$ 个质数。对于质数 $p$，在阶乘 $n!$ 中 $p$ 的出现次数为
-
 \[
 \sum_{i = 1}^{\lfloor \log_p n \rfloor} \left\lfloor \frac{n}{p^i} \right\rfloor
 \]
@@ -301,12 +274,10 @@ for (int i = 0; i <= n; i ++) {
 \Highlight{卡特兰数}：$\mathrm{Cat}_n$，从原点 $(0, 0)$ 出发，每次只能向 $x$ 轴或 $y$ 轴正方向走，且不能越过直线 $y = x$，到达 $(n, n)$ 的方案数。
 
 下标从 $0$ 开始的若干项：
-
 \[
 1, 1, 2, 5, 14, 42, 132, 429, 1430, \dots
 \]
 \Highlight{卡特兰数通项公式}：
-
 \[
 \begin{aligned}
 \mathrm{Cat}_n & = \binom{2n}{n} - \binom{2n}{n - 1} \\
@@ -322,7 +293,6 @@ for (int i = 0; i <= n; i ++) {
 正难则反，不越过直线 $y = x$ 的方案数，即为总方案数 $\binom{2n}{n}$ 减去越过直线的方案数 $\binom{2n}{n - 1}$。
 
 \Highlight{卡特兰数递推公式}：
-
 \[
 \begin{gathered}
 \mathrm{Cat}_0 = 1 \\
@@ -334,7 +304,6 @@ for (int i = 0; i <= n; i ++) {
 由于在 $(i, i)$ 之前不能触碰直线 $y = x$，相当于是 $(1, 0) \to (i, i - 1)$ 不越过直线 $y = x - 1$，于是这部分的方案数为 $\mathrm{Cat}_{i - 1}\mathrm{Cat}_{n - i}$。
 
 \Highlight{卡特兰数递推公式 2}：
-
 \[
 \begin{gathered}
 \mathrm{Cat}_0 = 1\\
@@ -359,7 +328,6 @@ for (int i = 0; i <= n; i ++) {
 \Highlight{贝尔数}：$B_n$，表示将 $n$ 个两两不同的元素，划分成若干个互不区分的非空子集的方案数。
 
 下标从 $0$ 开始的若干项：
-
 \[
 \begin{gathered}
 1, 1, 2, 5, 15, \\
@@ -369,7 +337,6 @@ for (int i = 0; i <= n; i ++) {
 \end{gathered}
 \]
 \Highlight{贝尔数递推公式}：
-
 \[
 \begin{gathered}
 B_0 = 1 \\
@@ -388,7 +355,6 @@ B_n = \sum_{i = 0}^{n - 1} \binom{n - 1}{i}B_i
 \end{itemize}
 
 \Highlight{贝尔数与第二类斯特林数的关系}：
-
 \[
 B_n = \sum_{i = 0}^n {n \brace i}
 \]
@@ -399,7 +365,6 @@ B_n = \sum_{i = 0}^n {n \brace i}
 \Highlight{斐波那契数列}：$\mathrm{Fib}_n$。
 
 \Highlight{斐波那契数列递推公式}：
-
 \[
 \begin{gathered}
 \mathrm{Fib}_0 = 0, \mathrm{Fib}_1 = 1\\
@@ -407,7 +372,6 @@ B_n = \sum_{i = 0}^n {n \brace i}
 \end{gathered}
 \]
 \Highlight{斐波那契数列递推公式（矩阵形式）}：
-
 \[
 \begin{bmatrix}
 \mathrm{Fib}_n & \mathrm{Fib}_{n - 1}
@@ -423,7 +387,6 @@ B_n = \sum_{i = 0}^n {n \brace i}
 \end{bmatrix}
 \]
 即
-
 \[
 \begin{bmatrix}
 \mathrm{Fib}_n & \mathrm{Fib}_{n - 1}
@@ -441,19 +404,16 @@ B_n = \sum_{i = 0}^n {n \brace i}
 该转移矩阵可以求逆，从而实现逆向转移。
 
 \Highlight{斐波那契数列通项公式}：
-
 \[
 \mathrm{Fib}_n = \frac{\left( \frac{1 + \sqrt{5}}{2} \right)^n - \left( \frac{1 - \sqrt{5}}{2} \right)^n}{\sqrt{5}}
 \]
 当 $5$ 是模 $p$ 意义下的\textbf{二次剩余}时（一个常见模数是 $10^9 + 9$），可以直接暴力预先找出 $\sqrt{5}$，然后使用通项公式计算。
 
 否则，考虑使用\textbf{扩展数域}进行计算，定义扩展数域 $\mathbb{F}_p(\sqrt{5})$ 为
-
 \[
 \{ a + b\sqrt{5} \mid a, b \in \mathbb{F}_p \}
 \]
 可以验证，$\mathbb{F}_p(\sqrt{5})$ 关于加、减、乘、除封闭。记 $(a, b)$ 表示 $a + b\sqrt{5}$，则有
-
 \[
 \begin{aligned}
 (a, b) \pm (c, d) & = (a\pm c, b\pm d) \\
@@ -464,12 +424,10 @@ B_n = \sum_{i = 0}^n {n \brace i}
 \Highlight{广义斐波那契数列}：将递推公式反过来写，有 $\mathrm{Fib}_n = \mathrm{Fib}_{n + 2} - \mathrm{Fib}_{n + 1}$。
 
 考虑将斐波那契数列扩展到负数域，经过推导可得
-
 \[
 \mathrm{Fib}_{-n} = (-1)^{n - 1}\mathrm{Fib}_n
 \]
 \Highlight{类斐波那契数列}：已知数列 $G_0 = a, G_1 = b$，$G_n = G_{n - 1} + G_{n - 2}$，则有
-
 \[
 G_n = \mathrm{Fib}_{n - 1} \times a + \mathrm{Fib}_n \times b
 \]
@@ -478,24 +436,20 @@ G_n = \mathrm{Fib}_{n - 1} \times a + \mathrm{Fib}_n \times b
 \subsubsection{斐波那契数列常见恒等式}
 
 \Highlight{斐波那契数列求和}：
-
 \[
 \sum_{i = 1}^n \mathrm{Fib}_i = \mathrm{Fib}_{n + 2} - 1
 \]
 \Highlight{斐波那契数列平方和}：
-
 \[
 \sum_{i = 1}^n \mathrm{Fib}_i^2 = \mathrm{Fib}_n\mathrm{Fib}_{n + 1}
 \]
 \Highlight{卡西尼性质}：
-
 \[
 \mathrm{Fib}_{n - 1}\mathrm{Fib}_{n + 1} - \mathrm{Fib}_n^2 = (-1)^n
 \]
 简单推导：$\mathrm{Fib}_{n - 1}\mathrm{Fib}_{n + 1} - \mathrm{Fib}_n^2 = \det\begin{pmatrix} \mathrm{Fib}_{n + 1} & \mathrm{Fib}_n \\\mathrm{Fib}_n & \mathrm{Fib}_{n - 1} \end{pmatrix} = \det\begin{pmatrix} 1 & 1 \\1 & 0 \end{pmatrix}^n = (-1)^n$。
 
 \Highlight{附加性质}：
-
 \[
 \mathrm{Fib}_{n + m} = \mathrm{Fib}_{n + 1}\mathrm{Fib}_m + \mathrm{Fib}_n\mathrm{Fib}_{m - 1}
 \]
@@ -504,17 +458,14 @@ G_n = \mathrm{Fib}_{n - 1} \times a + \mathrm{Fib}_n \times b
 记 $G_0 = \mathrm{Fib}_n, G_1 = \mathrm{Fib}_{n + 1}$，$G_n = G_{n - 1} + G_{n - 2}$，则有 $\mathrm{Fib}_{n + m} = G_m$。
 
 \Highlight{斐波那契数列相邻项互质性质}：
-
 \[
 \gcd(\mathrm{Fib}_n, \mathrm{Fib}_{n + 1}) = 1
 \]
 \Highlight{斐波那契数列 gcd 性质}：
-
 \[
 \gcd(\mathrm{Fib}_n, \mathrm{Fib}_m) = \mathrm{Fib}_{\gcd(n, m)}
 \]
 简单推导：不妨设 $n < m$，则有
-
 \[
 \begin{aligned}
 \gcd(\mathrm{Fib}_n, \mathrm{Fib}_m) & = \gcd(\mathrm{Fib}_n, \mathrm{Fib}_{n + (m - n)}) \\
@@ -525,7 +476,6 @@ G_n = \mathrm{Fib}_{n - 1} \times a + \mathrm{Fib}_n \times b
 由上文提到的 $\mathrm{Fib}_{n + 1}$ 与 $\mathrm{Fib}_n$ 互质。则有 $\gcd(\mathrm{Fib}_n, \mathrm{Fib}_m) = \gcd(\mathrm{Fib}_n, \mathrm{Fib}_{m - n})$。该式子与辗转相除法相似，得证。
 
 \Highlight{斐波那契数列整除性质}：
-
 \[
 \mathrm{Fib}_n \mid \mathrm{Fib}_m \iff n \leq 2 \lor n \mid m
 \]
@@ -541,7 +491,6 @@ G_n = \mathrm{Fib}_{n - 1} \times a + \mathrm{Fib}_n \times b
 \Highlight{最小循环节（皮萨诺周期）}：定义斐波那契数列模 $p$ 意义下的最小循环节 $\pi(p)$ 为最小的正整数 $m$，使得 $\mathrm{Fib}_m \equiv 0 \pmod p$ 且 $\mathrm{Fib}_{m + 1} \equiv 1 \pmod p$。
 
 注意：周期一定是最小循环节的倍数，即
-
 \[
 \begin{cases} \mathrm{Fib}_k \equiv 0 \pmod p \\ \mathrm{Fib}_{k + 1} \equiv 1 \pmod p \end{cases} \iff \pi(p) \mid k
 \]
@@ -568,7 +517,6 @@ G_n = \mathrm{Fib}_{n - 1} \times a + \mathrm{Fib}_n \times b
 在一般应用中，通常只需要求出一个循环节即可。
 
 对于质数 $p$，记
-
 \[
 g(p) = \begin{cases} 3 & p = 2 \\
 20 & p = 5 \\
@@ -585,7 +533,6 @@ p - 1 & p \equiv \pm 1 \pmod 5\\
 \end{quoteblock}
 
 考虑斐波那契数列的矩阵表示
-
 \[
 \begin{bmatrix}
 \mathrm{Fib}_n & \mathrm{Fib}_{n - 1}
@@ -603,7 +550,6 @@ p - 1 & p \equiv \pm 1 \pmod 5\\
 记转移矩阵 $A = \begin{bmatrix} 1 & 1 \\ 1 & 0 \end{bmatrix}$，那么循环节即为满足 $A^m \equiv I \pmod p$ 的正整数 $m$。
 
 在转移矩阵可逆的情况下，套用 BSGS 的流程：取 $S$ 表示上界的根号，设 $m = iS - j$（其中 $i \geq 1$ 且 $0 \leq j < S$），则有
-
 \[
 \begin{gathered}
 A^{iS} \times A^{-j} \equiv I \pmod p \\
@@ -631,12 +577,10 @@ A^{iS} \equiv A^j \pmod p
 \subsection{普通生成函数}
 
 \Highlight{普通生成函数（OGF）}：
-
 \[
 F(x) = \sum_{n} a_nx^n
 \]
 \Highlight{OGF 乘法}：
-
 \[
 F(x)G(x) = \sum_{n} \left( \sum_{i = 0}^n a_ib_{n - i} \right)x^n
 \]
@@ -656,12 +600,10 @@ OGF 常用于解决\textbf{无标号的计数问题}（例如：优化计数类�
 \subsection{指数生成函数}
 
 \Highlight{指数生成函数（EGF）}：
-
 \[
 F(x) = \sum_{n} a_n \frac{x^n}{n!}
 \]
 \Highlight{EGF 乘法}：
-
 \[
 F(x)G(x) = \sum_{n} \left( \sum_{i = 0}^n \binom{n}{i}a_ib_{n - i} \right)\frac{x^n}{n!}
 \]
@@ -678,7 +620,6 @@ EGF 常用于解决\textbf{有标号的计数问题}。
 \Highlight{EGF 中多项式 exp 的组合意义}：
 
 回顾一下 exp 的式子（在这里我们默认 $[x^0]f(x) = 0$）
-
 \[
 \exp f(x) = \sum\limits_{i = 0}^{\infty} \frac{f^i(x)}{i!}
 \]
@@ -699,7 +640,6 @@ EGF 常用于解决\textbf{有标号的计数问题}。
 设 $f_i$ 表示点数为 $i$ 的\textbf{有标号简单无向连通图}个数，设 $g_i$ 表示点数为 $i$ 的\textbf{有标号简单无向图}个数，显然 $g_i = 2^{\binom{i}{2}}$。
 
 考虑容斥。枚举点 $1$ 所在的连通块大小，有递推式
-
 \[
 \begin{gathered}
 f_1 = 1 \\
@@ -707,7 +647,6 @@ f_i = g_i - \sum_{j = 1}^{i - 1}\binom{i - 1}{j - 1}f_jg_{i - j}
 \end{gathered}
 \]
 化简式子，得
-
 \[
 \frac{f_i}{(i - 1)!} = \frac{g_i}{(i - 1)!} - \sum_{j = 1}^{i - 1}\frac{f_j}{(j - 1)!} \frac{g_{i - j}}{(i - j)!}
 \]
@@ -722,7 +661,6 @@ f_i = g_i - \sum_{j = 1}^{i - 1}\binom{i - 1}{j - 1}f_jg_{i - j}
 \paragraph{算法二：多项式 ln}
 
 设 $F(x)$ 是 $f_i$ 的 EGF，$G(x)$ 是 $g_i$ 的 EGF。由 EGF 中多项式 exp 的组合意义，有 $G(x) = e^{F(x)}$。所以
-
 \[
 F(x) = \ln G(x)
 \]
@@ -747,7 +685,6 @@ F(x) = \ln G(x)
 设 $f_i$ 表示点数为 $i$ 的\textbf{有标号简单无向二分图}个数，设 $g_i$ 表示点数为 $i$ 的\textbf{对节点进行 $2$ 染色，满足同色节点不存在边的图（二分染色图）}个数。
 
 考虑求 $g_i$，枚举黑色节点个数 $j$，则有
-
 \[
 \begin{gathered}
 g_i = \sum_{j = 0}^i \binom{i}{j} 2^{j(i - j)} \\
@@ -767,7 +704,6 @@ g_i = \sum_{j = 0}^i \binom{i}{j} 2^{\binom{i}{2} - \binom{j}{2} - \binom{i - j}
 则二分染色图可以由两个组件构成，第一个组件是最小点颜色为黑色的连通块集合，第二个组件是最小点颜色为白色的连通块集合。而两个组件内部均是二分图。
 
 于是设 $F(x)$ 是 $f_i$ 的 EGF，$G(x)$ 是 $g_i$ 的 EGF，则有
-
 \[
 \begin{gathered}
 F(x) \times F(x) = G(x) \\
@@ -783,19 +719,16 @@ F(x) = \sqrt{G(x)}
 设 $f_i$ 表示点数为 $i$ 的\textbf{有标号 DAG（不保证弱连通）}个数。
 
 将 DAG 视作一个分层图，考虑容斥，\textbf{钦定}拓扑序第一层（零入度点）的个数。
-
 \[
 f_i = \sum_{j = 1}^{i}(-1)^{j + 1} \binom{i}{j} 2^{j(i - j)}f_{i - j}
 \]
 至此，可以做到 $\mathcal{O}(n^2)$。
 
 进一步
-
 \[
 \frac{f_i}{i! \cdot 2^\binom{i}{2}} = \sum_{j = 1}^i \frac{(-1)^{j + 1}}{j! \cdot 2^\binom{j}{2}} \cdot \frac{f_{i - j}}{(i - j)! \cdot 2^\binom{i - j}{2}}
 \]
 设 $F_i = \frac{f_i}{i! \cdot 2^\binom{i}{2}}, G_j = \frac{(-1)^{j + 1}}{j! \cdot 2^\binom{j}{2}}$，则有
-
 \[
 \begin{gathered}
 F = G\times F + 1 \\
@@ -811,7 +744,6 @@ F = \frac{1}{1 - G}
 设 $f_i$ 表示点数为 $i$ 的\textbf{有标号 DAG（不保证弱连通）}个数，设 $h_i$ 表示点数为 $i$ 的\textbf{有标号弱连通 DAG} 个数。$f_i$ 的求解详见 “有标号 DAG 计数”。
 
 设 $F(x)$ 是 $f_i$ 的 EGF，$H(x)$ 是 $h_i$ 的 EGF。由 EGF 中多项式 exp 的组合意义，有 $F(x) = e^{H(x)}$。所以
-
 \[
 H(x) = \ln F(x)
 \]
@@ -824,7 +756,6 @@ H(x) = \ln F(x)
 设 $f_i$ 表示点数为 $i$ 的\textbf{有标号强连通图}个数，设 $b_{i, j}$ 表示 \textbf{$i$ 个点形成 $j$ 个独立的强连通图}的个数，设 $h_i$ 表示点数为 $i$ 的\textbf{任意有向图}个数。显然 $h_i = 2^{i(i - 1)}$。
 
 则有
-
 \[
 h_i = \sum_{j = 1}^i \binom{i}{j} h_{i - j}\times 2^{j(i - j)} \times \sum_{k = 1}^{j}(-1)^{k + 1}b_{j, k}
 \]
@@ -833,7 +764,6 @@ h_i = \sum_{j = 1}^i \binom{i}{j} h_{i - j}\times 2^{j(i - j)} \times \sum_{k = 
 \textbf{钦定 $k$ 个强连通分量出度为 $0$，这 $k$ 个强连通分量里包含了 $j$ 个点}。剩下的 $i - j$ 个点随意连接。
 
 设 $g_j = \sum_{k = 1}^j (-1)^{k + 1}b_{j, k}$，则有
-
 \[
 \begin{gathered}
 g_i = h_i - \sum_{j = 1}^{i - 1} \binom{i}{j} 2^{j(i - j)} h_{i - j} g_j \\
@@ -841,7 +771,6 @@ g_i = h_i - \sum_{j = 1}^{i - 1} \binom{i}{j} 2^{j(i - j)} h_{i - j} g_j \\
 \end{gathered}
 \]
 设 $H_i = \frac{h_i}{i! \cdot 2^{\binom{i}{2}}}, G_i = \frac{g_i}{i! \cdot 2^{\binom{i}{2}}}$，则有
-
 \[
 \begin{gathered}
 H = G \times H + 1 \\
@@ -851,7 +780,6 @@ G = 1 - \frac{1}{H}
 至此，可以使用多项式求逆求出 $G$。
 
 再根据 $g$ 的定义，考虑 $g$ 的转移，有
-
 \[
 \begin{gathered}
 g_i = f_i - \sum_{j = 1}^{i - 1} \binom{i - 1}{j - 1}f_jg_{i - j} \\
@@ -860,7 +788,6 @@ f_i = g_i + \sum_{j = 1}^{i - 1} \binom{i - 1}{j - 1}f_jg_{i - j} \\
 \end{gathered}
 \]
 设 $F_i = \frac{f_i}{(i - 1)!}, A_i = \frac{g_i}{(i - 1)!}, B_i = \frac{g_i}{i!}$，则有
-
 \[
 \begin{gathered}
 F = A + F \times B \\

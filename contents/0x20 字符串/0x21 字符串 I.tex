@@ -8,7 +8,6 @@
 \Highlight{字符串哈希}：字符串哈希要求\textbf{数据有序}。将字符串的元素通过某种\textbf{不具有交换律的运算}结合（例如矩阵乘法）。
 
 通常将字符串 $s$ 视为一个 \textbf{$\mathrm{base}$ 进制数}，即
-
 \[
 f(s) \equiv \sum_{i = 1}^{l} s_i \times \mathrm{base}^{l - i} \pmod M
 \]
@@ -16,7 +15,6 @@ f(s) \equiv \sum_{i = 1}^{l} s_i \times \mathrm{base}^{l - i} \pmod M
 其中模数 $M$ 尽量为\textbf{大质数}，并且尽量对两个大质数模数 $M_1, M_2$ 各求一次哈希（\textbf{双哈希}）
 
 \Highlight{静态字符串区间哈希}：
-
 \[
 \begin{gathered}
 \mathrm{pre}_i = \mathrm{pre}_{i - 1} \times \mathrm{base} + s_i \\
@@ -25,7 +23,6 @@ f(s[l : r]) = \mathrm{pre}_r - \mathrm{pre}_{l - 1} \times \mathrm{base}^{r - l 
 \]
 
 \Highlight{动态字符串区间哈希}：区间哈希值可以合并。设左右两个区间的长度与哈希值分别为 $(l_1, h_1), (l_2, h_2)$，将它们拼接形成大区间的长度与哈希值为
-
 \[
 (l_1 + l_2, h_1 \times \mathrm{base}^{l_2} + h_2)
 \]
@@ -39,7 +36,6 @@ $\mathrm{base}$ 为偶数：此时 $\mathrm{base}^{64} \equiv 0 \pmod{2^{64}}$�
 $\mathrm{base}$ 为奇数：使用 Thue Morse 序列攻击。对于二进制串 $s$，设 $\overline{s}$ 表示 $s$ 按位取反后得到的串。
 
 Thue Morse 序列：$t_0 = \mathtt{0}$，$t_i = t_{i - 1} + \overline{t_{i - 1}}$。此时
-
 \[
 \begin{gathered}
 f(t_i) = \mathrm{base}^{2^{i - 1}} f(t_{i - 1}) + f(\overline{t_{i - 1}}) \\
@@ -48,7 +44,6 @@ f(\overline{t_i}) = \mathrm{base}^{2^{i - 1}} f(\overline{t_{i - 1}}) + f(t_{i -
 \]
 
 记 $h_i = f(t_i) - f(\overline{t_i})$，有 $h_i = \left(\mathrm{base}^{2^{i - 1}} - 1\right)h_{i - 1}$。由于
-
 \[
 \mathrm{base}^{2^{i - 1}} - 1 = (\mathrm{base}^{2^{i - 2}} + 1)(\mathrm{base}^{2^{i - 3}} + 1)\dots(\mathrm{base} + 1)(\mathrm{base} - 1)
 \]
@@ -76,13 +71,11 @@ Thue Morse 序列的规律：第 $x$ 位上的值等于 $\mathrm{popcount}(x) \b
 
 \begin{itemize}
 \item 使用加法结合：
-
 \[
 f(S) = \sum_{x \in S} \mathrm{shift}(x)
 \]
 
 \item 使用异或结合（\textbf{异或哈希}）：
-
 \[
 f(S) = \bigoplus_{x \in S} \mathrm{shift}(x)
 \]
@@ -148,13 +141,11 @@ f(S) = \bigoplus_{x \in S} \mathrm{shift}(x)
 \Highlight{字符串 border 结构}：$s$ 的所有 border 可以被划分成至多 $\left\lceil \log_2 n \right\rceil$ 个等差数列。
 
 进一步，每个等差数列都具有一定的周期性。同一个等差数列里的字符串，都可以被表示成
-
 \[
 W, W + A, W + A^2, \dots, W + A^k
 \]
 
 或
-
 \[
 W, B + W, B^2 + W, \dots, B^k + W
 \]
@@ -180,13 +171,11 @@ W, B + W, B^2 + W, \dots, B^k + W
 
 \begin{itemize}
 \item 若 $i \leq r$，则
-
 \[
 Z_i \geq \min(Z_{i - l + 1}, r - i + 1)
 \]
 
 \item 若 $i > r$，则
-
 \[
 Z_i \geq 0
 \]
@@ -212,13 +201,11 @@ Z_i \geq 0
 
 \begin{itemize}
 \item 若 $i \leq k + p_k - 1$，则
-
 \[
 p_i \geq \min(k + p_k - i, p_{2k - i})
 \]
 
 \item 若 $i > k + p_k - 1$，则
-
 \[
 p_i \geq 0
 \]

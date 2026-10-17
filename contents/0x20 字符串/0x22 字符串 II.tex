@@ -117,12 +117,10 @@
 \Highlight{height 数组}：$\mathrm{height}_i = \mathrm{LCP}(\mathrm{sa}_{i - 1}, \mathrm{sa}_i)$
 
 \Highlight{height 数组求后缀 LCP}：后缀 $\mathrm{sa}_i, \mathrm{sa}_j$ ($i < j$) 的最长公共前缀为
-
 \[
 \mathrm{LCP}(\mathrm{sa}_i, \mathrm{sa}_j) = \min_{i < k \leq j}\{\mathrm{height}_k\}
 \]
 \Highlight{本质不同子串个数}：
-
 \[
 \frac{n(n + 1)}{2} - \sum_{i = 2}^n \mathrm{height}_i
 \]
@@ -268,13 +266,11 @@ parent 树是反串的后缀树，而后缀树又是后缀 trie 虚树化（仅�
 \Highlight{Palindrome Series}：回文串 $s$ 的所有回文后缀，可以被划分成至多 $\left\lceil \log_2 n \right\rceil$ 个等差数列。
 
 进一步，每个等差数列都具有一定的周期性。同一个等差数列里的字符串，都可以被表示成
-
 \[
 W, W + A, W + A^2, \dots, W + A^k
 \]
 
 或
-
 \[
 W, B + W, B^2 + W, \dots, B^k + W
 \]
@@ -291,7 +287,6 @@ W, B + W, B^2 + W, \dots, B^k + W
 我们称 \textbf{diff 值相同的连续 link 链为一个 Series}，Series 中的回文串长度都构成一个等差数列。那么 $\mathrm{slink}_u$ 就表示 $u$ 所在的 Series 对应的下一个 Series 的最长回文节点。
 
 上述理论可以用来优化一类 dp 问题：
-
 \[
 f_i = \bigoplus_{s[j + 1 : i] \ \text{is} \ \text{Palindrome}} f_j
 \]
@@ -303,7 +298,6 @@ f_i = \bigoplus_{s[j + 1 : i] \ \text{is} \ \text{Palindrome}} f_j
 若节点 $u$ 最近一次在位置 $i$ 结尾，且 $\mathrm{diff}_u = \mathrm{diff}_{\mathrm{link}_u}$，则 $\mathrm{link}_u$ 在严格早于 $i$ 的最近一次出现在位置 $i - \mathrm{diff}_u$ 结尾。
 
 假设当前处理到位置 $i$，沿着 slink 处理每一个 Series 的贡献。设当前节点为 $u$，则 $u$ 所在 Series 中最短回文串长度为 $\mathrm{diff}_u + \mathrm{len}_{\mathrm{slink}_u}$，除了最短回文串的其他贡献，恰好等于在位置 $i - \mathrm{diff}_u$ 时已经维护好的 $g_{\mathrm{link}_u}$。因此有转移：
-
 \[
 g_u = \begin{cases}
 f_{i - \mathrm{diff}_u - \mathrm{len}_{\mathrm{slink}_u}} & \mathrm{diff}_u \neq \mathrm{diff}_{\mathrm{link}_u} \\

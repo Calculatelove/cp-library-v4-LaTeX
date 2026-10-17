@@ -8,7 +8,6 @@
 \Highlight{质数分布函数}：$\pi(n)$ 表示 $1 \sim n$ 中的质数个数。当 $n$ 足够大时，$\pi(n) \sim \frac{n}{\ln n}$。
 
 \Highlight{\textbf{唯一分解定理}}：任意一个大于 $1$ 的正整数 $n$，都可以唯一分解成有限个质数的乘积，记作
-
 \[
 n = p_1^{c_1}p_2^{c_2}\dots p_t^{c_t}
 \]
@@ -25,7 +24,6 @@ n = p_1^{c_1}p_2^{c_2}\dots p_t^{c_t}
 共有大约 $\frac{n}{\ln n}$ 个质数，每个质数 $p$ 的求解需要 $\log_p n$ 的开销，故时间复杂度 $\mathcal{O}(n)$。
 
 \Highlight{阶乘 $n!$ 中包含质数 $p$ 的次数}：
-
 \[
 \sum_{i = 1}^{\lfloor \log_p n \rfloor} \left\lfloor \frac{n}{p^i} \right\rfloor
 \]
@@ -34,7 +32,6 @@ n = p_1^{c_1}p_2^{c_2}\dots p_t^{c_t}
 \Highlight{阶乘 $n!$ 中包含合数 $m$ 的次数}：将 $m$ 唯一分解成 $m = p_1^{c_1}p_2^{c_2}\dots p_t^{c_t}$ 的形式。
 
 记 $v_p(n) = \sum_{i = 1}^{\lfloor \log_p n \rfloor} \left\lfloor \frac{n}{p^i} \right\rfloor$，答案为
-
 \[
 \min_{1 \leq i \leq t} \left\lfloor \frac{v_{p_i}(n)}{c_i} \right\rfloor
 \]
@@ -53,7 +50,6 @@ n = p_1^{c_1}p_2^{c_2}\dots p_t^{c_t}
 埃氏筛的时间复杂度证明：\textbf{相当于是证明 $1 \sim n$ 中所有质数的倒数之和为 $\mathcal{O}(\log \log n)$ 级别}。
 
 由质数分布函数，可以推测第 $n$ 个质数的大小为 $\Theta(n \log n)$，于是有
-
 \[
 \begin{aligned}
 \sum_{k = 1}^{\pi(n)} \frac{1}{p_k} & = \mathcal{O}\left( \sum_{k = 2}^{\pi(n)} \frac{1}{k \log k} \right) \\
@@ -234,7 +230,6 @@ for (int j = 1; j <= primeCount; j ++) {
 \Highlight{最小公倍数}：最小的公共倍数（\textbf{L}east \textbf{C}ommon \textbf{M}ultiple，简写 LCM）。
 
 \Highlight{\textbf{唯一分解角度下的 gcd 与 lcm}}：设 $a = p_1^{c_1}p_2^{c_2}\dots$，$b = p_1^{d_1}p_2^{d_2} \dots$，则有
-
 \[
 \begin{gathered}
 \gcd(a, b) = p_1^{\min(c_1, d_1)}p_2^{\min(c_2, d_2)} \dots \\
@@ -264,7 +259,6 @@ for (int j = 1; j <= primeCount; j ++) {
 \subsubsection{gcd 和 lcm 的常见恒等式}
 
 \Highlight{gcd-lcm 恒等式}：
-
 \[
 \gcd(a, b) \operatorname{lcm}(a, b) = ab
 \]
@@ -273,7 +267,6 @@ for (int j = 1; j <= primeCount; j ++) {
 事实上当 $n \geq 3$ 时，$\gcd(a_1, \dots, a_n) \operatorname{lcm}(a_1, \dots, a_n) = a_1\dots a_n$ 当且仅当 $a_1, \dots, a_n$ 两两互质。
 
 \Highlight{gcd 和 lcm 的结合律}：
-
 \[
 \begin{gathered}
 \gcd(a, b, c) = \gcd(\gcd(a, b), c) \\
@@ -285,26 +278,22 @@ for (int j = 1; j <= primeCount; j ++) {
 于是可以使用恒等式 $\mathrm{lcm}(a, b) = \frac{ab}{\gcd(a, b)}$，用来求解 $\mathrm{lcm}(a, b, c)$，以及 $\mathrm{lcm}(a_1, \dots, a_n)$。
 
 \Highlight{gcd 对乘法的分配律}：
-
 \[
 \gcd(a, bc) = \gcd(a, b) \gcd\left(\frac{a}{\gcd(a, b)}, c\right)
 \]
 根据对乘法的分配律计算 $\gcd(a, b_1\dots b_n)$。每次处理 $b_i$ 时，计算 $t = \gcd(a, b_i)$，然后将 $a$ 除以 $t$（相当于是将已计算的质因数贡献去掉），答案乘以 $t$。
 
 \Highlight{gcd 的差分律}：
-
 \[
 \gcd(a_1, a_2, \dots, a_n) = \gcd(a_1, a_2 - a_1, \dots, a_n - a_{n - 1})
 \]
 通过差分律，我们可以维护差分数组的 gcd，以实现 “区间加” 与 “区间 gcd”。
 
 \Highlight{斐波那契数列 gcd 恒等式}：
-
 \[
 \gcd(\mathrm{Fib}_n, \mathrm{Fib}_m) = \mathrm{Fib}_{\gcd(n, m)}
 \]
 \Highlight{幂差 gcd 恒等式}：\textbf{不妨设 $a \geq b$，当 $\gcd(a, b) = 1$ 时}，有
-
 \[
 \gcd(a^n - b^n, a^m - b^m) = a^{\gcd(n, m)} - b^{\gcd(n, m)}
 \]
@@ -319,7 +308,6 @@ $k$ 次方差公式：$x^k - y^k = (x - y)(x^{k - 1} + x^{k - 2}y + \dots + xy^{
 对于 $n, m$ 的公约数 $d$ 来说，可以证得 $a^d - b^d \mid a^n - b^n$ 与 $a^d - b^d \mid a^m - b^m$。
 
 于是 $a^d - b^d \mid \gcd(a^n - b^n, a^m - b^m)$。所以
-
 \[
 a^{\gcd(n, m)} - b^{\gcd(n, m)} \mid \gcd(a^n - b^n, a^m - b^m)
 \]
@@ -327,7 +315,6 @@ a^{\gcd(n, m)} - b^{\gcd(n, m)} \mid \gcd(a^n - b^n, a^m - b^m)
 
 \begin{quoteblock}
 “降幂引理”：不妨设 $r \geq s$，当 $\gcd(a, b) = 1$ 时，有
-
 \[
 \gcd(a^r - b^r, a^s - b^s) \mid a^{r - s} - b^{r - s}
 \]
@@ -340,7 +327,6 @@ a^{\gcd(n, m)} - b^{\gcd(n, m)} \mid \gcd(a^n - b^n, a^m - b^m)
 \end{quoteblock}
 
 对 $\gcd(a^n - b^n, a^m - b^m)$ 反复应用 “降幂引理”，过程等价于辗转相除法。所以
-
 \[
 \gcd(a^n - b^n, a^m - b^m) \mid a^{\gcd(n, m)} - b^{\gcd(n, m)}
 \]
@@ -354,7 +340,6 @@ a^{\gcd(n, m)} - b^{\gcd(n, m)} \mid \gcd(a^n - b^n, a^m - b^m)
 （也称之为欧几里得算法）
 
 对于 $\forall a, b \in \mathbb{N}$ 且 $b \neq 0$，有
-
 \[
 \gcd(a, b) = \gcd(b, a \bmod b)
 \]
@@ -380,7 +365,6 @@ int gcd(int a, int b) {
 （也称之为 Stein 算法）
 
 对于 $\forall a, b \in \mathbb{N}$，不妨设 $a\geq b$，有
-
 \[
 \begin{gathered}
 \gcd(a, b) = \gcd(a, a - b) = \gcd(b, a - b) \\
@@ -457,12 +441,10 @@ for (int i = 0; i <= n; i ++) {
 \Highlight{类欧几里得算法}：用来解决一类形如 $\left\lfloor \frac{ai + b}{c} \right\rfloor$ 结构的求和问题。
 
 基本模型为
-
 \[
 f(a, b, c, n) = \sum_{i = 0}^n \left\lfloor \frac{ai + b}{c} \right\rfloor
 \]
 首先，可以转化为 $0 \leq a, b < c$ 的情况
-
 \[
 \begin{aligned}
 f(a, b, c, n) & = \sum_{i = 0}^n \left\lfloor \frac{ai + b}{c} \right\rfloor \\
@@ -472,7 +454,6 @@ f(a, b, c, n) & = \sum_{i = 0}^n \left\lfloor \frac{ai + b}{c} \right\rfloor \\
 \end{aligned}
 \]
 然后，令 $m = \left\lfloor \frac{an + b}{c} \right\rfloor$
-
 \[
 \begin{aligned}
 f(a, b, c, n) & = \sum_{i = 0}^n \left\lfloor \frac{ai + b}{c} \right\rfloor \\
@@ -509,7 +490,6 @@ f(a, b, c, n) & = \sum_{i = 0}^n \left\lfloor \frac{ai + b}{c} \right\rfloor \\
 \subsubsection{取整的常见恒等式}
 
 \Highlight{上下取整的相互转化}：$n, m \in \mathbb{Z}$，$m > 0$
-
 \[
 \begin{gathered}
 \left\lceil \frac{n}{m} \right\rceil = \left\lfloor \frac{n + m - 1}{m} \right\rfloor = \left\lfloor \frac{n - 1}{m} \right\rfloor + 1 \\
@@ -517,7 +497,6 @@ f(a, b, c, n) & = \sum_{i = 0}^n \left\lfloor \frac{ai + b}{c} \right\rfloor \\
 \end{gathered}
 \]
 \Highlight{上下取整的嵌套恒等式}：$a, b, c \in \mathbb{N}_+$
-
 \[
 \begin{gathered}
 \left\lfloor \frac{ \left\lfloor \frac{a}{b} \right\rfloor }{c} \right\rfloor = \left\lfloor \frac{a}{bc} \right\rfloor \\
@@ -526,7 +505,6 @@ f(a, b, c, n) & = \sum_{i = 0}^n \left\lfloor \frac{ai + b}{c} \right\rfloor \\
 \]
 
 \Highlight{上下取整对加法的恒等式}：$A, B, C, D \in \mathbb{N}_+$
-
 \[
 \begin{gathered}
 \left\lfloor \frac{ \left\lfloor \frac{A}{B} \right\rfloor + C }{D} \right\rfloor = \left\lfloor \frac{A + BC}{BD} \right\rfloor \\
@@ -554,7 +532,6 @@ f(a, b, c, n) & = \sum_{i = 0}^n \left\lfloor \frac{ai + b}{c} \right\rfloor \\
 \textbf{性质 2}：若 $m \in D_n$，则 $D_m \subseteq D_n$。
 
 简单推导：设 $m = \left\lfloor \frac{n}{k} \right\rfloor$，此时对于任意 $d \in \mathbb{N}_+$
-
 \[
 \left\lfloor \frac{m}{d} \right\rfloor = \left\lfloor \frac{\left\lfloor \frac{n}{k} \right\rfloor}{d} \right\rfloor = \left\lfloor \frac{n}{kd} \right\rfloor \in D_n
 \]
@@ -637,7 +614,6 @@ for (int x = 1, nx; x <= h; x = nx + 1) {
 \begin{itemize}
 \item 对于任意积性函数 $f(x)$（除了恒为 $0$ 的函数），有 $f(1) = 1$。
 \item 对于任意积性函数 $f(x), g(x)$，\textbf{以下的函数仍为积性函数}
-
 \[
 \begin{gathered}
 f(x^p) \\
@@ -653,13 +629,11 @@ f(x)g(x) \\
 \subsubsection{常见积性函数（及性质）}
 
 \paragraph{单位函数（完全积性）}
-
 \[
 \epsilon(n) = [n = 1]
 \]
 
 \paragraph{恒等函数（完全积性）}
-
 \[
 \mathrm{ID}_k(n) = n^k
 \]
@@ -667,7 +641,6 @@ f(x)g(x) \\
 当 $k = 1$ 时，亦可简写为 $\mathrm{ID}(n) = n$。
 
 \paragraph{常数函数（完全积性）}
-
 \[
 1(n) = 1
 \]
@@ -675,7 +648,6 @@ f(x)g(x) \\
 \paragraph{约数函数（积性）}
 
 \Highlight{约数函数}：
-
 \[
 \sigma_k(n) = \sum_{d \mid n} d^k
 \]
@@ -683,12 +655,10 @@ f(x)g(x) \\
 当 $k = 0$ 时，$\sigma_0(n)$ 表示 $n$ 的约数个数函数。
 
 \Highlight{约数个数函数的前缀和}：
-
 \[
 \sum_{i = 1}^n \sigma_0(i) = \sum_{i = 1}^n \left\lfloor \frac{n}{i} \right\rfloor
 \]
 \Highlight{乘积的约数个数函数}：
-
 \[
 \begin{gathered}
 \sigma_0(ij) = \sum_{x \mid i} \sum_{y \mid j} [\gcd(x, y) = 1] \\
@@ -702,20 +672,17 @@ f(x)g(x) \\
 \paragraph{欧拉函数（积性）}
 
 \Highlight{欧拉函数}：$\varphi(n)$，表示 $1 \sim n$ 中与 $n$ 互质的数的个数。将 $n$ 唯一分解成 $n = p_1^{c_1}p_2^{c_2}\dots p_t^{c_t}$，则欧拉函数为
-
 \[
 \varphi(n) = n \prod_{i = 1}^t (1 - \frac{1}{p_i})
 \]
 
 \Highlight{乘积的欧拉函数}：
-
 \[
 \varphi(ij) = \frac{\varphi(i) \varphi(j) \gcd(i, j)}{\varphi(\gcd(i, j))}
 \]
 简单推导：设 $P(n)$ 表示 $n$ 的质因数集合，则有 $P(ij) = P(i) \cup P(j)$ 与 $P(\gcd(i, j)) = P(i) \cap P(j)$。
 
 由容斥原理得
-
 \[
 \prod_{p \mid ij} \left(1 - \frac{1}{p}\right) = \frac{\prod_{p \mid i} \left(1 - \frac{1}{p}\right) \prod_{p \mid j} \left(1 - \frac{1}{p}\right)}{\prod_{p \mid \gcd(i, j)} \left(1 - \frac{1}{p}\right)}
 \iff
@@ -725,7 +692,6 @@ f(x)g(x) \\
 \paragraph{莫比乌斯函数（积性）}
 
 \Highlight{莫比乌斯函数}：$\mu(n)$，将 $n$ 唯一分解成 $n = p_1^{c_1}p_2^{c_2}\dots p_t^{c_t}$，则莫比乌斯函数有如下的定义
-
 \[
 \mu(n) = \begin{cases}
 (-1)^t & \forall i\in[1, t], c_i = 1 \\
@@ -735,7 +701,6 @@ f(x)g(x) \\
 特别地，$\mu(1) = 1$。
 
 \Highlight{莫比乌斯函数的平方}：
-
 \[
 \mu^2(n) = \sum_{d^2 \mid n} \mu(d)
 \]
@@ -760,7 +725,6 @@ f(x)g(x) \\
 \subsubsection{狄利克雷卷积}
 
 \Highlight{狄利克雷卷积}：对于两个数论函数 $f, g$，定义 $f, g$ 的狄利克雷卷积为
-
 \[
 (f \ast g)(x) = \sum_{d \mid x} f(d)g\left( \frac{x}{d} \right)
 \]
@@ -776,7 +740,6 @@ f(x)g(x) \\
 \subsubsection{常见狄利克雷卷积式}
 
 \paragraph{式 1}
-
 \[
 \boldsymbol{\epsilon = \mu \ast 1 \iff \sum_{d \mid n} \mu(d) = [n = 1]}
 \]
@@ -786,7 +749,6 @@ f(x)g(x) \\
 \begin{itemize}
 \item 当 $n = 1$ 时，等式成立。
 \item 当 $n > 1$ 时，将 $n$ 唯一分解成 $n = p_1^{c_1}p_2^{c_2}\dots p_t^{c_t}$，则有
-
 \[
 \begin{aligned}
 f(n) & = \prod_{i = 1}^t f(p_i^{c_i}) \\
@@ -800,7 +762,6 @@ f(n) & = \prod_{i = 1}^t f(p_i^{c_i}) \\
 综上，$\sum_{d \mid n} \mu(d) = [n = 1]$。
 
 \paragraph{式 2}
-
 \[
 \boldsymbol{\mathrm{ID} = \varphi \ast 1 \iff \sum_{d \mid n} \varphi(d) = n}
 \]
@@ -810,7 +771,6 @@ f(n) & = \prod_{i = 1}^t f(p_i^{c_i}) \\
 \begin{itemize}
 \item 当 $n = 1$ 时，等式成立。
 \item 当 $n > 1$ 时，将 $n$ 唯一分解成 $n = p_1^{c_1}p_2^{c_2}\dots p_t^{c_t}$，则有
-
 \[
 \begin{aligned}
 f(n) & = \prod_{i = 1}^t f(p_i^{c_i}) \\
@@ -825,13 +785,11 @@ f(n) & = \prod_{i = 1}^t f(p_i^{c_i}) \\
 综上，$\sum_{d \mid n} \varphi(d) = n$。
 
 \paragraph{式 3}
-
 \[
 \boldsymbol{\varphi = \mu \ast \mathrm{ID} \iff \varphi(n) = \sum_{d \mid n} d\mu\left( \frac{n}{d} \right)}
 \]
 
 简单推导：
-
 \[
 \begin{aligned}
 \varphi \ast 1 = \mathrm{ID} & \Longrightarrow \varphi \ast 1 \ast \mu = \mathrm{ID} \ast \mu \\
@@ -852,7 +810,6 @@ f(n) & = \prod_{i = 1}^t f(p_i^{c_i}) \\
 \Separator{}
 
 记 $S(n) = \sum_{i = 1}^n f(i)$。取杜教筛中的辅助函数 $g(x)$，则有
-
 \[
 \begin{aligned}
 \sum_{i = 1}^n (f \ast g)(i) & = \sum_{i = 1}^n \sum_{d \mid i} g(d)f\left( \frac{i}{d} \right) \\
@@ -861,7 +818,6 @@ f(n) & = \prod_{i = 1}^t f(p_i^{c_i}) \\
 \end{aligned}
 \]
 移项得
-
 \[
 g(1)S(n) = \sum_{i = 1}^n (f \ast g)(i) - \sum_{i = 2}^n g(i)S\left( \left\lfloor \frac{n}{i} \right\rfloor \right)
 \]
@@ -872,7 +828,6 @@ g(1)S(n) = \sum_{i = 1}^n (f \ast g)(i) - \sum_{i = 2}^n g(i)S\left( \left\lfloo
 由数论分块的性质，对于 $m \in D_n$，有 $D_m \subseteq D_n$。于是我们\textbf{需要使用记忆化保证杜教筛的复杂度}，使用记忆化以后，只需要对所有的 $k \in D_n$ 计算一次 $S(k)$ 即可。
 
 假设函数 $f \ast g$ 与 $g$ 的前缀和均可 $\mathcal{O}(1)$ 求出，设计算 $S(n)$ 的时间复杂度为 $T(n)$，则有
-
 \[
 \begin{aligned}
 T(n) & = \sum\limits_{k \in D_n} T(k) \\
@@ -882,7 +837,6 @@ T(n) & = \sum\limits_{k \in D_n} T(k) \\
 \end{aligned}
 \]
 进一步优化，\textbf{我们预处理出数论函数 $f(x)$ 的前 $m$ 项（其中 $m \geq \sqrt{n}$），并预处理出其前缀和}。设预处理的时间复杂度为 $T_0(m)$，则有
-
 \[
 \begin{aligned}
 T(n) & = T_0(m) + \sum_{k \in D_n, k > m} T(k) \\
@@ -900,12 +854,10 @@ T(n) & = T_0(m) + \sum_{k \in D_n, k > m} T(k) \\
 \Highlight{杜教筛求莫比乌斯函数与欧拉函数前缀和}：
 
 给莫比乌斯函数选择的辅助函数为 $1(n) = 1$，由于 $\mu \ast 1 = \epsilon$，函数 $\epsilon$ 与 $1$ 的前缀和均便于求出。代入杜教筛公式得
-
 \[
 S(n) = 1 - \sum_{i = 2}^n S\left( \left\lfloor \frac{n}{i} \right\rfloor \right)
 \]
 给欧拉函数选择的辅助函数为 $1(n) = 1$，由于 $\varphi \ast 1 = \mathrm{ID}$，函数 $\mathrm{ID}$ 与 $1$ 的前缀和均便于求出。代入杜教筛公式得
-
 \[
 S(n) = \frac{n(n + 1)}{2} - \sum_{i = 2}^n S\left( \left\lfloor \frac{n}{i} \right\rfloor \right)
 \]
@@ -960,17 +912,14 @@ S(n) = \frac{n(n + 1)}{2} - \sum_{i = 2}^n S\left( \left\lfloor \frac{n}{i} \rig
 简单推导：由于 $p$ 是质数且 $p \nmid a$，对于 $i = 0, 1, \dots, p - 1$，$ia \bmod p$ 两两不同。
 
 因此 $\{ ia \bmod p \}$ 也构成 $0 \sim p - 1$ 的排列。所以
-
 \[
 \prod_{i = 1}^{p - 1}(ia \bmod p) = \prod_{i = 1}^{p - 1} i
 \]
 又由于
-
 \[
 \prod_{i = 1}^{p - 1}ia \equiv a^{p - 1}\prod_{i = 1}^{p - 1} i \pmod p
 \]
 所以
-
 \[
 (a^{p - 1} - 1)\prod_{i = 1}^{p - 1}i \equiv 0 \pmod p
 \]
@@ -985,24 +934,20 @@ By the way：费马小定理的逆命题并不成立。
 \Highlight{欧拉定理}：设整数 $m > 0$，对于任意满足 $\gcd(a, m) = 1$ 的整数 $a$，满足 $a^{\varphi(m)} \equiv 1 \pmod m$。
 
 简单推导：设 $R$ 表示 $1 \sim m$ 中与 $m$ 互质的数构成的集合。已知 $a\in R$，对于所有 $R$ 中的元素 $r$，$ra \bmod m$ 仍然属于 $R$ 且两两不同。所以
-
 \[
 \prod_{r \in R} (ra \bmod m) = \prod_{r \in R} r
 \]
 又由于
-
 \[
 \prod_{r \in R} ra \equiv a^{\varphi(m)} \prod_{r \in R} r \pmod m
 \]
 所以
-
 \[
 (a^{\varphi(m)} - 1) \prod_{r \in R} r \equiv 0 \pmod m
 \]
 由于每个 $r\in R$ 均与 $m$ 互质，所以 $a^{\varphi(m)} \equiv 1 \pmod m$。
 
 \Highlight{扩展欧拉定理}：设整数 $m > 0$，对于任意整数 $a, b$ ($b \geq 0$)，有
-
 \[
 a^b \equiv \begin{cases}
 a^{b \bmod \varphi(m)} & \gcd(a, m) = 1 \\
@@ -1022,7 +967,6 @@ a^{b \bmod \varphi(m) + \varphi(m)} & \gcd(a, m) \neq 1, b \geq \varphi(m)
 \subsubsection{模质数意义下逆元}
 
 当模数 $p$ 为质数时。对于任意整数 $a$（$a$ 不能是 $p$ 的倍数），有
-
 \[
 a \times a^{p - 2} \equiv 1 \pmod p
 \]
@@ -1045,12 +989,10 @@ a \times a^{p - 2} \equiv 1 \pmod p
 \subsubsection{预处理线性逆元}
 
 若要求解 $1 \sim n$ 所有整数模质数 $p$ 意义下的逆元。对于 $1 < i < p$，有
-
 \[
 0 \equiv \left\lfloor \frac{p}{i} \right\rfloor i + (p \bmod i) \pmod p
 \]
 将等式两边同乘以 $i^{-1}(p \bmod i)^{-1}$，得
-
 \[
 i^{-1} \equiv -\left\lfloor \frac{p}{i} \right\rfloor (p \bmod i)^{-1} \pmod p
 \]
@@ -1087,14 +1029,12 @@ i^{-1} \equiv -\left\lfloor \frac{p}{i} \right\rfloor (p \bmod i)^{-1} \pmod p
 \begin{itemize}
 \item 当 $b = 0$ 时。此时有 $x = 1, y = 0$，使得 $a \cdot 1 + 0 \cdot 0 = \gcd(a, 0)$。
 \item 当 $b > 0$ 时。由于 $\gcd(a, b) = \gcd(b, a \bmod b)$，假设存在一对 $x, y$ 使得
-
 \[
 bx + (a \bmod b)y = \gcd(b, a \bmod b)
 \]
 \end{itemize}
 
 利用 $a \bmod b = a - \left\lfloor \frac{a}{b} \right\rfloor b$，并移项得
-
 \[
 ay + b\left(x - \left\lfloor \frac{a}{b} \right\rfloor y\right) = \gcd(a, b)
 \]
@@ -1111,7 +1051,6 @@ ay + b\left(x - \left\lfloor \frac{a}{b} \right\rfloor y\right) = \gcd(a, b)
 \begin{itemize}
 \item 有解性：当且仅当 $\gcd(a, b) \mid c$。
 \item 通解：使用 exgcd 找出方程 $ax + by = \gcd(a, b)$ 的一组特解 $x_0, y_0$，则有通解
-
 \[
 \begin{gathered}
 x = \frac{c}{\gcd(a, b)}x_0 + k\frac{b}{\gcd(a, b)} \\
@@ -1127,7 +1066,6 @@ y = \frac{c}{\gcd(a, b)}y_0 - k\frac{a}{\gcd(a, b)}
 \begin{itemize}
 \item 有解性：当且仅当 $\gcd(a, m) \mid b$。
 \item 通解：使用 exgcd 找出方程 $ax + my = \gcd(a, m)$ 的一组特解 $x_0, y_0$，则有通解
-
 \[
 x = \frac{b}{\gcd(a, m)}x_0 + k\frac{m}{\gcd(a, m)}
 \]
@@ -1137,7 +1075,6 @@ x = \frac{b}{\gcd(a, m)}x_0 + k\frac{m}{\gcd(a, m)}
 将线性同余方程中 $x$ 的系数消成 $1$：
 
 对于线性同余方程 $ax \equiv b \pmod m$，有解的充要条件是 $\gcd(a, m) \mid b$。当满足该条件时，方程可以转化为
-
 \[
 \frac{a}{\gcd(a, m)}x \equiv \frac{b}{\gcd(a, m)} \pmod{\frac{m}{\gcd(a, m)}}
 \]
@@ -1150,7 +1087,6 @@ x = \frac{b}{\gcd(a, m)}x_0 + k\frac{m}{\gcd(a, m)}
 \subsection{线性同余方程组}
 
 \Highlight{\textbf{模数两两互质}的一元线性同余方程组（中国剩余定理，CRT）}：
-
 \[
 \begin{cases}
 x \equiv a_1 \pmod{m_1} \\
@@ -1168,13 +1104,11 @@ x \equiv a_n \pmod{m_n}
   \item 记 $V_i$ 表示 $M_i$ 在模 $m_i$ 意义下的逆元。
   \end{itemize}
 \item 特解：
-
 \[
 x_0 = \sum_{i = 1}^n a_iM_iV_i
 \]
 
 \item 通解：
-
 \[
 x = x_0 + kM
 \]
@@ -1185,7 +1119,6 @@ x = x_0 + kM
 \Highlight{\textbf{不保证模数两两互质}的一元线性同余方程组（扩展中国剩余定理，exCRT）}：
 
 仅考虑两个方程的合并（多个方程的情况，可以依次合并）。设这两个方程为
-
 \[
 \begin{cases}
 x \equiv a_1 \pmod{m_1} \\
@@ -1193,14 +1126,12 @@ x \equiv a_2 \pmod{m_2}
 \end{cases}
 \]
 则
-
 \[
 x = pm_1 + a_1 = qm_2 + a_2 \Longrightarrow m_1p - m_2q = a_2 - a_1
 \]
 使用 exgcd 找出方程 $m_1p - m_2q = a_2 - a_1$ 的一组特解 $p_0, q_0$。
 
 此时取 $a' = p_0m_1 + a_1$ 与 $m' = \operatorname{lcm}(m_1, m_2)$，两个方程合并为
-
 \[
 x \equiv a' \pmod{m'}
 \]
@@ -1224,7 +1155,6 @@ x \equiv a' \pmod{m'}
 \item 若 $a\perp m$，则 $a, a^2, \dots, a^{\mathrm{ord}_m(a)}$ 模 $m$ 两两不同。
 \item 若 $a \perp m$，则 $\mathrm{ord}_m(a) \mid \varphi(m)$。
 \item 若 $a \perp m$，则
-
 \[
 \mathrm{ord}_m(a^k) = \frac{\mathrm{ord}_m(a)}{\gcd(\mathrm{ord}_m(a), k)}
 \]
@@ -1235,7 +1165,6 @@ x \equiv a' \pmod{m'}
 
 \begin{itemize}
 \item 若 $a\perp m, b\perp m$，则
-
 \[
 \frac{\mathrm{lcm}(\mathrm{ord}_m(a), \mathrm{ord}_m(b))}{\gcd(\mathrm{ord}_m(a), \mathrm{ord}_m(b))} \mid
 \mathrm{ord}_m(ab)
@@ -1243,13 +1172,11 @@ x \equiv a' \pmod{m'}
 \]
 
 \item 若 $a \perp m, b \perp m$，则
-
 \[
 \mathrm{ord}_m(ab) = \mathrm{ord}_m(a)\mathrm{ord}_m(b) \iff \gcd(\mathrm{ord}_m(a), \mathrm{ord}_m(b)) = 1
 \]
 
 \item 若 $a \perp m, b\perp m$，则总是存在满足 $c\perp m$ 的 $c$，使得
-
 \[
 \mathrm{ord}_m(c) = \mathrm{lcm}(\mathrm{ord}_m(a), \mathrm{ord}_m(b))
 \]
@@ -1257,20 +1184,17 @@ x \equiv a' \pmod{m'}
 
 \begin{quoteblock}
 简单构造：将 $\mathrm{ord}_m(a), \mathrm{ord}_m(b)$ 唯一分解
-
 \[
 \mathrm{ord}_m(a) = \prod p_i^{s_i}, \quad
 \mathrm{ord}_m(b) = \prod p_i^{t_i}
 \]
 
 根据 $s_i$ 与 $t_i$ 的大小关系，可以将所有质因子分成两类
-
 \[
 A = \{ i \mid s_i \geq t_i \}, \quad B = \{ i \mid s_i < t_i \}
 \]
 
 记
-
 \[
 x_A = \prod_{i \in A} p_i^{s_i}, \quad
 x_B = \prod_{i \in B} p_i^{s_i}, \quad
@@ -1279,14 +1203,12 @@ y_B = \prod_{i \in B} p_i^{t_i}
 \]
 
 此时 $\mathrm{ord}_m(a) = x_Ax_B, \mathrm{ord}_m(b) = y_Ay_B$，可得
-
 \[
 \mathrm{ord}_m(a^{x_B}) = x_A, \quad
 \mathrm{ord}_m(b^{y_A}) = y_B
 \]
 
 又由于 $x_A \perp y_B$，所以
-
 \[
 \mathrm{ord}_m(a^{x_B}b^{y_A}) = x_Ay_B = \prod p_i^{\max(s_i, t_i)} = \mathrm{lcm}(\mathrm{ord}_m(a), \mathrm{ord}_m(b))
 \]
@@ -1299,7 +1221,6 @@ y_B = \prod_{i \in B} p_i^{t_i}
 \textbf{此时 $g, g^2, \dots, g^{\varphi(m)}$ 构成了 $m$ 的简化剩余系}。
 
 \Highlight{原根判定定理}：设整数 $m \geq 3$，则 $g$ 是模 $m$ 的原根，当且仅当 $\gcd(g, m) = 1$ 且对于 $\varphi(m)$ 的每个质因子 $p$，都有
-
 \[
 g^{\frac{\varphi(m)}{p}} \not\equiv 1 \pmod m
 \]
@@ -1310,7 +1231,6 @@ g^{\frac{\varphi(m)}{p}} \not\equiv 1 \pmod m
 
 \begin{quoteblock}
 简单推导：设 $m$ 的原根为 $g$，则 $m$ 的简化剩余系中的元素可以写成 $g^k \bmod m$ 的形式，其中 $1 \leq k \leq \varphi(m)$。则
-
 \[
 \mathrm{ord}_m(g^k) = \frac{\varphi(m)}{\gcd(\varphi(m), k)}
 \]
@@ -1358,7 +1278,6 @@ g^{\frac{\varphi(m)}{p}} \not\equiv 1 \pmod m
 \Highlight{\textbf{固定底数且与模数互质}的高次同余方程 $a^x \equiv b \pmod{p}$（BSGS）}：
 
 取 $S = \left\lceil \sqrt{p} \right\rceil$，设 $m = iS - j$（其中 $i \geq 1$ 且 $0 \leq j < S$），则有
-
 \[
 \begin{gathered}
 a^{iS - j} \equiv b \pmod p \\
@@ -1377,7 +1296,6 @@ a^{iS} \equiv b \times a^j \pmod p
 该方程等价于 $a^x - b$ 为 $p$ 的倍数，不妨设为 $-k$ 倍，则原方程转化为 $a\cdot a^{x - 1} + kp = b$。
 
 若 $\gcd(a, p) \nmid b$ 则无解，否则
-
 \[
 a^{x - 1} \frac{a}{\gcd(a, p)} + k\frac{p}{\gcd(a, p)} = \frac{b}{\gcd(a, p)}
 \]
@@ -1390,7 +1308,6 @@ a^{x - 1} \frac{a}{\gcd(a, p)} + k\frac{p}{\gcd(a, p)} = \frac{b}{\gcd(a, p)}
 \InputCode{cpp}{contents/0x30 数学/code/0x34 exBSGS（扩展大步小步算法）.cpp}
 
 \Highlight{\textbf{固定次数且模数为质数}的高次同余方程 $x^a \equiv b \pmod p$}：设 $p$ 的原根为 $g$，记 $x = g^c$（这里 $c$ 是未知数），问题转化为
-
 \[
 (g^a)^c \equiv b \pmod p
 \]

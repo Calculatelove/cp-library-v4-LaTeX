@@ -4,7 +4,6 @@
 \subsection{FWT}
 
 \Highlight{位运算卷积}：已知序列 $a_0, \dots, a_{2^m - 1}$ 和序列 $b_0, \dots, b_{2^m - 1}$，求出 $c_0, \dots, c_{2^m - 1}$，其中
-
 \[
 c_k = \sum_{i \oplus j = k} a_ib_j
 \]
@@ -17,7 +16,6 @@ FFT 多项式乘法的核心思想：$A, B$ 的系数转 $A, B$ 的点值，$A, 
 \end{quoteblock}
 
 我们想要 DWT 与 IDWT 有着类似的功能。设 $\mathrm{dwt}(a)$ 表示幂级数 $a$ 经过 DWT 变换后得到的幂级数（点值），我们希望
-
 \[
 a \times b = c \iff \mathrm{dwt}(a) \cdot \mathrm{dwt}(b) = \mathrm{dwt}(c)
 \]
@@ -26,7 +24,6 @@ a \times b = c \iff \mathrm{dwt}(a) \cdot \mathrm{dwt}(b) = \mathrm{dwt}(c)
 记序列长度 $n = 2^m$，设 $\mathrm{dwt}(a)_i = \sum_{j = 0}^{n - 1} c(i, j)a_j$，其中变换系数 $c(i, j)$ 表示变换前下标 $j$ 对变换后下标 $i$ 的贡献。
 
 由 $\mathrm{dwt}(a) \cdot \mathrm{dwt}(b) = \mathrm{dwt}(c)$，得
-
 \[
 \begin{gathered}
 \mathrm{dwt}(c)_i = \mathrm{dwt}(a)_i \cdot \mathrm{dwt}(b)_i \\
@@ -35,7 +32,6 @@ a \times b = c \iff \mathrm{dwt}(a) \cdot \mathrm{dwt}(b) = \mathrm{dwt}(c)
 \end{gathered}
 \]
 由 $a \times b = c$，得
-
 \[
 \begin{aligned}
 \sum_{p = 0}^{n - 1} c(i, p)c_p & = \sum_{p = 0}^{n - 1} c(i, p) \sum_{t_1 \oplus t_2 = p} a_{t_1}b_{t_2} \\
@@ -46,14 +42,12 @@ a \times b = c \iff \mathrm{dwt}(a) \cdot \mathrm{dwt}(b) = \mathrm{dwt}(c)
 对比上下两段的最后一个式子，\textbf{发现充要条件为} $c(i, j)c(i, k) = c(i, j \oplus k)$。
 
 由于位运算可以\textbf{按位考虑}，可以这样构造 $c(i, j)$：\textbf{先得到单个二进制位的转移系数} $c([0, 1], [0, 1])$，满足 $c(i, j)c(i, k) = c(i, j \oplus k)$。对于所有的 $c(i, j)$，我们将 $i, j$ 二进制分解，\textbf{将对应位的转移系数相乘}
-
 \[
 c(i, j) = \prod_{x = 0}^{m - 1} c(i_x, j_x)
 \]
 （其中 $i_x, j_x$ 分别表示 $i, j$ 的二进制下第 $x$ 位）
 
 代入条件 $c(i, j)c(i, k) = c(i, j \oplus k)$，可验证其成立
-
 \[
 \begin{aligned}
 c(i, j)c(i, k) & = \left(\prod_{x = 0}^{m - 1}c(i_x, j_x)\right) \left( \prod_{x = 0}^{m - 1}c(i_x, k_x) \right) \\
@@ -63,7 +57,6 @@ c(i, j)c(i, k) & = \left(\prod_{x = 0}^{m - 1}c(i_x, j_x)\right) \left( \prod_{x
 \end{aligned}
 \]
 现在考虑优化计算 DWT。考虑\textbf{按最高位拆分}，记 $i', j'$ 表示 $i, j$ 去掉最高位的值，记 $i_h$ 表示 $i$ 的最高位
-
 \[
 \begin{aligned}
 \mathrm{dwt}(a)_i & = \sum_{j = 0}^{n - 1}c(i, j)a_j \\
@@ -75,13 +68,11 @@ c(i, j)c(i, k) & = \left(\prod_{x = 0}^{m - 1}c(i_x, j_x)\right) \left( \prod_{x
 
 \begin{itemize}
 \item 对于 $k < n / 2$，代入 $i = k$ 得
-
 \[
 \mathrm{dwt}(a)_k = c(0, 0) \cdot \mathrm{dwt}(a_0)_k + c(0, 1) \cdot \mathrm{dwt}(a_1)_k
 \]
 
 \item 对于 $k < n / 2$，代入 $i = k + n / 2$ 得
-
 \[
 \mathrm{dwt}(a)_{k + n / 2} = c(1, 0) \cdot \mathrm{dwt}(a_0)_k + c(1, 1) \cdot \mathrm{dwt}(a_1)_k
 \]
@@ -96,7 +87,6 @@ c(i, j)c(i, k) & = \left(\prod_{x = 0}^{m - 1}c(i_x, j_x)\right) \left( \prod_{x
 \subsubsection{IDWT}
 
 在 DWT 中，我们只需要
-
 \[
 c = \begin{bmatrix}
 c(0, 0) & c(0, 1) \\
@@ -106,7 +96,6 @@ c(1, 0) & c(1, 1)
 这四个数即可完成变换，记该矩阵为位矩阵 $c$。
 
 如果我们要进行 IDWT，则需要位矩阵 $c$ 的逆矩阵 $c^{-1}$。类似地，有
-
 \[
 a_i = \sum_{j = 0}^{n - 1} c^{-1}(i, j)\mathrm{dwt}(a)_j
 \]
@@ -117,7 +106,6 @@ a_i = \sum_{j = 0}^{n - 1} c^{-1}(i, j)\mathrm{dwt}(a)_j
 \subsubsection{位运算卷积}
 
 \Highlight{or 卷积}：or 运算的位矩阵，及其逆矩阵
-
 \[
 c = \begin{bmatrix}
 1 & 0 \\
@@ -130,7 +118,6 @@ c = \begin{bmatrix}
 or 卷积的正变换等价于\textbf{子集求和}，因为 $c(i, j) = [i \operatorname{and} j = j]$。
 
 \Highlight{and 卷积}：and 运算的位矩阵，及其逆矩阵
-
 \[
 c = \begin{bmatrix}
 1 & 1 \\
@@ -143,7 +130,6 @@ c = \begin{bmatrix}
 and 卷积的正变换等价于\textbf{超集求和}，因为 $c(i, j) = [i \operatorname{or} j = j]$。
 
 \Highlight{xor 卷积}：xor 运算的位矩阵，及其逆矩阵
-
 \[
 c = \begin{bmatrix}
 1 & 1 \\
@@ -210,12 +196,10 @@ for (int s = 1; s <= m; s ++) {
 \subsection{子集卷积}
 
 \Highlight{子集卷积}：已知序列 $a_0, \dots, a_{2^m - 1}$ 和序列 $b_0, \dots, b_{2^m - 1}$，求出 $c_0, \dots, c_{2^m - 1}$，其中
-
 \[
 c_k = \sum_{i \operatorname{or} j = k, i \operatorname{and} j = \varnothing} a_ib_j
 \]
 注意到 $i \operatorname{and} j = \varnothing$ 的充要条件为 $|i| + |j| = |i \operatorname{or} j|$。于是引入序列 $f$ 的占位多项式 $F$
-
 \[
 F_{p, i} = \begin{cases}
 f_i & |i| = p\\
@@ -223,12 +207,10 @@ f_i & |i| = p\\
 \end{cases}
 \]
 将占位多项式代入到子集卷积的式子中
-
 \[
 C_{s, k} = \sum_{p + q = s} \sum_{i \operatorname{or} j = k}A_{p, i}B_{q, j}
 \]
 从 or 卷积的角度来看，有
-
 \[
 C_s = \sum_{p + q = s}A_p \operatorname{or} B_q
 \]
@@ -239,7 +221,6 @@ C_s = \sum_{p + q = s}A_p \operatorname{or} B_q
 \InputCode{cpp}{contents/0x30 数学/code/0x32 子集卷积.cpp}
 
 \Highlight{半在线子集卷积}：已知序列 $g_0, \dots, g_{2^m - 1}$，求出 $f_0, \dots, f_{2^m - 1}$，其中对于 $k > 0$ 满足
-
 \[
 f_k = \sum_{i \operatorname{or} j = k, i \operatorname{and} j = \varnothing} f_ig_j
 \]
