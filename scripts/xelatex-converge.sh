@@ -99,7 +99,9 @@ fonts=$(count 'Font shape .*undefined|Some font shapes were not available')
 others=$(grep -oE '^(Package [A-Za-z0-9_.-]+|Class [A-Za-z0-9_.-]+|LaTeX) Warning' "$log" |
     sed -E 's/^(Package|Class) //; s/ Warning$//' | sort | uniq -c |
     awk '{ printf "%s%s %s", (NR > 1 ? "，" : ""), $2, $1 }' || true)
-summary="Overfull $overfull，Underfull $underfull，缺字 $missing，字体替换 $fonts"
+# 变量名后紧跟中文标点时须写花括号：macOS 自带的 bash 3.2 在 UTF-8 区域设置下
+# 会把多字节字符的前几个字节读进变量名，在 set -u 下报 unbound variable。
+summary="Overfull ${overfull}，Underfull ${underfull}，缺字 ${missing}，字体替换 ${fonts}"
 if [[ -n "$others" ]]; then
     summary+="；其他：$others"
 fi
@@ -121,7 +123,7 @@ if [[ "$strict" == true ]] &&
     exit 1
 fi
 if [[ "$quiet" == true ]]; then
-    printf '%s：%s 轮收敛%s\n' "$job" "$pass" "${brief:+（末轮警告：$brief）}"
+    printf '%s：%s 轮收敛%s\n' "$job" "$pass" "${brief:+（末轮警告：${brief}）}"
 else
     printf '\n目录与交叉引用已稳定（共 %s 轮）。\n末轮警告：%s\n' "$pass" "$summary"
 fi
