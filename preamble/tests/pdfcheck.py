@@ -8,6 +8,7 @@
 """
 from contextlib import contextmanager
 from pathlib import Path
+import re
 import sys
 
 try:
@@ -164,7 +165,58 @@ def code_spans(doc):
     """Maple Mono 字体的代码文字；跳过只含空白或图标的 span（代码卡片标题的语言图标）。"""
     return [span for page in doc for block in page.get_text('dict')['blocks']
             for line in block.get('lines', []) for span in line['spans']
-            if 'Maple' in span['font'] and not all(c.isspace() or is_icon(c) for c in span['text'])]
+            if 'Maple' in span['font'] and not is_code_line_number(span)
+            and not all(c.isspace() or is_icon(c) for c in span['text'])]
+
+
+def is_code_line_number(span):
+    """行号单独检查，不计入代码 token 的四色配色。"""
+    return (span['text'].strip().isascii() and span['text'].strip().isdigit()
+            and 'Maple' in span['font'] and abs(span['size'] - pt(4)) < .02
+            and span['color'] == 0x808080)
+
+
+def check_code_line_numbers(checker, doc, twocolumn=False):
+    """检查框外位置、基线、逐行编号、折行与空行；复用 code-cards 样张。"""
+    all_numbers = []
+    for page in doc:
+        spans = [s for b in page.get_text('dict')['blocks']
+                 for line in b.get('lines', []) for s in line['spans']]
+        numbers = [s for s in spans if is_code_line_number(s)]
+        frames = [d['rect'] for d in page.get_drawings() if d.get('fill')
+                  and all(abs(a - b / 255) < .005
+                          for a, b in zip(d['fill'], (209, 209, 214)))]
+        for s in numbers:
+            # tcolorbox 先填充整个灰色外框，再覆盖白色代码区；取外框填充路径。
+            matches = [r for r in frames
+                       if r.y0 <= s['origin'][1] <= r.y1
+                       and abs(r.x0 - s['bbox'][2] - mm(1)) < .05]
+            checker.check(bool(matches), '行号须在左边框外 1 mm，且位于卡片高度内', s['text'], s['bbox'])
+            checker.check(s['bbox'][0] >= 0, '行号不得越过纸边', s['text'])
+            checker.check('Bold' not in s['font'] and 'Italic' not in s['font'], '行号须为常规正体')
+        all_numbers.extend(numbers)
+        # 同一源文件的逐行人工声明，包括跨栏、跨页；文件首行是注释。
+        for s in spans:
+            if 'landscape_value_' in s['text']:
+                match = re.search(r'landscape_value_(\d{3})', s['text'])
+                if match:
+                    found = [n for n in numbers if abs(n['origin'][1] - s['origin'][1]) < .02
+                             and 0 < s['bbox'][0] - n['bbox'][2] < mm(50)]
+                    checker.check(len(found) == 1 and int(found[0]['text']) == int(match[1]) + 1,
+                                  '人工长代码的行号须与源文件行一致', s['text'])
+        if page.search_for('Wrap-start:'):
+            start = next(s for s in spans if 'Wrap-start:' in s['text'])
+            end = next(s for s in spans if 'final_line' in s['text'])
+            selected = [n for n in numbers
+                        if start['origin'][1] - .02 <= n['origin'][1] <= end['origin'][1] + .02
+                        and 0 < start['bbox'][0] - n['bbox'][2] < mm(10)]
+            checker.check([n['text'] for n in selected] == ['1', '2', '3', '4'],
+                          '折行只标一次，空行也显示编号，新卡片从 1 开始', [n['text'] for n in selected])
+            wrap_end = next(s for s in spans if 'Wrap-end.' in s['text'])
+            checker.check(wrap_end['origin'][1] > start['origin'][1], '样张长行须实际折行')
+    checker.require(all_numbers, '代码卡片应有 4 pt、808080、Maple 行号')
+    if twocolumn:
+        checker.check(any(int(s['text']) >= 100 for s in all_numbers), '应覆盖三位行号')
 
 
 def check_code_palette(checker, doc, name, sample_tokens=False):

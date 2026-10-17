@@ -11,6 +11,7 @@
 | `sample.sh` | Bash 高亮 |
 | `Makefile test` | 含空格的路径与 Makefile 高亮 |
 | `long-code.cpp` | 长代码跨页，确认续页不重复标题 |
+| `line-number-wrap.cpp` | 四行人工代码，覆盖长行折行、空行编号、源文件行号及新卡片重新从 1 开始 |
 | `landscape-long.cpp` | 横版与代码版的人工长代码：100 个编号不同的声明，用于核对单个卡片跨栏、跨页的顺序与完整性；不是算法模板 |
 
 前五个由 `mystyle/` 的样张引用，布局样张也可以复用。

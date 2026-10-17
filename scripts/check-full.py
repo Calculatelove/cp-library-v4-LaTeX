@@ -45,6 +45,16 @@ EDGES = (('左栏左缘', LEFT_START, 'start'), ('左栏右缘', LEFT_END, 'end'
          ('右栏左缘', RIGHT_START, 'start'), ('右栏右缘', RIGHT_END, 'end'))
 
 
+def is_card_line_number(span):
+    """只跳过位于规定框外位置的行号，不笼统忽略栏距中的小字或数字。"""
+    text = ''.join(ch['c'] for ch in span['chars']).strip()
+    return (text.isascii() and text.isdigit() and 'Maple' in span['font']
+            and abs(span['size'] - 4 * 72 / 72.27) < .02
+            and span['color'] == 0x808080
+            and any(abs(span['bbox'][2] - (edge - MM)) < .05
+                    for edge in (LEFT_START, RIGHT_START)))
+
+
 def read(path):
     """读取 PDF，返回 (逐字记录, 文字行记录, 各页尺寸)。
 
@@ -59,13 +69,19 @@ def read(path):
             for block in page.get_text('rawdict')['blocks']:
                 for line in block.get('lines', []):
                     text = []
+                    boxes = []
                     for span in line['spans']:
+                        if is_card_line_number(span):
+                            continue
                         for ch in span['chars']:
                             x0, y0, x1, _ = ch['bbox']
                             chars.append((number, width, ch['c'], x0, x1, y0, span['size']))
                             text.append(ch['c'])
+                            boxes.append(ch['bbox'])
                     if ''.join(text).strip():
-                        x0, y0, x1, _ = line['bbox']
+                        x0 = min(b[0] for b in boxes)
+                        y0 = min(b[1] for b in boxes)
+                        x1 = max(b[2] for b in boxes)
                         lines.append((number, x0, x1, y0))
     return chars, lines, sizes
 

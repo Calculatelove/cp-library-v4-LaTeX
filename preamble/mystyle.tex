@@ -93,8 +93,15 @@
       input-code-title/.try
     ]
     \xeCJKsetup{CJKecglue={}}
+    % 行号向卡片左边框外悬挂；零宽度编号盒不挤占代码区，也不影响折行。
+    % numbersep 从代码左缘量起：左内距 2.5 mm + 边框 0.4 pt + 框外 1 mm。
+    \renewcommand{\theFancyVerbLine}{{%
+      \use:c {FV@FontFamily}\mdseries\upshape\fontsize{4}{10.5}\selectfont
+      \color[HTML]{808080}\arabic{FancyVerbLine}}}
     % 上下留白由卡片的 top/bottom 管理，不叠加 FancyVerb 列表间距。
     \inputminted[mathescape=false,texcomments=false,autogobble=false,
+      linenos=true,firstnumber=1,stepnumber=1,numberblanklines=true,
+      numbersep=\dimexpr 3.5mm+0.4pt\relax,
       listparameters={\setlength{\topsep}{0pt}\setlength{\partopsep}{0pt}},
       vspace=0pt]{#2}{#3}
     \end{tcolorbox}

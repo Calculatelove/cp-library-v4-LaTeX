@@ -14,4 +14,6 @@ for name in ('syntax-colors', 'code-cards'):
     with c.section(name):
         with c.open(pc.BUILD / f'portrait/{name}.pdf', '请先运行 bash preamble/tests/portrait/run.sh') as doc:
             pc.check_code_palette(c, doc, name, sample_tokens=(name == 'syntax-colors'))
+            if name == 'code-cards':
+                pc.check_code_line_numbers(c, doc)
 sys.exit(c.finish())

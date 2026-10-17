@@ -41,6 +41,17 @@ class CheckFullTests(unittest.TestCase):
         chars = [self.char(100, 140, page=1, size=c.TITLEPAGE_SIZE + 4), self.char(100, 110, page=2)]
         self.assertEqual(c.title_pages(chars), [1])
 
+    def test_card_line_numbers_are_identified_narrowly(self):
+        """框外行号可跳过；同位置的正文数字、错误字号或偏移的数字仍须检查。"""
+        span = {'chars': [{'c': ch} for ch in '123'], 'font': 'MapleMono-NF-CN-Regular',
+                'size': 4 * 72 / 72.27, 'color': 0x808080,
+                'bbox': (c.RIGHT_START - 14, 100, c.RIGHT_START - c.MM, 108)}
+        self.assertTrue(c.is_card_line_number(span))
+        for changed in ({'color': 0x30343B}, {'size': 8}, {'font': 'LatinModernMath'},
+                        {'chars': [{'c': 'x'}]},
+                        {'bbox': (c.RIGHT_START - 14, 100, c.RIGHT_START - 2 * c.MM, 108)}):
+            self.assertFalse(c.is_card_line_number(dict(span, **changed)))
+
     def test_geometry_matches(self):
         """四条栏边各有足够多的正文行对齐、纸张为 A4 横向时没有问题。"""
         lines = [(2, c.LEFT_START, c.LEFT_END, 100), (2, c.RIGHT_START, c.RIGHT_END, 100)] * c.EDGE_MIN_LINES

@@ -66,6 +66,7 @@ for name in ('code-cards', 'syntax-colors'):
         with c.open(OUT / f'{name}.pdf', HINT) as doc:
             pc.check_code_palette(c, doc, name, sample_tokens=(name == 'syntax-colors'))
             if name == 'code-cards':
+                pc.check_code_line_numbers(c, doc, twocolumn=True)
                 segments, lines = [], []
                 for i, page in enumerate(doc):
                     for col, text in column_texts(page):
