@@ -1,259 +1,52 @@
-# 纵向版布局检验
+# 竖版布局检验
 
-本目录仅测试 `preamble/` 的纵向布局，全部内容为独立样例，不引用或修改 `contents/` 章节。
+本目录检验 `preamble/layout-portrait.tex` 及其与共用实现、自定义接口的组合。全部为独立样例，不引用章节。
 
-## 源码与产物
+## 样张
 
-| 源码 | 用途 | PDF（位于 `preamble/tests/build/portrait/`） |
+| 源码 | 检验内容 | PDF（在 `../build/portrait/`） |
 | --- | --- | --- |
-| `titlepage.tex` | 扉页：横、竖两种配图与无配图，提交说明含特殊字符、超长换行、dirty 标注及提交信息缺失，扉页后正文页码；用 `\TitlePageReadCommit{<文件>}` 改读 `fixtures/` 中的提交信息（2026-10-16 起三版共用此命令） | `titlepage.pdf` |
-| `check-titlepage.py` | 检查上述 PDF 的标题区字体、颜色与固定位置，配图区域尺寸，提交信息原样输出、换行与底边，PDF 文档属性及页码；需要 PyMuPDF | — |
-| `toc-layout.tex` | 单栏三级目录、长标题续行、页码对齐与页底主题 | `toc-layout.pdf` |
-| `code-cards.tex` | 语言图标、通用图标、长标题换行、短代码与跨页卡片 | `code-cards.pdf` |
-| `symbols.tex` | 单色符号的标题、目录、页眉、正文、字号、字重、引用块、文字提取与书签 | `symbols.pdf` |
-| `preview.tex` | 标题页、目录、正文、标题层级、页眉页码、脚注、嵌套列表、高亮、代码和引用跨页 | `preview.pdf` |
-| `section-breaks.tex` | 一级标题分页回归；以页码断言检查空小标题、空一级标题、普通正文、目录、显式分页及星号标题 | `section-breaks.pdf` |
-| `heading-levels.tex` | 四、五级标题与三级标题、正文、公式、引用块、高亮、列表的衔接，长标题换行，以及带剩余空间断言的页底边界 | `heading-levels.pdf` |
-| `check-headings.py` | 检查上述 PDF 的标题字体字号、独立成行、与后文同页、竖向间距及书签层级；需要 PyMuPDF | — |
-| `math-stix.tex` | STIX Two Math 对照样张 | `math-stix.pdf` |
-| `math-latin-modern.tex` | Latin Modern Math 默认数学样张 | `math-latin-modern.pdf` |
-| `math-content.tex` | 上述两份数学样张共用的内容，不能独立编译 | — |
-| `syntax-colors.tex` | 代码四色配色与常规直立字形；正文在 `../fixtures/syntax-colors-body.tex`，与横版、代码版共用，本文件只载入竖版布局 | `syntax-colors.pdf` |
-| `check-syntax-colors.py` | 检查 `syntax-colors.pdf` 与 `code-cards.pdf` 的代码配色、字重与直立字形；需要 PyMuPDF | — |
-| `run.sh` | 调用 `scripts/xelatex-converge.sh` 编译全部或指定样张：至少两轮、最多八轮，检查辅助文件收敛、缺字、溢出、字体替换及页眉高度 | — |
+| `titlepage.tex` | 扉页：横、竖两种配图与无配图；提交说明含全部 TeX 特殊字符、超长换行、dirty 标签，以及提交信息文件不存在；扉页后的正文页码。用 `\TitlePageReadCommit{<文件>}` 改读 `../fixtures/` 中的提交信息，不依赖本仓库的 Git 状态 | `titlepage.pdf` |
+| `toc-layout.tex` | 单栏三级目录、各级长标题续行与页码对齐；页底空间不足时，三级标题组整体移到下一页（第 2 页特意留白以构造边界） | `toc-layout.pdf` |
+| `code-cards.tex` | 语言图标与通用图标、长标题换行、短代码与跨页卡片 | `code-cards.pdf` |
+| `symbols.tex` | ⭐、🚩 在标题、目录、页眉、正文、引用块中的字号与字重，文字提取与书签；断言正文与 22 pt 粗体标题中两个符号的宽度 | `symbols.pdf` |
+| `preview.tex` | 综合样张：扉页、目录、正文、标题层级、页眉页码、脚注、嵌套列表、高亮、代码与引用跨页，以及 Maple 行内代码（中文、易混淆字符、运算符与转义符号） | `preview.pdf` |
+| `section-breaks.tex` | 一级标题前分页：以页码断言检查空小标题、空一级标题、普通正文、目录、显式分页与星号标题；应为 7 页，目录后 A—F 各占一页 | `section-breaks.pdf` |
+| `heading-levels.tex` | 四、五级标题与三级标题、正文、公式、引用块、高亮、列表的衔接，以及长标题换行；第 2—5 页把正文推到页底，断言剩余空间介于标题本身与标题加首行之间，否则编译报错 | `heading-levels.pdf` |
+| `math-latin-modern.tex`、`math-stix.tex` | 默认数学字体 Latin Modern Math 与 STIX Two Math 的对照，正文相同（`math-content.tex`，不能单独编译）：行内公式、黑板粗体、花体、粗体希腊字母、求和、积分、分式、矩阵与引用块；`\boldsymbol` 作用于含分式、定界符与 min 算子的表达式；递推式中的 log 与粗体 log；普通、上下标与粗体的 `\mathrm{base}`，以及 `\text{base}` | `math-latin-modern.pdf`、`math-stix.pdf` |
+| `syntax-colors.tex` | 四色配色与常规直立字形；正文在 `../fixtures/syntax-colors-body.tex`，与横版、代码版共用 | `syntax-colors.pdf` |
 
-三个检查脚本共用 `../pdfcheck.py`，失败时列出全部未通过项并返回 1；也可用 `scripts/check.sh --full` 一并运行。
+## PDF 检查
 
-两份数学样张的正文均使用 Latin Modern Roman，除标识文字外只改变数学字体；包含行内公式、黑板粗体、花体、粗体希腊字母、求和、积分、分式、矩阵与引用块。代码引用复用 `preamble/tests/fixtures/` 的五个原样资源。
+| 脚本 | 断言 |
+| --- | --- |
+| `check-titlepage.py` | PDF 标题与作者取自入口元信息；书名、英文书名、作者的字体、字号与基线位置，水平居中，各页一致；配图在 130 × 110 mm 区域内等比缩放，不与文字重叠；提交信息为眉题式三行：眉题“LAST COMMIT”，日期与哈希（Maple Mono，哈希为 `506B82`），提交说明与资源逐字一致（`--` 不被替换为连接号）；各行不含“·”；dirty 时第二行末尾有带唯一细框的标签；相邻汉字的步进等于字号（TikZ 的 `align=center` 会拉开字距）；超长说明居中换行、向上增长，不进入下边距；提交信息缺失时只显示标题区；扉页无页码，其后正文照常编号 |
+| `check-headings.py` | 四、五级标题为苹方 Semibold 10.5 pt，独立成行，与其后第一行同页；四级标题上下的基线距为 24/20 pt（容差 1 pt），三级更大，三级紧接四级时介于正文行距与 24 pt 之间；页底的标题移到下一页页首；书签层级为 4、5 |
+| `check-syntax-colors.py` | `syntax-colors.pdf` 与 `code-cards.pdf` 中的代码只用四种颜色，没有粗体或斜体；跨页卡片的续页颜色不变 |
 
-两份数学样张均保留 `\boldsymbol` 的完整表达式语义：显式配置 bold 数学版本，符号使用 `FakeBold=1.2` 轻度合成加粗，直立算子使用所选数学字体（`\setoperatorfont{\symup}`），随 bold 数学版本合成加粗；显式 `\mathrm` 通过带外层分组的 `\symup` 使用所选数学字体，兼容 `^\mathrm{mid}`、`_\mathrm{mid}` 的原有写法，`\text` 保持正文字体。复合粗体样例包含分式、定界符和 min 算子，并增加递推式中的 log 与粗体 log 检验，以及普通、上下标、粗体 `\mathrm{base}` 与 `\text{base}` 对照。
-
-## 依赖与运行
-
-需要 XeLaTeX、可用的 `latexminted`，以及 `packages.tex` 中的宏包。字体需要 Songti SC、PingFang SC、Maple Mono NF CN（含常规、粗体、斜体、粗斜体）；Latin Modern Roman、STIX Two Math、Latin Modern Math 使用 TeX Live 提供的字体文件。字体缺失时应报错，不自动改用其他字体。
-
-从项目根目录运行：
+## 运行
 
 ```sh
-preamble/tests/portrait/run.sh
+bash preamble/tests/portrait/run.sh
+bash preamble/tests/portrait/run.sh titlepage symbols
+python3 preamble/tests/portrait/check-titlepage.py
+python3 preamble/tests/portrait/check-headings.py
+python3 preamble/tests/portrait/check-syntax-colors.py
 ```
 
-脚本也支持从其他目录启动，可只传入样张名，例如 `preamble/tests/portrait/run.sh titlepage symbols`；编译循环与根目录 `run.sh` 共用 `scripts/xelatex-converge.sh`。无需不受限的 `-shell-escape`；PDF、日志、辅助文件与 minted 缓存全部保留在已忽略的 `preamble/tests/build/portrait/`，便于检查。不会调用根目录 `run.sh` 或清理其他测试产物。
+编译方式、产物位置与 PDF 检查的共同约定见 `../README.md`。字体需要 Songti SC、PingFang SC 与 Maple Mono NF CN（常规、粗体、斜体、粗斜体）；Latin Modern Roman、Latin Modern Math 与 STIX Two Math 使用 TeX Live 提供的字体文件。
 
-macOS 沙箱中的 XeLaTeX 可能无法通过名称访问苹方和用户安装的 Maple 字体，即使系统能够列出它们。本轮在允许访问 macOS 字体服务的编译环境中验证成功；未复制字体、修改系统字体缓存或硬编码用户字体路径。
+## 人工检查要点
 
-## 设计参数与检查项
+- 代码中的运算符与 `fi`、`fl`、`ffi`、`ffl` 没有连字；中文注释与 ASCII 对齐；代码标题栏没有用 Maple。
+- 跨页的代码卡片与引用块不侵入页眉页脚。
+- 目录页码与标题的起页一致；书签包含全部标题层级，并默认展开。
+- 日志中 xeCJK 的字体族重定义提示是预期的；不应出现缺字或字体替换。
 
-- A4 单栏；左右各 20 mm；上下各 15 mm 包含页眉页脚，正文宽 170 mm。
-- 中文宋体、西文 Latin Modern Roman，正文 10.5/15 pt；黑体标题 22/28、14/19、11.5/16 pt；四、五级与正文同为 10.5/15 pt 的苹方 Semibold，独立成行。
-- 代码 Maple Mono NF CN，9/12 pt；关闭 liga、clig、dlig、hlig、calt、tlig；启用 cv01 去除符号间隙、cv32—cv37 使用常规斜体；标题栏苹方 Medium 9/12 pt。行内代码不随之改字体。
-- 默认无代码行号，长行仅视觉折行；标题不在续页重复。语言级 `setminted` 仍可覆盖默认设置。
-- 章节另起页，不强制奇数页；章首页无页眉，其他页面统一显示当前一级标题；页码居中。
-- 分页由 `cmd/section/before` 钩子执行；不能仅依赖 `sectionbreak`，因为 titlesec 在上一标题没有正文时会跳过该接口。`section-breaks.tex` 应为 7 页，目录页后 A—F 各占一页。
-- 目录显示到三级，PDF 书签包含全部标题层级并默认全部展开。检查目录页码与标题起页一致。
-- 检查代码中的运算符与 `fi/fl/ffi/ffl` 无连字、中文注释与 ASCII 对齐、标题栏未使用 Maple；两类跨页盒子不侵入页眉页脚。
-- 字体配置从 Fandol 切换到纵向版字体时，xeCJK 的两条 family 重定义提示为预期提示；不应出现缺字或 font shape 替换。
-
-可用 Poppler 渲染及检查字体：
+可以用 Poppler 渲染页面、查看嵌入的字体：
 
 ```sh
 mkdir -p preamble/tests/build/portrait/render
 pdftoppm -scale-to 1600 -png preamble/tests/build/portrait/preview.pdf preamble/tests/build/portrait/render/preview
 pdffonts preamble/tests/build/portrait/preview.pdf
 ```
-
-苹方的简体和香港字形共享 TTC 中的 CFF 轮廓表，因此 PDF 字体清单可能显示 `PingFangHK`；布局选择的仍是 `PingFang SC`，不能仅凭共享 CFF 名称判断字体被替换。
-
-## 本轮验证（2026-10-12）
-
-三份样张均编译收敛：综合样张 6 页，两份数学样张各 1 页。检查全部 8 页渲染，标题、目录、公式、代码标题、颜色范围与跨页未发现遮挡或裁切；日志无缺字、Overfull 或字体字形替换。另检查字体嵌入及代码内容。
-
-这是导言区样张验证，不代表完整笔记已经通过编译或视觉验收。完整入口引用的 19 篇章节文件现已全部存在（含补齐的 0x51、0x52）；本次仅核对文件与引用路径，未重新编译完整笔记。
-
-用户已选定 Latin Modern Math 为纵向版默认数学字体；西文正文现使用 Latin Modern Roman。综合样张和默认数学样张直接读取此配置，STIX 对照样张显式覆盖数学字体。
-
-切换默认数学字体后，三份样张再次各两轮编译收敛；综合 PDF 已确认嵌入 Latin Modern Math，日志无缺字、Overfull 或字体替换，并重新检查受影响的正文及跨页公式页面。完整笔记未在本轮重编译。
-
-算子字体修复（2026-10-12）：纵向布局新增 `\setoperatorfont{\symup}`，使 `\log`、`\min`、`\lim` 和 `\operatorname` 跟随数学字体，覆盖普通与 bold 数学版本；显式 `\mathrm` 的正文罗马字体语义保持不变。三份样张各两轮收敛，日志无缺字、Overfull 或字体替换；逐文本片段检查确认默认样张算子来自 Latin Modern Math、STIX 对照算子来自 STIX Two Math。新增递推式与粗体 log 后，默认数学样张 1 页、STIX 对照 2 页，已检查数学样张渲染及 6 页综合样张总览，无裁切遮挡。完整笔记未重编译。
-
-一级标题分页修复（2026-10-12）：先用新增回归样张复现“预期第 3 页、实际第 2 页”，再将纵向布局的分页操作移至 `cmd/section/before`。四份样张均两轮收敛，日志无缺字、Overfull 或字体替换；检查回归样张全部 7 页渲染与目录页码，空标题后另起页、星号标题和已有分页均正常，无额外空白页。此次未重新逐页检查原有三份样张，完整笔记 PDF 未重建。
-
-引用块段落修复（2026-10-12）：公共 `quoteblock` 改为保留所在版式的段落参数，纵向版因此恢复 `3pt plus 1pt minus 1pt` 段间距。四份纵向样张各两轮收敛，日志无缺字、Overfull 或字体替换；已渲染检查综合样张第 3、5、6 页的引用块、列表、公式及续页，无遮挡或裁切。本轮未逐页复查其余页面，完整笔记未重建。
-
-页眉调整（2026-10-12）：普通正文页统一使用一级标题标记，不再按奇偶页切换层级；章首页仍无页眉。四份纵向样张均两轮收敛，日志无缺字、Overfull 或字体替换；综合样张第 5、6 页已提取文字并渲染检查，奇偶页均显示“0x01 代码字体与跨页”，无裁切遮挡。完整笔记未重编译。
-
-`\mathrm` 字体修复（2026-10-12，接续上项）：纵向布局新增 `\unimathsetup{mathrm=sym}`，将显式直立数学字母改为所选数学字体；`\text` 保持正文字体。新增普通、下标与粗体 `\mathrm{base}` 对照，修复前 PDF 三者分别使用 STIX Two Text 的常规／粗体，修复后均使用 Latin Modern Math；STIX 数学对照则均使用 STIX Two Math。四份纵向样张（含 section-breaks）各两轮编译收敛，日志无缺字、Overfull 或字体替换；两份数学样张现各 2 页，均已渲染检查，无裁切遮挡。完整笔记未重编译。
-
-`\mathrm` 上下标兼容修复（2026-10-12）：完整正文的 `^\mathrm{mid}` 在 `mathrm=sym` 设置下触发 `Missing { inserted`。已用独立样例复现，改为在 `begindocument/end` 钩子中将 `\mathrm` 定义为带外层分组的 `\symup`，兼容未额外分组的上下标，并避免 unicode-math 初始化覆盖。未修改正文。四份纵向样张各两轮通过，PDF 字体检查确认普通、下标、粗体与未分组上下标仍使用所选数学字体；`\text` 保持 STIX Two Text。`./run.sh portrait` 三轮收敛，生成 151 页完整 PDF；已渲染检查原报错公式所在第 65 页及默认数学回归样张。完整 PDF 尚未逐页验收；末轮仍有 4 条 Overfull、13 条缺字警告（⭐、🚩、⫋），以及 amsmath 的括号／atopwithdelims 警告，未在此字体兼容修复中处理。
-
-
-## 单色符号修复（2026-10-12）
-
-纵向布局通过 `newunicodechar` 将原字符 `⭐`、`🚩` 映射到项目内的 Noto Emoji 常规静态字体。章节原文不变；符号随字号缩放、继承颜色，在粗体／斜体环境中保持常规直立字形。PDF 书签保留原 Unicode。来源、许可和字体生成方式见 `../../fonts/README.md`。这不是全局缺字自动回退，亦不改变 minted 内的字符处理。
-
-`symbols.tex` 修复前复现两种字符的缺字；修复后全部五份纵向样张各两轮收敛，无缺字、Overfull 或字体替换。符号样张共 3 页，全部渲染检查无裁切遮挡；`pdffonts` 确认 NotoEmoji-Regular 嵌入且有 Unicode 映射，文字提取保留两种字符，书签核对为“符号检验⭐🚩”“多项式全家桶⭐”“质数🚩”。其余四份样张本轮只做编译回归，未重新逐页视觉验收。
-
-`./run.sh portrait` 三轮收敛，完整 PDF 151 页，末轮无缺字；仍有原有 4 条 Overfull 和 amsmath 括号／atopwithdelims 警告。已检查目录第 3、4 页和第 67、105、111、118、126、137 页的符号标题区域，六个书签和文字提取均保留 Unicode。未逐页验收完整 PDF。此次没有修改正文；其他既有缺字警告的变化不归因于该映射。
-
-本次新增公共宏包后，五份 mystyle 独立接口样张也各两轮编译通过，日志无缺字、Overfull 或字体替换；本轮未重新逐页视觉验收这些独立样张。
-
-
-符号间距修复（2026-10-12）：xeCJK 默认中西文间距取当前字体的空格，而 Noto Emoji 空格宽约 1.27em。纵向布局在两个符号命令的局部分组中将 CJKecglue 设为 0.25em，不影响其他文字的间距。symbols.tex 新增正文与 22pt 粗体标题的双符号宽度断言，修复前失败、修复后通过。五份纵向样张各两轮收敛，无缺字、Overfull 或字体替换；符号样张全部 3 页重新渲染检查，书签及 Unicode 提取正常。完整笔记三轮收敛，151 页，无缺字，原有 4 处 Overfull 与 amsmath 警告仍在；重新检查目录和六处符号标题区域，未逐页验收完整 PDF。
-
-引用块左侧间距调整（2026-10-12）：公共 `quoteblock` 左内边距由 2 mm 改为 `\dimexpr\ccwd+2pt\relax`，使竖线内侧至正文约为一个中文字宽，并随字号变化；其余三侧仍为 2 mm。引用块与分隔线独立样张各两轮通过，全部 3 页已渲染检查；五份纵向样张各两轮收敛，日志无缺字、Overfull 或字体替换，已检查综合样张第 3、5、6 页。完整竖版通过 `./run.sh portrait` 三轮收敛，仍为 151 页，末轮无缺字，保留原有 4 条 Overfull 与 amsmath 警告；已渲染检查完整 PDF 第 105 页的实际引用块，未逐页验收完整 PDF。
-
-引用块间距基准更正（2026-10-12）：按用户确认，以竖线外侧为基准，将左内边距改为 `left=\ccwd`，一个中文字宽包含竖线自身厚度。引用块、分隔线独立样张各两轮通过，全部 3 页已渲染检查；五份纵向样张各两轮收敛，日志无缺字、Overfull 或字体替换，已检查综合样张第 3、5、6 页。完整竖版三轮收敛，仍为 151 页，末轮无缺字，原有 4 条 Overfull 与 amsmath 警告不变；已检查第 105 页实际引用块，未逐页验收全文。
-
-
-Maple 代码字形调整（2026-10-12）：按用户要求，纵向布局的拉丁与中文代码字体均启用 cv01，去除 @、$、&、% 等符号的间隙；启用 cv32—cv37，将 f、i、j、k、l、x、y 的手写斜体切换为常规斜体，保留倾斜及原有连字禁用设置。综合样张补充符号与斜体字符检验。五份纵向样张各两轮收敛，日志无缺字、Overfull 或字体替换；已渲染检查综合样张第 4 页，目标字形生效，无裁切遮挡。完整竖版通过 ./run.sh portrait 三轮收敛，仍为 151 页，末轮无缺字，保留原有 4 条 Overfull 与 amsmath 警告；本次未逐页验收完整 PDF。未修改正文，横版和代码版仍为空占位。
-
-
-## InputCode 卡片设计（2026-10-12）
-
-按批准方案实现浅灰标题栏（F5F5F7）、白色代码区、0.4 pt 灰色边框（D1D1D6）、2 mm 圆角，无黑色标题分隔线。文件名颜色 1D1D1F；纵向标题使用苹方 Medium 9/12 pt。左侧 Nerd Font 图标为单色灰黑（6E6E73），复用已安装的 Maple Mono NF CN，不新增字体文件，不显示右侧语言或版本。图标由现有语言参数选择，当前覆盖 C、C++、Python、Bash、Makefile 及相应别名；其余语言使用通用代码文件图标。映射依据 [Nerd Fonts 官方 glyphnames.json](https://github.com/ryanoasis/nerd-fonts/blob/master/glyphnames.json)。
-
-设置 boxsep=0pt，标题左右内距 2.5 mm、上下 1.5 mm；图标占 4 mm；代码区不随文件名缩进，左右内距均为 2.5 mm、上下 2 mm。长标题完整换行且续行与文件名对齐；续页不重复标题与图标，分页连接处直边，只在代码块首尾保留圆角。接口参数、正文、代码字体与高亮不变。
-
-新增 `preamble/tests/portrait/code-cards.tex`（2 页）并纳入纵向检验脚本；修改前复现长标题 147.52 pt 溢出，修改后无溢出。六份纵向样张与五份独立接口样张各两轮编译通过，日志无缺字、Overfull 或字体替换。已逐页渲染检查代码卡片样张 2 页、独立代码样张 1 页及独立跨页样张 2 页，并检查综合样张第 4、5 页；文字提取确认图标码位、长标题完整、跨页标题只出现一次及 36 行代码无遗漏。其余独立接口与纵向样张本轮仅编译回归，未重新逐页视觉验收。
-
-完整竖版通过 `./run.sh portrait` 三轮收敛，仍为 151 页；末轮无缺字，原有 4 条 Overfull 与 2 条 amsmath 警告仍在。已渲染检查完整 PDF 第 20、21 页 KMP 跨页及第 110 页长文件名，未逐页验收全文。横版与代码版仍为空占位；本次未修改正文、未提交或推送。
-
-
-InputCode 代码区缩进调整（2026-10-12）：按用户要求，代码区左内距由 6.5 mm 改为 2.5 mm，与右内距一致，不再与标题文件名对齐；标题图标及长标题续行对齐保留。六份纵向样张和两份独立代码样张各两轮通过，日志无缺字、Overfull 或字体替换；已检查代码卡片两页及独立代码样张，独立样张显式开启的行号使用 minted 默认外侧位置。完整竖版三轮收敛，151 页，无缺字，仍有原有 4 条 Overfull 与 2 条 amsmath 警告；已检查完整 PDF 第 20、21 页，未逐页验收全文。
-
-
-## 低饱和度代码高亮（2026-10-12）
-
-纵向布局落实用户指定的白底四色方案：普通名称、函数调用、运算符和标点 `30343B`，关键字、类型、数字及预处理指令 `506B82`，字符串与字符 `58715D`，注释 `70757D` 且斜体；其他代码为 Regular，不用粗体区分 token。C++ 的 `vector`、`string`、`pair` 通过 minted 的 `extrakeywordstype` 补充；这是词法名称表，不做 C++ 语义分析（自定义类型、常量标识符的语义不自动推断）。
-
-实现位于 `preamble/layout-portrait.tex`：以 `style=bw` 提供 Pygments 转义接口，通过 minted 样式加载后的钩子使用有限的 token 映射，覆盖默认粗体、额外颜色与错误边框；仅对 bw 生效。使用 minted 3.x / Pygments 2.x 的内部 token 接口，升级依赖后需运行配色检验。没有新增系统 Python 插件或不受限 shell escape。卡片正文 `coltext` 同时设置为深灰，避免续页回到纯黑。
-
-新增 `syntax-colors.tex`（1 页）与 `check-syntax-colors.py`。修改前实际 PDF 包含红紫等 11 个色值；修改后只使用指定四种代码文字颜色。跨页卡片检查曾复现续页纯黑，修复后两份 PDF 的颜色、Regular 字重及注释斜体断言通过。七份纵向样张均两轮收敛，无缺字、Overfull 或字体替换；已渲染检查配色样张全部 1 页、代码卡片全部 2 页。其余纵向样张仅编译回归；本次未重新编译 mystyle 独立样张（公共接口未修改）。
-
-完整竖版通过 `./run.sh portrait` 三轮收敛，当前输出 153 页，末轮无缺字或字体替换，仍有 4 条 Overfull 与 2 条 amsmath 警告；已渲染检查第 20、21 页 KMP 跨页。未逐页验收全文，未做实物打印验收。本次未修改正文、横版或代码版，未提交或推送。
-
-配色检验命令（从根目录运行；第二条需要 Python 3 与 PyMuPDF）：
-
-```sh
-preamble/tests/portrait/run.sh
-python3 preamble/tests/portrait/check-syntax-colors.py
-```
-
-样张源码为 `preamble/tests/portrait/syntax-colors.tex`，产物为 `preamble/tests/build/portrait/syntax-colors.pdf`；颜色脚本也检查 `code-cards.pdf` 的跨页正文。PDF、日志和渲染图仍写入已忽略的测试构建目录。
-
-
-## InputCode 多余上下间距修复（2026-10-13）
-
-公共 `mystyle.tex` 在 `InputCode` 内的 `inputminted` 调用中设置 `vspace=0pt`，并通过 `listparameters` 将 `topsep`、`partopsep` 清零，消除 FancyVerb 额外的列表间距。卡片的上下 2 mm 内边距及卡片外间距不变；独立 minted 环境、原始代码中的空行不受影响。
-
-`preamble/tests/mystyle/input-code.tex` 新增实际列表间距断言：修改前以 `10pt plus 3pt minus 5pt` 失败，修改后通过。五份公共接口样张各两轮通过，七份纵向样张各两轮收敛，日志无缺字、Overfull 或字体替换；配色 PDF 检查仍通过。已渲染检查纵向代码卡片 2 页、独立代码样张 1 页及独立跨页样张 2 页，其余样张仅编译回归。
-
-完整竖版通过 `./run.sh portrait` 三轮收敛，由本次修复前的 153 页变为 151 页；末轮无缺字或字体替换，仍有原有 4 条 Overfull 与 2 条 amsmath 警告。已渲染检查第 20、21 页实际 KMP 跨页，未逐页验收全文。未修改正文、未提交或推送。
-
-
-## 代码块取消斜体（2026-10-13）
-
-按用户要求，纵向布局移除注释 token 的显式斜体设置，所有高亮代码使用常规直立字形；保留四色配色、代码字体、字号及卡片外观。更新配色样张文字及 PDF 检查脚本，要求代码文字均无 Bold / Italic 字体。字体族已有的 cv32—cv37 设置保留，但高亮不再调用斜体。
-
-七份纵向样张各两轮收敛，日志无缺字、Overfull 或字体替换；配色及跨页代码卡片的 PDF 颜色、常规字重与直立字体检查通过。已渲染检查配色样张 1 页及代码卡片 2 页，无裁切遮挡；其他样张仅编译回归。完整竖版通过 `./run.sh portrait` 三轮收敛，仍为 151 页，末轮无缺字或字体替换，保留原有 4 条 Overfull 与 2 条 amsmath 警告；本次未逐页验收完整 PDF。公共接口未修改，未重编译 mystyle 独立样张；未修改正文、横版或代码版，未提交或推送。
-
-
-## 目录与书签层级调整（2026-10-13）
-
-按用户要求，纵向布局将 `tocdepth` 改为 3，目录显示到三级；`bookmarksdepth` 改为 5，覆盖至 subparagraph，并移除 `bookmarksopenlevel=1` 限制，使全部书签默认展开。
-
-完整竖版通过 `./run.sh portrait` 三轮收敛，现为 153 页。全部 5 页目录（PDF 第 2—6 页）已渲染检查，无裁切遮挡；文字检查确认三级标题进入目录、四级标题不进入目录。PDF 共 208 个书签（一级 19、二级 90、三级 88、四级 11），全部展开，实际四级标题已收录；当前正文无五级标题，五级仅完成配置，未以实际正文验证。末轮无缺字或字体替换，仍有 4 条 Overfull、2 条 amsmath 警告，以及 xeCJK 字体族重定义与 tcolorbox nobreak 警告。本次未逐页验收正文，未重编译独立样张；未修改正文、横版或代码版，未提交或推送。
-
-
-## 单栏书籍目录样式（2026-10-13）
-
-按用户确认方案，纵向目录采用一级苹方 Medium 11/16 pt、二级宋体 10/14 pt、三级宋体 9.5/13 pt；缩进为 0、1、2 个正文中文字宽。一级章前 12 pt、章后 4 pt，二级条目前 3 pt；一级取消点线，二三级使用 `AAAAAA`浅灰点线。页码为常规字重、右对齐；去掉未编号条目的编号槽，使长标题续行与本级起点对齐，右侧预留页码区域。字号和段间距局限于目录条目，不改变正文。公共宏包增加 needspace，为一、二级条目预留后续行空间；多行标题的极端分页仍以实际试排为准，不强制整组条目同页。书签深度与默认全部展开保持不变。
-
-新增 `preamble/tests/portrait/toc-layout.tex` 并纳入运行脚本，检验三层目录、各级长标题换行和页底主题。八份纵向样张各两轮收敛，五份独立接口样张各两轮通过，日志无缺字、Overfull 或字体替换；配色与跨页代码检查通过。已渲染检查目录样张 1 页，以及完整 PDF 全部目录第 2—6 页，无裁切遮挡，长标题续行与页码对齐正常；其余样张本轮仅编译回归。
-
-完整竖版通过 `./run.sh portrait` 三轮收敛，仍为 153 页；PDF 字体与位置提取确认三级字号递减、逐级缩进，208 个书签全部展开。末轮无缺字或字体替换，原有 4 条 Overfull、2 条 amsmath 警告仍在。未逐页验收正文，未做实物打印验收；未修改正文、横版或代码版，未提交或推送。
-
-
-## 目录重新设计（2026-10-13，替代前一版目录样式）
-
-按逐项确认的新方案：一级黑体 Semibold 12 pt，二三级宋体 Regular 10 pt，各级行距均为 15 pt。当前机器未检测到思源宋体和 Noto Serif CJK，实际采用宋体 Songti SC Regular；一级为苹方 PingFang SC Semibold。布局中保留思源宋体、Noto Serif CJK 优先检测，当前未触发更后的 CID 回退。缩进以选定宋体在 10 pt 下“中”的实际宽度为基准，分别为 0、2、4 倍。一级前 12 pt、后 5 pt，二级前 4 pt，三级不额外加距；页首丢弃额外前留白。一级无引导线，二三级点线采用 `888888`，dotsep=2；页码统一 10 pt Regular、右对齐。
-
-目录条目使用完整段落盒，长标题续行与本级起点对齐，末行连接引导线及页码，单条不可跨页。通过相邻层级的分页惩罚将一级与后续首条、二级与首个三级条目保持同页，不捆绑整章。撤下前一版的固定 Needspace 估算及公共 needspace 宏包。`toc-layout.tex` 补充真实页底空间不足的样例，三级标题组整体移到下一页；样张现为 3 页（第 2 页特意保留空白以构造边界）。
-
-八份纵向样张均两轮收敛；新增分页边界后目录样张单独再两轮通过。日志无缺字、Overfull 或字体替换；代码配色及跨页检查通过。完整竖版通过 `./run.sh portrait` 三轮收敛，现为 154 页，目录为第 2—7 页。已逐页渲染检查全部 6 页目录与 3 页目录样张，无裁切遮挡；PDF 提取核对字号、字重、0/2/4 字宽缩进和 15 pt 基线间距，分页标题组同页，197 个目录链接有效、208 个书签全部展开。末轮仍有原有 4 条 Overfull、2 条 amsmath 警告，无缺字或字体替换。
-
-本轮未重编译 mystyle 独立样张，未逐页验收正文，未做实物打印验收；未修改正文、横版或代码版，未提交或推送。
-
-
-二级目录取消额外留白（2026-10-13）：按用户要求移除二级条目前额外的 4 pt，二三级均仅使用统一 15 pt 行距，一级留白保持不变。目录样张两轮通过，分页标题组同页；已渲染检查长标题样张第 1 页及完整目录全部第 2—6 页。PDF 提取确认连续二级条目的基线间距为 15 pt。完整竖版通过 `./run.sh portrait` 三轮收敛，现为 153 页；末轮无缺字或字体替换，仍有原有 4 条 Overfull、2 条 amsmath 警告。本轮未重编译其余独立样张、未逐页验收正文；未修改正文，未提交或推送。
-
-
-目录点线与一级页码调整（2026-10-13）：按确认方案，二三级连接点保留 `888888` 中灰色，改用固定 9 pt 宽的点盒，实际点中心间距为 9 pt；两端各留 3 pt，剩余空间不足一格时不强行绘点。一级页码增至 11 pt Regular，二三级页码仍为 10 pt，统一右对齐。目录样张两轮通过，分页标题组仍同页；已渲染检查长标题样张第 1 页及完整目录全部第 2—6 页，无裁切遮挡。PDF 提取验证首目录页 1523 个点间隔均为 9 TeX pt，并确认页码的 11/10 pt 字号。完整竖版通过 `./run.sh portrait` 三轮收敛，仍为 153 页；末轮无缺字或字体替换，原有 4 条 Overfull、2 条 amsmath 警告不变。本轮其余独立样张未重编译，未逐页验收正文，未修改正文、未提交或推送。
-
-
-一级目录字体优先级调整（2026-10-13）：按用户要求，一级目录中文与西文字体改为思源黑体 `Source Han Sans SC SemiBold` 优先，缺失时回退到系统黑体 `Heiti SC Medium`。本机未检测到思源黑体，实际采用 Heiti SC；该字体没有原生 Semibold，因此使用 `FakeBold=1.2` 轻度合成加粗，字号仍为 12 pt。一级页码仍为宋体/正文西文字体的 11 pt Regular，其他目录参数不变。目录样张两轮通过，分页标题组同页；完整竖版三轮收敛，仍为 153 页。PDF 字体提取确认一级目录中文来自 STHeitiSC-Medium；已渲染检查长标题样张第 1 页及完整目录全部第 2—6 页，无裁切遮挡。末轮无缺字或字体替换，保留原有 4 条 Overfull、2 条 amsmath 警告。思源黑体分支未在本机实际渲染验证；其余独立样张未重编译、正文未逐页验收；未修改正文，未提交或推送。
-
-
-思源字体安装后编译修复（2026-10-13）：已复现完整编译失败：`Source Han Serif SC Regular` 不存在。字体元数据确认新安装的 TTC 中，宋体 Regular 的完整名称为 `Source Han Serif SC`，旧配置在检测族名成功后错误追加 `Regular`，此前因未安装而未触发。移除思源宋体及 Noto Serif CJK 分支不可靠的 Regular 后缀；按族名选择其默认 Regular。另确认本机思源黑体提供 ExtraLight/Light/Normal/Regular/Medium/Bold/Heavy，没有 SemiBold；新增思源黑体原生 Bold 分支，避免已安装思源字体却仍回退 Heiti。保留 SemiBold 优先检测与系统黑体兜底。
-
-八份纵向样张各两轮收敛，无缺字、Overfull 或字体替换；配色检查通过，分页边界标题组仍同页。完整竖版通过 `./run.sh portrait` 三轮收敛，153 页；PDF 字体提取确认一级使用 SourceHanSans-Bold，二三级使用 SourceHanSerif-Regular，编译日志确认所选族为 SC。已渲染检查完整目录第 2—6 页及长标题样张第 1 页，无裁切遮挡。末轮无缺字或字体替换，保留原有 4 条 Overfull、2 条 amsmath 警告。Noto 分支未在本机实际渲染验证；未重编译 mystyle 独立样张、未逐页验收正文，未修改正文、未提交或推送。
-
-
-## 西文正文改用 Latin Modern Roman（2026-10-13）
-
-按用户确认的真实段落样张，纵向布局将西文正文由 STIX Two Text 改为 Latin Modern Roman，使用 TeX Live 的 lmroman10 静态 Regular / Bold / Italic / BoldItalic；正文仍为 10.5/15 pt。同步替换文本类数学字母的 bold 版本映射及两份数学对照样张的标识和映射。中文正文、标题、Latin Modern Math、代码块和行内代码字体配置不变；目录二三级的西文与目录数字页码继承新正文字体，一级目录仍使用思源黑体。未修改封面设计或正文内容。
-
-八份纵向样张各两轮收敛，无缺字、Overfull 或字体替换；代码配色及跨页卡片检查通过。两份数学样张共四页与目录样张第一页已渲染检查，无裁切遮挡；PDF 字体提取确认数学样张正文常规／粗体为 Latin Modern Roman，数学仍分别为 Latin Modern Math / STIX Two Math。
-
-完整竖版通过 ./run.sh portrait 三轮收敛，仍为 153 页；PDF 中无 STIX Two Text，西文常规／粗体为 Latin Modern Roman。末轮无缺字或字体替换，有 3 条 Overfull 与 2 条 amsmath 警告。已渲染检查完整 PDF 第 2、21、23、69 页，未逐页验收全文。其余纵向样张仅编译回归；公共接口未修改，未重编译 mystyle 独立样张。横版和代码版仍为空占位；未提交或推送。
-
-
-## 目录字体方案 A（2026-10-13）
-
-按用户确认，一级目录改用与正文标题一致的苹方 Semibold 12/15 pt；二三级中文沿用正文宋体 Songti SC Regular，西文为 Latin Modern Roman，分别为 10.5/15 pt、10/15 pt。移除目录专用思源／Noto／Heiti 字体选择分支。缩进仍为 0/2/4 个 10 pt 中文字宽，一级留白、9 pt 点距、15 pt 行距、分页保护和书签配置保持不变；页码仍为 Latin Modern Roman Regular，一级 11 pt，其余 10 pt。
-
-目录样张两轮编译通过，三页全部渲染检查，长标题续行与页码正常，分页边界三级标题组保持同页，日志无缺字、Overfull 或字体替换。字体与位置提取确认苹方 Semibold、宋体 Regular 及 12/10.5/10 pt 层级、0/2/4 字宽缩进。
-
-完整竖版经 ./run.sh portrait 三轮收敛，仍为 153 页。全部五页目录（第 2—6 页）已渲染检查，无裁切遮挡；197 个目录链接目标有效，208 个书签保留。第 7—153 页逐页提取文字与修改前一致。末轮无缺字或字体替换，保留 3 条 Overfull 与 2 条 amsmath 警告。本次未重编译其他独立样张，未逐页视觉验收正文；未修改正文或封面设计，未提交或推送。
-
-
-目录标题居中（2026-10-13）：按用户要求，仅为“目录”标题添加左右对称伸缩间距，字体、字号及上下间距不变，条目继续左对齐。目录样张同步使用标题后置设置，并保留末端对齐胶。样张两轮通过，无缺字、Overfull 或字体替换，已渲染检查第一页；完整竖版三轮收敛，仍为 153 页，已渲染检查第 2 页。PDF 坐标核对确认标题水平中心与纸张中心一致，纵向位置不变；除该标题外，全书文字位置、字体、字号与修改前一致。末轮仍有 3 条 Overfull 与 2 条 amsmath 警告，无缺字或字体替换。未重新逐页视觉验收正文或重编译其他样张；未修改正文，未提交或推送。
-
-
-## 四、五级标题（2026-10-14）
-
-按用户批准的方案，纵向布局为 `\paragraph`、`\subparagraph` 补充样式：独立成行，苹方 Semibold，与正文同为 10.5/15 pt；四级段前 6 pt、段后 2 pt，五级段前 5 pt、段后 2 pt。此前未设置，沿用 titlesec 默认的宋体粗体同行标题。
-
-`heading-levels.tex`（5 页）覆盖三级接四级、四级夹在正文之间（附正文粗体对照）、接行间公式、公式之后、引用块之后、接高亮正文、接列表、接五级标题和长标题换行。第 2—5 页为页底边界：先把正文推到页底，再以 `\pagegoal-\pagetotal` 断言剩余空间介于标题本身（约 24 pt）与标题加后文首行（约 44 pt）之间，不在此范围即编译报错；标题应移到下一页页首，与后接的正文或行间公式同页。
-
-`check-headings.py` 断言：标题行内文字均为苹方 Semibold 10.5 pt，没有同行正文；标题与其后第一行内容同页；四级标题上下基线距为 24/20 pt（容差 1 pt），三级标题上下距离均更大，三级紧接四级时介于正文行距与 24 pt 之间；页底标题位于下一页页首；书签层级为 4、5。
-
-修改布局前先复现：样张可编译，检查在第一个四级标题处失败（宋体粗体与同行宋体正文）。修改后九份纵向样张各两轮收敛，日志无缺字、Overfull 或字体替换；标题检查通过（四级 24.0/20.0 pt，三级 27.0/21.0 pt，三级接四级 22.3 pt），配色检查仍通过。其余八份样张与修改前逐页比较全部文字片段的位置、字体、字号和颜色，完全一致。已渲染检查标题样张全部 5 页，无裁切遮挡。完整竖版的结果见 `../../README.md`。
-
-```sh
-preamble/tests/portrait/run.sh
-python3 preamble/tests/portrait/check-headings.py
-```
-
-竖版与代码版代码字号调整（2026-10-14）：按用户要求，两版 minted 代码正文统一为 8/10.5 pt，覆盖 InputCode 与内嵌 minted；标题栏仍为 9/12 pt，行内代码及公共接口不变。竖版九份样张各两轮收敛，代码版 code-cards、syntax-colors 两份样张各两轮收敛，无缺字、Overfull 或字体替换。两版代码配色及常规直立字形检查通过，代码版 100 行跨栏代码完整；已逐页渲染检查两版代码卡片共 4 页，长标题、折行及跨页连接正常。
-
-完整竖版与代码版分别由 ./run.sh portrait、./run.sh code 三轮收敛，竖版由 153 页变为 145 页，代码版由 53 页变为 49 页；完整 PDF 中代码字体均提取为 7.970 PDF pt（8 TeX pt）。竖版末轮保留原有 3 条 Overfull 与 2 条 amsmath 警告；代码版无 Overfull，双栏检查报告 0 项警告。两版均无缺字或字体替换。未逐页验收完整 PDF、未做打印验收；未修改正文、横版或根 README，未提交或推送。
-
-
-2026-10-14：preview.tex 新增 Maple Mono NF CN 行内代码检验，覆盖中文、易混淆字符、运算符及转义符号；字号随正文。样张两轮收敛，字体提取与所在页渲染检查通过。
-
-
-## 扉页（2026-10-15）
-
-`titlepage.tex` 共 4 页：前 3 页为扉页，分别使用横向配图与含全部 TeX 特殊字符的提交说明、纵向配图与超长 dirty 提交说明、无配图且提交信息文件不存在；第 4 页为普通正文页。样张用 `\PortraitTitlePageReadCommit{<文件>}` 在 `\maketitle` 前改读 `fixtures/` 中的提交信息，不依赖本仓库的 Git 状态。资源说明见 `../fixtures/README.md`。
-
-`check-titlepage.py` 断言：PDF 标题、作者为入口元信息；三页扉页的书名、英文书名、作者分别为苹方 Semibold 44 pt、Regular 15 pt、Medium 12 pt，基线位于纸张中心上方 80、66.5、55 mm，水平居中，三页位置一致；配图在 130 × 110 mm 区域内等比缩放，中心位于纸张中心下方 20 mm，不与文字重叠；提交信息为眉题式三行：眉题“LAST COMMIT”为苹方 Medium 6.5 pt 且居中，第二行只有日期与哈希（Maple Mono，哈希为 `506B82`），各行均不含“·”；提交说明为苹方且与资源逐字一致（`--` 不被替换为连接号）；dirty 时第二行末尾有深色 6.5 pt“含未提交修改”，外有唯一一个 0.4 pt `D1D1D6` 细框包住文字，连同细框整行居中，clean 时没有细框；相邻汉字的步进等于字号，居中不拉开字距；超长说明居中换行并向上增长，末行贴近距纸张中心下方 131.5 mm 的底边，不进入 15 mm 下边距；提交信息缺失时只显示标题区；扉页不显示页码，其后正文页照常显示页码。
-
-```sh
-preamble/tests/portrait/run.sh
-python3 preamble/tests/portrait/check-titlepage.py
-```
-
-验证：十份纵向样张各两轮收敛，日志无缺字、Overfull 或字体替换；扉页、标题与配色三个检查脚本均通过。已渲染检查扉页样张全部 4 页。首版使用 TikZ 的 `align=center`，其居中胶只有有限伸缩（`plus 2em`），会连带拉开 xeCJK 的字间胶，汉字步进约为字号的 1.1—1.2 倍；改为 `align=flush center`（`fil` 胶）后步进等于字号。在临时副本中分别改回 `align=center`、把提交说明改回启用 TeX 连字的字体，`check-titlepage.py` 均报错，确认检查有效。
-
-提交信息改为眉题式后（2026-10-15），按新的行结构更新断言：眉题、日期与哈希、提交说明分行检查，并核对未提交修改标签的细框。十份样张各两轮收敛，日志无缺字、Overfull 或字体替换，三个检查脚本通过，已渲染检查扉页样张。在临时副本中去掉标签细框，`check-titlepage.py` 报错，确认新断言有效。

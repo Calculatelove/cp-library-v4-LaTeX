@@ -1,70 +1,34 @@
 # 横版布局检验
 
-本目录仅检验 `preamble/layout-landscape.tex` 及其与公共接口的组合，不引入 `contents/` 章节。使用 A4 横向双栏、12 mm 边距（包含页眉页脚）、8 mm 栏距、132.5 mm 栏宽；正文 10/14 pt，代码 8/10.5 pt。
-
-## 依赖与运行
-
-依赖 XeLaTeX、latexminted、TeX Live 的 mwe 示例图片、公共宏包、Songti SC、PingFang SC、Maple Mono NF CN、TeX Live 的 Latin Modern 字体及项目内 Noto Emoji。PDF 检查需要 Python 3 + PyMuPDF；可用 `pdftoppm` 渲染。不需要不受限 shell escape。
-
-从项目根目录运行：
-
-```sh
-bash preamble/tests/landscape/run.sh
-python3 preamble/tests/landscape/check-layout.py
-python3 preamble/tests/landscape/check-titlepage.py
-```
-
-两个检查脚本加参数 `code` 时检查代码版样张，见 `../code/README.md`。它们共用 `../pdfcheck.py`，失败时列出全部未通过项并返回 1。`flow`、`code-cards`、`toc-layout` 的正文在 `../fixtures/twocolumn-*-body.tex`，与代码版共用；`syntax-colors` 的正文在 `../fixtures/syntax-colors-body.tex`，与竖版、代码版共用。本目录的这四份样张只保留载入横版布局的包装。
-
-脚本也可从其他目录调用；自动回到项目根目录。支持将样张名作为参数，例如 `bash preamble/tests/landscape/run.sh flow toc-layout`。编译由 `scripts/xelatex-converge.sh` 完成（与根目录 `run.sh` 共用）：至少两轮、最多八轮，比较辅助文件和重编译提示；缺字、Overfull、字体替换或页眉高度不足时失败并保留日志。
-
-源码使用项目根目录相对路径。PDF、日志、缓存、渲染图片统一放在已忽略的 `preamble/tests/build/landscape/`。可按下面的命令渲染全部目录样张页：
-
-```sh
-pdftoppm -scale-to 1600 -png preamble/tests/build/landscape/toc-layout.pdf preamble/tests/build/landscape/toc-layout
-```
-
-若沙盒阻断 macOS 字体服务、已安装字体仍报找不到，应在允许访问系统字体的环境运行编译，不为此替换设计字体。完整笔记由根目录 `./run.sh landscape` 单独构建，输出 `build/landscape/main-landscape.pdf`。
+本目录检验 `preamble/layout-landscape.tex` 及其与共用实现、自定义接口的组合，不引用章节。版式为 A4 横向双栏，四边 12 mm（含页眉页脚），栏距 8 mm，栏宽 132.5 mm。
 
 ## 样张与检查
 
 | 文件 | 检验内容 |
 | --- | --- |
-| `titlepage.tex` | 4 页扉页样张：横向配图与含 TeX 特殊字符的提交说明（clean）；纵向配图与超长提交说明（dirty）；无配图且提交信息文件不存在；扉页后的双栏正文页。提交信息与配图取自 `../fixtures/`。 |
-| `flow.tex` | 同栏连续章节、左右栏跨章、连续空标题、栏底标题跟随正文或公式；页眉显示页顶所在的章（左栏顶端新章取该章，否则取页首延续的章）；含栏宽断言。 |
-| `preview.tex` | 中西文、粗体与斜体、数学算子和未分组直立上下标、Unicode 符号、五级标题、嵌套列表、多语言代码及公共接口。 |
-| `code-cards.tex` | 单个 100 行人工代码卡片从左栏底跨到右栏和下一页、标题不重复、长文件名、显示折行及内嵌 minted。 |
-| `syntax-colors.tex` | 四色高亮、C++ 类型和注释的常规直立字体，沿用竖版配色检验内容。 |
-| `interfaces.tex` | 65 段人工引用跨栏跨页，嵌套列表、公式、分隔线、高亮的范围。 |
-| `toc-layout.tex` | 两页真实目录、三级长标题、父子条目保护、通栏居中目录标题、88 个条目与 90 个五层书签。 |
-| `images.tex` | 图片按局部栏宽解释 `textwidth`，验证 106 mm 图片和整栏图、分组结束后整页宽度不变。 |
-| `check-layout.py` | 从实际 PDF 检查纸张、阅读流向、章名、代码完整性、引用段落顺序、配色及字重、目录分栏、链接目标和书签。 |
-| `check-titlepage.py` | 检查扉页样张的书名区位置与居中、110 × 70 mm 配图区域、眉题式提交信息、未提交修改标签、原样输出、换行与底边、页眉页码及 PDF 文档属性；加参数 `code` 检查代码版样张，另查书名后悬挂的“（代码版）”。 |
-## 完整横版溢出检查
+| `titlepage.tex` | 4 页：横向配图与含 TeX 特殊字符的提交说明（clean）；纵向配图与超长提交说明（dirty）；无配图且提交信息文件不存在；扉页后的双栏正文页。资源取自 `../fixtures/` |
+| `flow.tex` | 同栏连续章节、左右栏跨章、连续空标题、栏底标题跟随正文或公式；页眉显示页顶所在的章（左栏顶端恰为新章时取该章，否则取页首延续的章）；含栏宽断言 |
+| `preview.tex` | 中西文、粗体与斜体、数学算子与未分组的直立上下标、Unicode 符号、五级标题、嵌套列表、多语言代码、Maple 行内代码及各接口 |
+| `code-cards.tex` | 单个 100 行的人工代码卡片从左栏底跨到右栏与下一页，标题不重复；长文件名、显示折行与内嵌 minted |
+| `syntax-colors.tex` | 四色高亮、C++ 类型与注释的常规直立字体 |
+| `interfaces.tex` | 65 段人工引用跨栏跨页；嵌套列表、公式、分隔线、高亮的范围 |
+| `toc-layout.tex` | 两页真实目录、三级长标题、父子条目保护、通栏居中的目录标题、88 个条目与 90 个五层书签 |
+| `images.tex` | 图片按局部栏宽解释 `\textwidth`：106 mm 的图与整栏图，分组结束后整页宽度不变 |
+| `check-layout.py` | 从 PDF 检查纸张、阅读流向、章名、代码完整性、引用段落顺序、配色与字重、目录分栏、链接目标与书签；加参数 `code` 检查代码版样张 |
+| `check-titlepage.py` | 书名区的位置与居中、110 × 70 mm 配图区域、眉题式提交信息、未提交修改标签、原样输出、换行与底边、页眉页码及 PDF 文档属性；加参数 `code` 检查代码版，另查书名后悬挂的“（代码版）” |
 
-完整笔记用 `./run.sh landscape` 构建。完整 PDF 的越栏检查不属于导言区检验，脚本已于 2026-10-16 由本目录移到 `scripts/check-full.py`；用法、保存完整构建控制台输出的方法及判定规则见 `scripts/README.md`。
+`flow`、`code-cards`、`toc-layout` 的正文在 `../fixtures/twocolumn-*-body.tex`，与代码版共用；`syntax-colors` 的正文在 `../fixtures/syntax-colors-body.tex`，与竖版、代码版共用。本目录的这四份样张只保留载入横版布局的包装。人工长代码在 `../fixtures/landscape-long.cpp`。
 
-`\Highlight` 由不可拆分的 `\colorbox` 实现，横版栏宽约 37 个汉字；段首高亮宜控制在约 33 个汉字以内（含公式按实际宽度估算）。原第 96 页 exBSGS 高亮越过纸边 6 pt，已由用户缩短 `0x34` 中 BSGS 与 exBSGS 两处高亮的括号说明解决。
+## 运行
 
-人工长代码在 `../fixtures/landscape-long.cpp`，其余代码复用既有资源。测试构造的大块留白用于触发边界，并非正文版式效果。测试脚本通过后仍需渲染检查边框、字形、长标题、跨栏连接处；本目录不代替完整笔记和实物打印验收。
+```sh
+bash preamble/tests/landscape/run.sh
+bash preamble/tests/landscape/run.sh flow toc-layout
+python3 preamble/tests/landscape/check-layout.py
+python3 preamble/tests/landscape/check-titlepage.py
+pdftoppm -scale-to 1600 -png preamble/tests/build/landscape/toc-layout.pdf preamble/tests/build/landscape/toc-layout
+```
 
+编译方式、产物位置与 PDF 检查的共同约定见 `../README.md`；本组另需 TeX Live 的 mwe 示例图片。
 
-横版与代码版目录缩进调整（2026-10-14）：按用户要求，两版均改为一级不缩进、二级两个“中”字宽、三级四个“中”字宽；基准为目录 Regular 字体 10 pt 下“中”的实测宽度，其他目录参数不变。两版 toc-layout 样张各两轮收敛，无缺字、Overfull 或字体替换；PDF 坐标确认 0/20/40 TeX pt 缩进，目录专项检查确认长标题、父子条目同栏、88 个链接和 90 个展开书签有效。已渲染检查横版样张两页及完整横版全部 4 页目录、代码版全部 2 页目录，无裁切遮挡。完整两版各三轮收敛，横版仍为 101 页、代码版仍为 53 页；分别有 197/111 个有效目录链接、208/112 个书签。横版保留既有 2 条 Overfull 和 2 条 amsmath 警告，栏边界检查通过；代码版无缺字、Overfull 或字体替换。未重编译其他样张或逐页验收正文。原有横版全套 PDF 检查在未重建的 flow 样张页眉断言失败，本轮仅单独运行并通过其中目录专项检查。未修改正文、竖版或根 README，未提交或推送。
-
-
-横版代码字号试调（2026-10-14）：按用户要求，仅横版 minted 代码正文由 9/11.5 pt 改为 8/10.5 pt，涵盖 InputCode 和内嵌 minted；标题栏仍为 9/12 pt。竖版、代码版、公共接口及正文未修改。code-cards、syntax-colors、preview 三份样张各两轮收敛，无缺字、Overfull 或字体替换；代码专项 PDF 检查通过，字号提取为 7.970 PDF pt（8 TeX pt），100 行跨栏代码完整、四色及直立常规字体正常。已渲染检查卡片样张全部 2 页与完整 PDF 第 13、18 页。
-
-完整横版经 ./run.sh landscape 三轮收敛，由 101 页减为 96 页；末轮仍有 2 条 Overfull 和 2 条 amsmath 警告，无缺字或字体替换。但重新分页使 0x12 第 73 行的光速幂行内公式移至第 13 页左栏，伸入栏距约 13.1 pt（4.6 mm），check-full.py 未通过；原 0x34 基底集合现位于第 72 页右栏，外侧溢出为 21.8 pt（7.7 mm）。当时左栏越栏按旧规则导致检查失败；后续用户已将双栏溢出统一改为仅警告，不再要求为此修改公式（见下条）。未逐页验收全文、未做打印验收；未提交或推送。
-
-双栏溢出统一为警告（2026-10-14，替代此前所有溢出强制规则）：按用户要求，check-full.py 不再区分“允许”与“失败”，不维护登记接受清单或 10 mm 上限；两栏越过各自栏右边界均输出警告，越过纸边另附提示。沿用 0.5 pt 容差与按页、栏汇总最大越界量，正常完成时返回 0；PDF 读取等运行错误仍报错。当前 96 页横版报告第 13 页左栏 13.1 pt、第 72 页右栏 21.8 pt 两项警告。人工 PDF 验证栏内无警告，左栏进入栏距、右栏进入页边距、超过旧上限及越过纸边均警告且返回 0；缺失 PDF 仍返回非零。使用 PyMuPDF 分支，未单独重测 pdfplumber。已删除文档中的接受清单并同步代码版复用说明；本次未修改正文、布局或重建 PDF。
-
-
-2026-10-14：preview.tex 新增 Maple Mono NF CN 行内代码检验，覆盖中文、易混淆字符、运算符及转义符号；字号随正文。样张两轮收敛，字体提取与所在页渲染检查通过。
-
-横版与代码版扉页（2026-10-15）：
-
-- 新增 `titlepage.tex` 与 `check-titlepage.py`，`run.sh` 默认列表加入 titlepage。检查脚本两版共用，代码版样张见 `../code/README.md`。
-- 检查脚本对九种人工错误均报错：书名偏离中轴、标记字号、标记颜色、标记与书名的间距、PDF 标题、日期字体、配图位置、提交信息位置，以及标记与英文书名同时改色。
-- `check-full.py` 改为整页跳过扉页：修改前的脚本对扉页样张 3 页各误报约 28.9 pt。修改后的脚本检查修改前构建的 PDF，结果不变。
-- 八份样张各两轮收敛，无缺字、Overfull 或字体替换；`check-layout.py` 与扉页检查通过。已渲染检查扉页样张 4 页。
-- 完整横版 97 页（原 96 页），越栏检查报告第 14、73 页两项，即原第 13、72 页。设计与完整验证见 `../../README.md`“横版与代码版扉页”。
+样张中特意构造的大块留白用于触发边界，不代表正文的版式效果。本目录不代替整书与实物打印验收；整书的越栏检查见 `scripts/README.md`。

@@ -2,7 +2,7 @@
 % 此文件集中加载宏包；各版参数放在 layout-<版本>.tex，三版共用的排版实现放在 shared/，自定义命令放在 mystyle.tex。
 
 % 中文支持；不采用 ctex 的中文标题名称与版式方案。
-% 暂用 Fandol；字体选项必须在加载 ctex 前传入，最终字体方案尚未实现。
+% 以 Fandol 作初始字体（mystyle 样张直接使用），各版字体在 shared/fonts.tex 中设置；字体选项必须在加载 ctex 前传入。
 \PassOptionsToPackage{fontset=fandol}{ctex}
 \usepackage[scheme=plain]{ctex}
 
@@ -29,7 +29,7 @@
 \usepackage{enumitem}
 \usepackage{tocloft}
 
-% 代码高亮，以及后续代码标题栏、引用块所需的盒子支持。
+% 代码高亮，以及代码卡片、引用块所需的盒子支持。
 \usepackage{minted}
 \usepackage{tcolorbox}
 \tcbuselibrary{skins,breakable,minted}

@@ -78,7 +78,7 @@
 \fancypagestyle{plain}{\fancyhf{}\fancyfoot[C]{\sffamily\fontsize{8}{10}\selectfont\color{BookMuted}\thepage}}
 
 % 双栏图片按当前容器计算正文宽度；保持原路径、可选参数和长宽比。
-% 用户已批准将现有 0.8\textwidth / \textwidth 分别解释为 0.8 / 1 栏宽。
+% 用户已批准：正文中 \textwidth 的比例（如 0.8\textwidth、0.6\textwidth）按当前栏宽解释。
 % 局部分组避免改变双栏输出的整页 textwidth。
 \NewCommandCopy{\BookIncludeGraphics}{\includegraphics}
 \RenewDocumentCommand{\includegraphics}{s O{} m}{%

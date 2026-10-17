@@ -1,8 +1,8 @@
 # 共用实现
 
-本目录存放三版共用的排版实现，由各版布局文件 `preamble/layout-<版本>.tex` 按顺序 `\input`，入口不直接引用（2026-10-16 起）。
+本目录存放三版共用的排版实现，由各版布局文件 `preamble/layout-<版本>.tex` 按顺序 `\input`，入口不直接引用。
 
-这里只放实现，不放各版参数。纸张、字号、间距、标题样式、栏距、扉页版面等参数写在各版布局文件中。
+这里只放实现，不放各版参数。纸张、字号、间距、标题样式、栏距、扉页版面等参数写在各版布局文件中。修改约束、命名规则与验收范围见 `../AGENTS.md`：本目录的改动影响所有版本。
 
 | 文件 | 内容 | 载入的版本 |
 | --- | --- | --- |
@@ -27,9 +27,9 @@
 
 需要保持的依赖：
 
-- `toc.tex` 在设置字号之后载入，目录缩进单位按当时的字体测量。
-- `code.tex` 和扉页使用 `colors.tex` 中的颜色；扉页强调色由代码的灰蓝色派生。
-- `begindocument/end` 钩子保持重构前的先后：`\mathrm` 重定义（`fonts.tex`）、启动双栏、双栏目录重定义（`twocolumn.tex`）。
+- `toc.tex` 在设置字号之后载入，目录缩进单位按载入时的字体测量。
+- `code.tex` 和扉页使用 `colors.tex` 中的颜色；扉页的强调色由代码的灰蓝色派生。
+- `begindocument/end` 钩子按以下先后执行：`\mathrm` 重定义（`fonts.tex`）、启动双栏、双栏目录重定义（`twocolumn.tex`）。
 
 ## 参数
 
@@ -37,11 +37,3 @@
 - 代码字号默认 8/10.5 pt；某版要不同时，在载入 `code.tex` 之后用 `\setminted{fontsize=…}` 覆盖。
 - 双栏版本须在 `\titleformat{\section}` 的标题文字处调用 `\BookChapterAnchor`，页眉据此判断页顶所在的章。
 - 目录字号与点线、代码配色、页眉字号等目前三版相同，直接共用。某版需要不同时，再增加参数或在该版布局中覆盖。
-
-## 命名
-
-共用实现中的命令、颜色和计数器以 `Book` 开头（如 `\BookTOCEntry`、`BookMuted`），expl3 内部变量使用 `book` 模块名。供入口或样张调用的命令不加前缀：`\EnglishTitle`、`\TitlePageImage`、`\EditionLabel`、`\TitlePageReadCommit`、`\TitlePageSetup`。
-
-## 验证
-
-修改本目录中的文件会影响所有版本。改完后运行 `./run.sh all` 和 `scripts/check.sh --full`，并与修改前的三版 PDF 及全部样张逐页比较：文字与位置、字体、颜色、矢量图形、书签和链接。

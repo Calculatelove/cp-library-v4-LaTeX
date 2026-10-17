@@ -1,38 +1,21 @@
 # 代码版布局检验
 
-仅检验 `preamble/layout-code.tex`，不在此目录放置章节测试。依赖与横版一致：XeLaTeX、latexminted、苹方、宋体、Maple Mono NF CN 与项目内 Noto Emoji。首次样张从横版选取，独立加载代码版布局。
+本目录检验 `preamble/layout-code.tex`，不引用章节。版式参数目前与横版相同；样张从横版选取，各自载入代码版布局。
 
-从项目根目录运行：
+| 样张 | 检验内容 |
+| --- | --- |
+| `titlepage.tex` | 4 页，内容同横版样张；前两页带版本标记，第 3 页不设版本标记 |
+| `flow.tex` | 连续章节、空标题、页顶所在章的页眉与分页边界 |
+| `code-cards.tex` | 代码跨栏跨页、长文件名与内嵌代码折行 |
+| `syntax-colors.tex` | 四色配色与直立的代码字体 |
+| `toc-layout.tex` | 双栏目录、长条目与标题组分页 |
+
+后四份的正文与横版共用（`syntax-colors` 还与竖版共用），放在 `../fixtures/*-body.tex`；本目录只保留载入代码版布局的包装。检查复用横版的脚本，加参数 `code`：`check-layout.py code` 检查后四份，断言与横版相同；`check-titlepage.py code` 检查扉页，另查书名后悬挂的“（代码版）”与书名同基线、不参与居中。
 
 ```sh
 bash preamble/tests/code/run.sh
+python3 preamble/tests/landscape/check-layout.py code
+python3 preamble/tests/landscape/check-titlepage.py code
 ```
 
-也可从任意目录调用该脚本，或只传入样张名。产物在被忽略的 `preamble/tests/build/code/`。编译由 `scripts/xelatex-converge.sh` 完成（与根目录 `run.sh` 共用）：至少两轮、最多八轮，检查收敛、缺字、溢出、字体替换与页眉高度。
-
-- `titlepage.tex`：4 页扉页样张，内容同横版样张；前两页带版本标记，第 3 页不设版本标记。用 `python3 preamble/tests/landscape/check-titlepage.py code` 检查，另查书名后悬挂的“（代码版）”及其同基线、不参与居中。
-- `flow.tex`：连续章节、空标题、页顶章页眉与分页边界。
-- `code-cards.tex`：代码跨栏跨页、长文件名及内嵌代码折行。
-- `syntax-colors.tex`：四色配色、直立代码字体。
-- `toc-layout.tex`：双栏目录、长条目及标题组分页。
-
-后四份的正文与横版共用（`syntax-colors` 还与竖版共用），放在 `../fixtures/` 的 `*-body.tex`；本目录只保留载入代码版布局的包装。用 `python3 preamble/tests/landscape/check-layout.py code` 检查这四份样张，断言与横版相同（2026-10-16 起，此前这四份没有检查脚本）。
-
-生成器测试在 `scripts/tests/test_generate_code.py`，与布局检验分开。完整代码版使用 `./run.sh code`，可用 `python3 scripts/check-full.py build/code/main-code.pdf` 检查相同几何参数下的栏边界（依赖 PyMuPDF；先核对纸张与栏边几何，不符时报错）；两栏越界统一输出警告，不维护接受清单或溢出上限，不因溢出返回失败。
-
-
-代码版验证（2026-10-14）：生成器四项测试通过，真实章节提取与输出中的 99 个代码块逐段、按序一致，--check 通过。四份布局样张各 2—3 轮收敛，无缺字、Overfull 或字体替换。完整代码版通过 ./run.sh code 三轮收敛，53 页（目录 2 页），112 个书签、111 个目录链接目标可解析；栏边界检查通过。全部 53 页已做缩略图检查，完整 PDF 第 3 页及代码卡片样张第 1 页高分辨率检查，无裁切遮挡；其余样张未逐页视觉验收，未做实物打印验收。完整编译无缺字、Overfull 或字体替换，保留 xeCJK 字体族重定义与 tcolorbox nobreak 警告。git diff --check 仅报告生成入口第 497 行的原始内嵌代码空白行，按代码保真要求保留。公共接口、原章节与原代码、竖版和横版未修改，未重复构建；未提交或推送。
-
-
-横版与代码版目录缩进调整（2026-10-14）：按用户要求，两版均改为一级不缩进、二级两个“中”字宽、三级四个“中”字宽；基准为目录 Regular 字体 10 pt 下“中”的实测宽度，其他目录参数不变。两版 toc-layout 样张各两轮收敛，无缺字、Overfull 或字体替换；PDF 坐标确认 0/20/40 TeX pt 缩进，目录专项检查确认长标题、父子条目同栏、88 个链接和 90 个展开书签有效。已渲染检查横版样张两页及完整横版全部 4 页目录、代码版全部 2 页目录，无裁切遮挡。完整两版各三轮收敛，横版仍为 101 页、代码版仍为 53 页；分别有 197/111 个有效目录链接、208/112 个书签。横版保留既有 2 条 Overfull 和 2 条 amsmath 警告，栏边界检查通过；代码版无缺字、Overfull 或字体替换。未重编译其他样张或逐页验收正文。原有横版全套 PDF 检查在未重建的 flow 样张页眉断言失败，本轮仅单独运行并通过其中目录专项检查。未修改正文、竖版或根 README，未提交或推送。
-
-竖版与代码版代码字号调整（2026-10-14）：按用户要求，两版 minted 代码正文统一为 8/10.5 pt，覆盖 InputCode 与内嵌 minted；标题栏仍为 9/12 pt，行内代码及公共接口不变。竖版九份样张各两轮收敛，代码版 code-cards、syntax-colors 两份样张各两轮收敛，无缺字、Overfull 或字体替换。两版代码配色及常规直立字形检查通过，代码版 100 行跨栏代码完整；已逐页渲染检查两版代码卡片共 4 页，长标题、折行及跨页连接正常。
-
-完整竖版与代码版分别由 ./run.sh portrait、./run.sh code 三轮收敛，竖版由 153 页变为 145 页，代码版由 53 页变为 49 页；完整 PDF 中代码字体均提取为 7.970 PDF pt（8 TeX pt）。竖版末轮保留原有 3 条 Overfull 与 2 条 amsmath 警告；代码版无 Overfull，双栏检查报告 0 项警告。两版均无缺字或字体替换。未逐页验收完整 PDF、未做打印验收；未修改正文、横版或根 README，未提交或推送。
-
-
-代码版扉页（2026-10-15）：
-
-- 新增 `titlepage.tex`，`run.sh` 默认列表加入 titlepage；检查复用 `../landscape/check-titlepage.py code`。
-- 五份样张各两轮收敛，无缺字、Overfull 或字体替换，扉页检查通过；已渲染检查扉页样张 4 页及标记局部。
-- 完整代码版 50 页（原 49 页），越栏检查报告 0 项（扉页整页跳过）。设计与完整验证见 `../../README.md`“横版与代码版扉页”。
+编译方式、产物位置与依赖见 `../README.md`。代码版入口的生成及其测试见 `scripts/README.md`；整书的越栏检查用 `python3 scripts/check-full.py build/code/main-code.pdf`。
