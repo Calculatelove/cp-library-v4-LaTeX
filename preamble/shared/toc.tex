@@ -4,9 +4,10 @@
 
 % 保留原文的 0xPQ 编号：只关闭章节标题的自动编号。
 \setcounter{secnumdepth}{-1}
-% 目录展开到三级；PDF 书签包含全部标题层级并默认全部展开。
+% 目录展开到三级；PDF 书签包含全部标题层级，初始只显示一级。
+% bookmarksopenlevel 是“从此级起闭合”的层级：取值 1 使一级条目本身闭合，二至五级随之隐藏。
 \setcounter{tocdepth}{3}
-\hypersetup{bookmarksdepth=5,bookmarksopen=true}
+\hypersetup{bookmarksdepth=5,bookmarksopen=true,bookmarksopenlevel=1}
 \renewcommand{\contentsname}{目录}
 % 方案 A：一级沿用苹方 Semibold；二三级沿用正文宋体与 Latin Modern Roman。
 \newlength{\BookTOCUnit}

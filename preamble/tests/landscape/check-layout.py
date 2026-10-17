@@ -107,7 +107,7 @@ with c.section('toc-layout：目录'):
         c.require(bookmarks, '应有书签')
         c.check(len(bookmarks) == 90, '应有 90 个书签', len(bookmarks))
         c.check({b[0] for b in bookmarks} == {1, 2, 3, 4, 5}, '书签应有 5 个层级', sorted({b[0] for b in bookmarks}))
-        c.check(all(not b[3].get('collapse', False) for b in bookmarks), '书签应全部展开')
+        c.check(all(b[3].get('collapse', True) for b in bookmarks), '初始只显示一级：可展开的书签都应闭合')
         body_first = bookmarks[0][2] - 1
         c.check(body_first == len(toc_pages), '正文应紧接目录页', body_first, len(toc_pages))
         c.check(any(r.x0 < 100 and r.y0 > pc.HEADER_BOTTOM for r in doc[body_first].search_for('TOC-Chapter-01')),
