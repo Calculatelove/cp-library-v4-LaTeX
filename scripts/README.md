@@ -49,7 +49,7 @@ mkdir -p preamble/tests/build/landscape
 
 ### 整书基线
 
-2026-10-17，基于提交 `45aec9c`（工作区另有文档整理与只改注释的改动），在 `LC_ALL=zh_CN.UTF-8` 下运行 `./run.sh all` 与 `scripts/check.sh --full`。与只改注释前的构建相比，三版只有扉页上的提交信息不同。
+2026-10-17，基于提交 `c642108`（工作区另有文档整理与只改注释的改动），在 `LC_ALL=zh_CN.UTF-8` 下运行 `./run.sh all` 与 `scripts/check.sh --full`。与只改注释前的构建相比，三版只有扉页上的提交信息不同。
 
 | 版本 | 页数 | 书签 | 末轮警告 | 越栏警告 |
 | --- | --- | --- | --- | --- |

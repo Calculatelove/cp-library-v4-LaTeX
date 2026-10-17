@@ -52,4 +52,4 @@ bash preamble/tests/code/run.sh
 
 ## 验证状态
 
-2026-10-17，基于提交 `45aec9c`；工作区另有文档整理的改动，以及 `packages.tex`、`shared/twocolumn.tex` 中只改注释的三行。在 `LC_ALL=zh_CN.UTF-8` 下运行 `scripts/check.sh --full`：四组共 28 份样张都两轮收敛，严格日志检查与七项 PDF 检查全部通过。与改注释前构建的样张逐页比较文字与位置、字体、颜色、矢量图形、图片与链接，完全一致。本次没有人工查看样张 PDF。
+2026-10-17，基于提交 `c642108`；工作区另有文档整理的改动，以及 `packages.tex`、`shared/twocolumn.tex` 中只改注释的三行。在 `LC_ALL=zh_CN.UTF-8` 下运行 `scripts/check.sh --full`：四组共 28 份样张都两轮收敛，严格日志检查与七项 PDF 检查全部通过。与改注释前构建的样张逐页比较文字与位置、字体、颜色、矢量图形、图片与链接，完全一致。本次没有人工查看样张 PDF。
