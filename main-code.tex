@@ -384,79 +384,45 @@ for (int i = 1; i <= m; i ++) {
 \subsection{多项式多点求值}
 
 % 来源：contents/0x30 数学/0x31 数学 多项式.tex:886
-\begin{minted}{cpp}
-// 多项式多点求值（多项式取模做法），作为 poly 的成员函数
-constexpr std::vector<int> eval(std::vector<int> x) const {
-    if (empty()) return std::vector<int>(x.size(), 0);
-    if (x.empty()) return {};
+\InputCode{cpp}{contents/0x30 数学/code/0x31 多项式多点求值（多项式取模）.cpp}
 
-    int n = x.size();
-    std::vector<poly> t(n * 4);
-    std::vector<int> ans(n);
-
-    std::function<void(int, int, int)> build = [&] (int p, int l, int r) {
-        if (l == r) {
-            t[p] = poly{norm(-x[l]), 1};
-            return;
-        }
-        int mid = (l + r) >> 1;
-        build(p * 2, l, mid), build(p * 2 + 1, mid + 1, r);
-        t[p] = t[p * 2] * t[p * 2 + 1];
-    };
-    build(1, 0, n - 1);
-
-    std::function<void(int, int, int, const poly &)> solve = [&] (int p, int l, int r, const poly &f) {
-        if (l == r) {
-            ans[l] = f[0];
-            return;
-        }
-        int mid = (l + r) >> 1;
-        solve(p * 2, l, mid, divmod(f, t[p * 2]).second);
-        solve(p * 2 + 1, mid + 1, r, divmod(f, t[p * 2 + 1]).second);
-    };
-    solve(1, 0, n - 1, divmod(*this, t[1]).second);
-
-    return ans;
-}
-\end{minted}
-
-% 来源：contents/0x30 数学/0x31 数学 多项式.tex:1021
+% 来源：contents/0x30 数学/0x31 数学 多项式.tex:987
 \subsection{多项式全家桶⭐}
 
-% 来源：contents/0x30 数学/0x31 数学 多项式.tex:1036
+% 来源：contents/0x30 数学/0x31 数学 多项式.tex:1002
 \InputCode{cpp}{contents/0x30 数学/code/0x31 多项式全家桶.cpp}
 
-% 来源：contents/0x30 数学/0x31 数学 多项式.tex:1038
+% 来源：contents/0x30 数学/0x31 数学 多项式.tex:1004
 \subsection{Bostan-Mori}
 
-% 来源：contents/0x30 数学/0x31 数学 多项式.tex:1040
+% 来源：contents/0x30 数学/0x31 数学 多项式.tex:1006
 \subsubsection{分式远处系数}
 
-% 来源：contents/0x30 数学/0x31 数学 多项式.tex:1070
+% 来源：contents/0x30 数学/0x31 数学 多项式.tex:1036
 \InputCode{cpp}{contents/0x30 数学/code/0x31 分式远处系数.cpp}
 
-% 来源：contents/0x30 数学/0x31 数学 多项式.tex:1076
+% 来源：contents/0x30 数学/0x31 数学 多项式.tex:1042
 \subsection{常系数齐次线性递推}
 
-% 来源：contents/0x30 数学/0x31 数学 多项式.tex:1080
+% 来源：contents/0x30 数学/0x31 数学 多项式.tex:1046
 \subsubsection{Fiduccia 算法}
 
-% 来源：contents/0x30 数学/0x31 数学 多项式.tex:1097
+% 来源：contents/0x30 数学/0x31 数学 多项式.tex:1063
 \InputCode{cpp}{contents/0x30 数学/code/0x31 常系数齐次线性递推（Fiduccia）.cpp}
 
-% 来源：contents/0x30 数学/0x31 数学 多项式.tex:1099
+% 来源：contents/0x30 数学/0x31 数学 多项式.tex:1065
 \subsubsection{递推式转分式}
 
-% 来源：contents/0x30 数学/0x31 数学 多项式.tex:1123
+% 来源：contents/0x30 数学/0x31 数学 多项式.tex:1089
 \InputCode{cpp}{contents/0x30 数学/code/0x31 常系数齐次线性递推（Bostan-Mori）.cpp}
 
-% 来源：contents/0x30 数学/0x31 数学 多项式.tex:1125
+% 来源：contents/0x30 数学/0x31 数学 多项式.tex:1091
 \subsection{整式递推}
 
-% 来源：contents/0x30 数学/0x31 数学 多项式.tex:1129
+% 来源：contents/0x30 数学/0x31 数学 多项式.tex:1095
 \subsubsection{应用：快速阶乘算法}
 
-% 来源：contents/0x30 数学/0x31 数学 多项式.tex:1166
+% 来源：contents/0x30 数学/0x31 数学 多项式.tex:1132
 \InputCode{cpp}{contents/0x30 数学/code/0x31 快速阶乘算法.cpp}
 
 % 来源：contents/0x30 数学/0x32 数学 集合幂级数.tex:1
@@ -515,46 +481,7 @@ for (int s = 1; s <= m; s ++) {
 \InputCode{cpp}{contents/0x30 数学/code/0x32 子集卷积.cpp}
 
 % 来源：contents/0x30 数学/0x32 数学 集合幂级数.tex:252
-\begin{minted}{cpp}
-// 半在线子集卷积
-std::vector<int> subset_conv(std::vector<int> g) {
-    int n = g.size(), m = std::__lg(n);
-    std::vector<std::vector<int>> F(m + 1, std::vector<int>(n, 0));
-    std::vector<std::vector<int>> G(m + 1, std::vector<int>(n, 0));
-
-    for (int i = 1; i < n; i ++) { // 一般来说 g_0 = 0，所以不考虑 G[0]
-        G[__builtin_popcount(i)][i] = g[i];
-    }
-    for (int i = 1; i <= m; i ++) {
-        dwtOr(G[i], +1);
-    }
-
-    int f0 = 1;
-    std::fill(F[0].begin(), F[0].end(), f0); // 一般来说 f_0 = 1，这一步模拟了 dwtOr(F[0], +1)
-
-    std::vector<int> f(n);
-    f[0] = f0;
-    for (int i = 1; i <= m; i ++) {
-        for (int j = 1; j <= i; j ++) {
-            for (int k = 0; k < n; k ++) {
-                add(F[i][k], 1ll * G[j][k] * F[i - j][k] % mod);
-            }
-        }
-        dwtOr(F[i], -1);
-
-        for (int S = 0; S < n; S ++) {
-            if (__builtin_popcount(S) == i) {
-                // 在此更新 F[i][S]，即为真正的 f[S]
-                f[S] = F[i][S];
-            } else {
-                F[i][S] = 0;
-            }
-        }
-        dwtOr(F[i], +1);
-    }
-    return f;
-}
-\end{minted}
+\InputCode{cpp}{contents/0x30 数学/code/0x32 半在线子集卷积.cpp}
 
 % 来源：contents/0x30 数学/0x33 数学 组合计数.tex:1
 \section{0x33\ 数学\ 组合计数}
