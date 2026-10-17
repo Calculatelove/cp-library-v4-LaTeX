@@ -96,11 +96,22 @@ class GeneratorTests(unittest.TestCase):
             r'\input{preamble/packages.tex}', r'\input{preamble/layout-code.tex}', r'\input{preamble/mystyle.tex}', '',
             r'\title{书名}', r'\date{}', r'\EditionLabel{代码版}', '',
             r'\begin{document}', '', r'\maketitle', '', r'\tableofcontents', '',
-            '% 来源：contents/0x11 a.tex:1', r'\section{甲}', '',
-            '% 来源：contents/0x11 a.tex:3', '\\begin{minted}{cpp}\nint a;\n\\end{minted}', '',
+            '% 来源：contents/0x11 a.tex', r'\section{甲}', '',
+            '% 来源：contents/0x11 a.tex', '\\begin{minted}{cpp}\nint a;\n\\end{minted}', '',
             '% 横版入口中的注释', '',
             r'\end{document}', ''])
         self.assertEqual(result, expected)
+
+    def test_prose_edits_keep_entry(self):
+        """来源注释不含行号：只增删正文或注释行时，代码版入口不变。"""
+        chapter = '\\section{甲}\n正文。\n\\begin{minted}{cpp}\nint a;\n\\end{minted}\n'
+        edited = chapter.replace('正文。\n', '正文。\n\n新增的一段正文。\n% 新增的注释\n')
+        results = []
+        for text in (chapter, edited):
+            with tempfile.TemporaryDirectory() as tmp:
+                root = self.make_root(tmp, SKELETON % r'\input{contents/0x11 a.tex}', {'contents/0x11 a.tex': text})
+                results.append(g.generate(root)[0])
+        self.assertEqual(results[0], results[1])
 
     def test_template_structure_errors(self):
         """布局行或 \\begin{document} 缺失、重复，或章节引用与其他内容同行时报错，不生成入口。"""

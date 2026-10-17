@@ -9,6 +9,8 @@
 - 扉页通栏居中、不分栏，以 44 pt 书名识别并整页跳过（2026-10-15 起横版、代码版均有扉页）。
 - 几何自检（2026-10-16）：先核对每页为 A4 横向，且正文中左右两栏的左、右缘各至少有 20 行对齐
   （容差 0.2 mm）。布局参数改了而这里的常量没有同步时直接报错，不输出不可信的越栏结果。
+- 先输出扉页上的提交（短哈希、日期，含未提交修改时注明），找不到时也注明（用户确认）：
+  被检查的是现有 PDF，不一定构建自当前源码。
 
 用法（从任意目录）：python3 scripts/check-full.py [PDF 路径]
 默认检查 build/landscape/main-landscape.pdf，即 ./run.sh landscape 的产物；代码版传入
@@ -16,6 +18,7 @@ build/code/main-code.pdf（栏宽与栏距与横版相同）。
 返回值：0 检查完成（越栏只输出警告）；1 几何与本脚本的常量不符；2 找不到 PDF。
 """
 from pathlib import Path
+import re
 import sys
 import unicodedata
 
@@ -43,6 +46,8 @@ EDGE_TOLERANCE = 0.2 * MM               # 几何自检：行首、行尾与栏�
 EDGE_MIN_LINES = 20                     # 几何自检：每条栏边至少对齐的正文行数
 EDGES = (('左栏左缘', LEFT_START, 'start'), ('左栏右缘', LEFT_END, 'end'),
          ('右栏左缘', RIGHT_START, 'start'), ('右栏右缘', RIGHT_END, 'end'))
+# 扉页提交信息：眉题、日期、短哈希，dirty 时附标签（preamble/shared/titlepage.tex）。
+STAMP = re.compile(r'LAST COMMIT (\d{4}-\d{2}-\d{2}) ([0-9a-f]{7,40})\b( 含未提交修改)?')
 
 
 def is_card_line_number(span):
@@ -56,12 +61,12 @@ def is_card_line_number(span):
 
 
 def read(path):
-    """读取 PDF，返回 (逐字记录, 文字行记录, 各页尺寸)。
+    """读取 PDF，返回 (逐字记录, 文字行记录, 各页尺寸, 文字片段)。
 
     逐字记录为 (页码, 页宽, 字符, 左端, 右端, 顶边, 字号)；文字行记录为 (页码, 左端, 右端, 顶边)；
-    页面尺寸为 (页码, 宽, 高)。坐标单位为 bp。
+    页面尺寸为 (页码, 宽, 高)；文字片段为 (页码, 文字)，按提取顺序。坐标单位为 bp。
     """
-    chars, lines, sizes = [], [], []
+    chars, lines, sizes, texts = [], [], [], []
     with fitz.open(path) as doc:
         for page in doc:
             number, width = page.number + 1, page.rect.width
@@ -71,6 +76,7 @@ def read(path):
                     text = []
                     boxes = []
                     for span in line['spans']:
+                        texts.append((number, ''.join(ch['c'] for ch in span['chars'])))
                         if is_card_line_number(span):
                             continue
                         for ch in span['chars']:
@@ -83,12 +89,18 @@ def read(path):
                         y0 = min(b[1] for b in boxes)
                         x1 = max(b[2] for b in boxes)
                         lines.append((number, x0, x1, y0))
-    return chars, lines, sizes
+    return chars, lines, sizes, texts
 
 
 def title_pages(chars):
     """含 44 pt 书名的页（扉页），整页跳过。"""
     return sorted({page for page, *_, size in chars if size >= TITLEPAGE_SIZE})
+
+
+def commit_stamp(texts):
+    """从扉页的文字片段读出提交信息，返回 (日期, 短哈希, 是否含未提交修改)；找不到时返回 None。"""
+    match = STAMP.search(' '.join(t.strip() for t in texts if t.strip()))
+    return (match[1], match[2], bool(match[3])) if match else None
 
 
 def geometry_problems(lines, sizes, skipped):
@@ -142,8 +154,14 @@ def main(argv=None):
     if not pdf.is_file():
         print(f'找不到 {pdf}；请先运行 ./run.sh landscape 或 ./run.sh code。', file=sys.stderr)
         return 2
-    chars, lines, sizes = read(pdf)
+    chars, lines, sizes, texts = read(pdf)
     skipped = title_pages(chars)
+    stamp = commit_stamp([text for page, text in texts if page == skipped[0]]) if skipped else None
+    if stamp:
+        date, commit, dirty = stamp
+        print(f'{pdf.name}: 扉页提交 {commit}（{date}{"，含未提交修改" if dirty else ""}）', flush=True)
+    else:
+        print(f'{pdf.name}: 扉页上没有提交信息', flush=True)
     problems = geometry_problems(lines, sizes, set(skipped))
     if problems:
         print(f'{pdf.name}: 纸张或栏边与本脚本的几何常量不符，不输出越栏结果：', file=sys.stderr)

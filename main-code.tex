@@ -18,37 +18,37 @@
 
 \tableofcontents
 
-% 来源：contents/0x10 基础/0x11 基础 Misc.tex:1
+% 来源：contents/0x10 基础/0x11 基础 Misc.tex
 \section{0x11\ 基础\ Misc}
 
-% 来源：contents/0x10 基础/0x11 基础 Misc.tex:11
+% 来源：contents/0x10 基础/0x11 基础 Misc.tex
 \subsection{常用公式}
 
-% 来源：contents/0x10 基础/0x11 基础 Misc.tex:13
+% 来源：contents/0x10 基础/0x11 基础 Misc.tex
 \subsubsection{日期公式}
 
-% 来源：contents/0x10 基础/0x11 基础 Misc.tex:15
+% 来源：contents/0x10 基础/0x11 基础 Misc.tex
 \InputCode{cpp}{contents/0x10 基础/code/0x11 日期公式.cpp}
 
-% 来源：contents/0x10 基础/0x11 基础 Misc.tex:17
+% 来源：contents/0x10 基础/0x11 基础 Misc.tex
 \subsubsection{xorshift}
 
-% 来源：contents/0x10 基础/0x11 基础 Misc.tex:19
+% 来源：contents/0x10 基础/0x11 基础 Misc.tex
 \InputCode{cpp}{contents/0x10 基础/code/0x11 xorshift.cpp}
 
-% 来源：contents/0x10 基础/0x11 基础 Misc.tex:21
+% 来源：contents/0x10 基础/0x11 基础 Misc.tex
 \subsubsection{xorsum}
 
-% 来源：contents/0x10 基础/0x11 基础 Misc.tex:31
+% 来源：contents/0x10 基础/0x11 基础 Misc.tex
 \InputCode{cpp}{contents/0x10 基础/code/0x11 xorsum.cpp}
 
-% 来源：contents/0x10 基础/0x11 基础 Misc.tex:42
+% 来源：contents/0x10 基础/0x11 基础 Misc.tex
 \subsection{常用配置}
 
-% 来源：contents/0x10 基础/0x11 基础 Misc.tex:44
+% 来源：contents/0x10 基础/0x11 基础 Misc.tex
 \subsubsection{makefile}
 
-% 来源：contents/0x10 基础/0x11 基础 Misc.tex:46
+% 来源：contents/0x10 基础/0x11 基础 Misc.tex
 \begin{minted}{make}
 CXXFLAGS = -std=c++23 -O2 -Wall -fsanitize=undefined
 
@@ -57,27 +57,27 @@ CXXFLAGS = -std=c++23 -O2 -Wall -fsanitize=undefined
 # -fsanitize=undefined : UB 检查
 \end{minted}
 
-% 来源：contents/0x10 基础/0x11 基础 Misc.tex:54
+% 来源：contents/0x10 基础/0x11 基础 Misc.tex
 \subsubsection{pragma}
 
-% 来源：contents/0x10 基础/0x11 基础 Misc.tex:56
+% 来源：contents/0x10 基础/0x11 基础 Misc.tex
 \begin{minted}{cpp}
 #pragma GCC optimize("O3,unroll-loops")
 #pragma GCC target("avx2")
 \end{minted}
 
-% 来源：contents/0x10 基础/0x11 基础 Misc.tex:61
+% 来源：contents/0x10 基础/0x11 基础 Misc.tex
 \subsubsection{ulimit}
 
-% 来源：contents/0x10 基础/0x11 基础 Misc.tex:63
+% 来源：contents/0x10 基础/0x11 基础 Misc.tex
 \begin{minted}{bash}
 ulimit -s 1048576
 \end{minted}
 
-% 来源：contents/0x10 基础/0x11 基础 Misc.tex:67
+% 来源：contents/0x10 基础/0x11 基础 Misc.tex
 \subsubsection{Linux 对拍脚本}
 
-% 来源：contents/0x10 基础/0x11 基础 Misc.tex:71
+% 来源：contents/0x10 基础/0x11 基础 Misc.tex
 \begin{minted}{bash}
 while true; do
     ./gen >0.in
@@ -93,10 +93,10 @@ while true; do
 done
 \end{minted}
 
-% 来源：contents/0x10 基础/0x11 基础 Misc.tex:86
+% 来源：contents/0x10 基础/0x11 基础 Misc.tex
 \subsubsection{Windows 对拍程序}
 
-% 来源：contents/0x10 基础/0x11 基础 Misc.tex:88
+% 来源：contents/0x10 基础/0x11 基础 Misc.tex
 \begin{minted}{cpp}
 #include <bits/stdc++.h>
 int main() {
@@ -116,193 +116,193 @@ int main() {
 }
 \end{minted}
 
-% 来源：contents/0x10 基础/0x11 基础 Misc.tex:107
+% 来源：contents/0x10 基础/0x11 基础 Misc.tex
 \subsection{随机数据生成}
 
-% 来源：contents/0x10 基础/0x11 基础 Misc.tex:109
+% 来源：contents/0x10 基础/0x11 基础 Misc.tex
 \subsubsection{生成区间 $[l,r]$ 中的随机整数}
 
-% 来源：contents/0x10 基础/0x11 基础 Misc.tex:111
+% 来源：contents/0x10 基础/0x11 基础 Misc.tex
 \InputCode{cpp}{contents/0x10 基础/code/0x11 生成区间 [l,r] 中的随机整数.cpp}
 
-% 来源：contents/0x10 基础/0x11 基础 Misc.tex:113
+% 来源：contents/0x10 基础/0x11 基础 Misc.tex
 \subsubsection{生成区间 $[l,r)$ 中的随机浮点数}
 
-% 来源：contents/0x10 基础/0x11 基础 Misc.tex:115
+% 来源：contents/0x10 基础/0x11 基础 Misc.tex
 \InputCode{cpp}{contents/0x10 基础/code/0x11 生成区间 [l,r) 中的随机浮点数.cpp}
 
-% 来源：contents/0x10 基础/0x11 基础 Misc.tex:117
+% 来源：contents/0x10 基础/0x11 基础 Misc.tex
 \subsubsection{生成互不相同的随机整数}
 
-% 来源：contents/0x10 基础/0x11 基础 Misc.tex:119
+% 来源：contents/0x10 基础/0x11 基础 Misc.tex
 \InputCode{cpp}{contents/0x10 基础/code/0x11 生成互不相同的随机整数.cpp}
 
-% 来源：contents/0x10 基础/0x11 基础 Misc.tex:121
+% 来源：contents/0x10 基础/0x11 基础 Misc.tex
 \subsubsection{生成随机树}
 
-% 来源：contents/0x10 基础/0x11 基础 Misc.tex:127
+% 来源：contents/0x10 基础/0x11 基础 Misc.tex
 \InputCode{cpp}{contents/0x10 基础/code/0x11 生成随机树.cpp}
 
-% 来源：contents/0x10 基础/0x11 基础 Misc.tex:129
+% 来源：contents/0x10 基础/0x11 基础 Misc.tex
 \subsection{常用库函数重载}
 
-% 来源：contents/0x10 基础/0x11 基础 Misc.tex:131
+% 来源：contents/0x10 基础/0x11 基础 Misc.tex
 \subsubsection{i128}
 
-% 来源：contents/0x10 基础/0x11 基础 Misc.tex:135
+% 来源：contents/0x10 基础/0x11 基础 Misc.tex
 \InputCode{cpp}{contents/0x10 基础/code/0x11 i128.cpp}
 
-% 来源：contents/0x10 基础/0x11 基础 Misc.tex:137
+% 来源：contents/0x10 基础/0x11 基础 Misc.tex
 \subsubsection{整数除法精确取整}
 
-% 来源：contents/0x10 基础/0x11 基础 Misc.tex:139
+% 来源：contents/0x10 基础/0x11 基础 Misc.tex
 \InputCode{cpp}{contents/0x10 基础/code/0x11 整数除法精确取整.cpp}
 
-% 来源：contents/0x10 基础/0x11 基础 Misc.tex:141
+% 来源：contents/0x10 基础/0x11 基础 Misc.tex
 \subsubsection{取最值}
 
-% 来源：contents/0x10 基础/0x11 基础 Misc.tex:143
+% 来源：contents/0x10 基础/0x11 基础 Misc.tex
 \InputCode{cpp}{contents/0x10 基础/code/0x11 取最值.cpp}
 
-% 来源：contents/0x10 基础/0x11 基础 Misc.tex:145
+% 来源：contents/0x10 基础/0x11 基础 Misc.tex
 \subsubsection{取模}
 
-% 来源：contents/0x10 基础/0x11 基础 Misc.tex:147
+% 来源：contents/0x10 基础/0x11 基础 Misc.tex
 \InputCode{cpp}{contents/0x10 基础/code/0x11 取模.cpp}
 
-% 来源：contents/0x10 基础/0x11 基础 Misc.tex:149
+% 来源：contents/0x10 基础/0x11 基础 Misc.tex
 \subsubsection{精确开根号}
 
-% 来源：contents/0x10 基础/0x11 基础 Misc.tex:151
+% 来源：contents/0x10 基础/0x11 基础 Misc.tex
 \InputCode{cpp}{contents/0x10 基础/code/0x11 精确开根号.cpp}
 
-% 来源：contents/0x10 基础/0x11 基础 Misc.tex:153
+% 来源：contents/0x10 基础/0x11 基础 Misc.tex
 \subsubsection{精确取对数}
 
-% 来源：contents/0x10 基础/0x11 基础 Misc.tex:155
+% 来源：contents/0x10 基础/0x11 基础 Misc.tex
 \InputCode{cpp}{contents/0x10 基础/code/0x11 精确取对数.cpp}
 
-% 来源：contents/0x10 基础/0x11 基础 Misc.tex:157
+% 来源：contents/0x10 基础/0x11 基础 Misc.tex
 \subsubsection{快读}
 
-% 来源：contents/0x10 基础/0x11 基础 Misc.tex:159
+% 来源：contents/0x10 基础/0x11 基础 Misc.tex
 \InputCode{cpp}{contents/0x10 基础/code/0x11 快读.cpp}
 
-% 来源：contents/0x10 基础/0x11 基础 Misc.tex:161
+% 来源：contents/0x10 基础/0x11 基础 Misc.tex
 \subsubsection{超级快读}
 
-% 来源：contents/0x10 基础/0x11 基础 Misc.tex:163
+% 来源：contents/0x10 基础/0x11 基础 Misc.tex
 \InputCode{cpp}{contents/0x10 基础/code/0x11 超级快读.cpp}
 
-% 来源：contents/0x10 基础/0x11 基础 Misc.tex:165
+% 来源：contents/0x10 基础/0x11 基础 Misc.tex
 \subsection{高精度}
 
-% 来源：contents/0x10 基础/0x11 基础 Misc.tex:167
+% 来源：contents/0x10 基础/0x11 基础 Misc.tex
 \InputCode{cpp}{contents/0x10 基础/code/0x11 高精度.cpp}
 
-% 来源：contents/0x10 基础/0x11 基础 Misc.tex:169
+% 来源：contents/0x10 基础/0x11 基础 Misc.tex
 \subsection{分数类}
 
-% 来源：contents/0x10 基础/0x11 基础 Misc.tex:171
+% 来源：contents/0x10 基础/0x11 基础 Misc.tex
 \InputCode{cpp}{contents/0x10 基础/code/0x11 分数类.cpp}
 
-% 来源：contents/0x10 基础/0x12 基础 算法.tex:1
+% 来源：contents/0x10 基础/0x12 基础 算法.tex
 \section{0x12\ 基础\ 算法}
 
-% 来源：contents/0x10 基础/0x12 基础 算法.tex:47
+% 来源：contents/0x10 基础/0x12 基础 算法.tex
 \subsection{快速乘}
 
-% 来源：contents/0x10 基础/0x12 基础 算法.tex:53
+% 来源：contents/0x10 基础/0x12 基础 算法.tex
 \subsubsection{正道：i128}
 
-% 来源：contents/0x10 基础/0x12 基础 算法.tex:55
+% 来源：contents/0x10 基础/0x12 基础 算法.tex
 \InputCode{cpp}{contents/0x10 基础/code/0x12 快速乘（i128）.cpp}
 
-% 来源：contents/0x10 基础/0x12 基础 算法.tex:57
+% 来源：contents/0x10 基础/0x12 基础 算法.tex
 \subsubsection{魔道：long double}
 
-% 来源：contents/0x10 基础/0x12 基础 算法.tex:63
+% 来源：contents/0x10 基础/0x12 基础 算法.tex
 \InputCode{cpp}{contents/0x10 基础/code/0x12 快速乘（long double）.cpp}
 
-% 来源：contents/0x10 基础/0x12 基础 算法.tex:65
+% 来源：contents/0x10 基础/0x12 基础 算法.tex
 \subsection{光速幂}
 
-% 来源：contents/0x10 基础/0x12 基础 算法.tex:81
+% 来源：contents/0x10 基础/0x12 基础 算法.tex
 \InputCode{cpp}{contents/0x10 基础/code/0x12 光速幂.cpp}
 
-% 来源：contents/0x20 字符串/0x21 字符串 I.tex:1
+% 来源：contents/0x20 字符串/0x21 字符串 I.tex
 \section{0x21\ 字符串\ I}
 
-% 来源：contents/0x20 字符串/0x21 字符串 I.tex:94
+% 来源：contents/0x20 字符串/0x21 字符串 I.tex
 \subsection{kmp}
 
-% 来源：contents/0x20 字符串/0x21 字符串 I.tex:108
+% 来源：contents/0x20 字符串/0x21 字符串 I.tex
 \InputCode{cpp}{contents/0x20 字符串/code/0x21 kmp.cpp}
 
-% 来源：contents/0x20 字符串/0x21 字符串 I.tex:166
+% 来源：contents/0x20 字符串/0x21 字符串 I.tex
 \subsection{Z Algorithm}
 
-% 来源：contents/0x20 字符串/0x21 字符串 I.tex:188
+% 来源：contents/0x20 字符串/0x21 字符串 I.tex
 \InputCode{cpp}{contents/0x20 字符串/code/0x21 Z-Algorithm.cpp}
 
-% 来源：contents/0x20 字符串/0x21 字符串 I.tex:190
+% 来源：contents/0x20 字符串/0x21 字符串 I.tex
 \subsection{manacher}
 
-% 来源：contents/0x20 字符串/0x21 字符串 I.tex:218
+% 来源：contents/0x20 字符串/0x21 字符串 I.tex
 \InputCode{cpp}{contents/0x20 字符串/code/0x21 manacher.cpp}
 
-% 来源：contents/0x20 字符串/0x21 字符串 I.tex:220
+% 来源：contents/0x20 字符串/0x21 字符串 I.tex
 \InputCode{cpp}{contents/0x20 字符串/code/0x21 manacher（奇偶分开考虑）.cpp}
 
-% 来源：contents/0x20 字符串/0x21 字符串 I.tex:230
+% 来源：contents/0x20 字符串/0x21 字符串 I.tex
 \subsection{Lyndon 分解}
 
-% 来源：contents/0x20 字符串/0x21 字符串 I.tex:270
+% 来源：contents/0x20 字符串/0x21 字符串 I.tex
 \InputCode{cpp}{contents/0x20 字符串/code/0x21 duval.cpp}
 
-% 来源：contents/0x20 字符串/0x21 字符串 I.tex:272
+% 来源：contents/0x20 字符串/0x21 字符串 I.tex
 \subsection{最小表示法}
 
-% 来源：contents/0x20 字符串/0x21 字符串 I.tex:290
+% 来源：contents/0x20 字符串/0x21 字符串 I.tex
 \InputCode{cpp}{contents/0x20 字符串/code/0x21 最小表示法.cpp}
 
-% 来源：contents/0x20 字符串/0x22 字符串 II.tex:1
+% 来源：contents/0x20 字符串/0x22 字符串 II.tex
 \section{0x22\ 字符串\ II}
 
-% 来源：contents/0x20 字符串/0x22 字符串 II.tex:4
+% 来源：contents/0x20 字符串/0x22 字符串 II.tex
 \subsection{Trie}
 
-% 来源：contents/0x20 字符串/0x22 字符串 II.tex:26
+% 来源：contents/0x20 字符串/0x22 字符串 II.tex
 \InputCode{cpp}{contents/0x20 字符串/code/0x22 01 trie.cpp}
 
-% 来源：contents/0x20 字符串/0x22 字符串 II.tex:28
+% 来源：contents/0x20 字符串/0x22 字符串 II.tex
 \InputCode{cpp}{contents/0x20 字符串/code/0x22 可持久化 01 trie.cpp}
 
-% 来源：contents/0x20 字符串/0x22 字符串 II.tex:71
+% 来源：contents/0x20 字符串/0x22 字符串 II.tex
 \InputCode{cpp}{contents/0x20 字符串/code/0x22 01 trie 维护集合异或和.cpp}
 
-% 来源：contents/0x20 字符串/0x22 字符串 II.tex:73
+% 来源：contents/0x20 字符串/0x22 字符串 II.tex
 \subsection{AC 自动机}
 
-% 来源：contents/0x20 字符串/0x22 字符串 II.tex:91
+% 来源：contents/0x20 字符串/0x22 字符串 II.tex
 \InputCode{cpp}{contents/0x20 字符串/code/0x22 AC 自动机.cpp}
 
-% 来源：contents/0x20 字符串/0x22 字符串 II.tex:95
+% 来源：contents/0x20 字符串/0x22 字符串 II.tex
 \InputCode{cpp}{contents/0x20 字符串/code/0x22 AC 自动机（大字符集）.cpp}
 
-% 来源：contents/0x20 字符串/0x22 字符串 II.tex:107
+% 来源：contents/0x20 字符串/0x22 字符串 II.tex
 \subsection{SA}
 
-% 来源：contents/0x20 字符串/0x22 字符串 II.tex:137
+% 来源：contents/0x20 字符串/0x22 字符串 II.tex
 \InputCode{cpp}{contents/0x20 字符串/code/0x22 SA.cpp}
 
-% 来源：contents/0x20 字符串/0x22 字符串 II.tex:139
+% 来源：contents/0x20 字符串/0x22 字符串 II.tex
 \subsection{SAM}
 
-% 来源：contents/0x20 字符串/0x22 字符串 II.tex:177
+% 来源：contents/0x20 字符串/0x22 字符串 II.tex
 \InputCode{cpp}{contents/0x20 字符串/code/0x22 SAM.cpp}
 
-% 来源：contents/0x20 字符串/0x22 字符串 II.tex:189
+% 来源：contents/0x20 字符串/0x22 字符串 II.tex
 \begin{minted}{cpp}
 int p = 1, len = 0; // 当前匹配到的状态与长度
 for (int i = 1; i <= m; i ++) {
@@ -317,130 +317,130 @@ for (int i = 1; i <= m; i ++) {
 }
 \end{minted}
 
-% 来源：contents/0x20 字符串/0x22 字符串 II.tex:222
+% 来源：contents/0x20 字符串/0x22 字符串 II.tex
 \InputCode{cpp}{contents/0x20 字符串/code/0x22 SAM 前端操作.cpp}
 
-% 来源：contents/0x20 字符串/0x22 字符串 II.tex:234
+% 来源：contents/0x20 字符串/0x22 字符串 II.tex
 \InputCode{cpp}{contents/0x20 字符串/code/0x22 广义 SAM（离线）.cpp}
 
-% 来源：contents/0x20 字符串/0x22 字符串 II.tex:236
+% 来源：contents/0x20 字符串/0x22 字符串 II.tex
 \InputCode{cpp}{contents/0x20 字符串/code/0x22 广义 SAM（在线）.cpp}
 
-% 来源：contents/0x20 字符串/0x22 字符串 II.tex:238
+% 来源：contents/0x20 字符串/0x22 字符串 II.tex
 \subsection{PAM}
 
-% 来源：contents/0x20 字符串/0x22 字符串 II.tex:254
+% 来源：contents/0x20 字符串/0x22 字符串 II.tex
 \InputCode{cpp}{contents/0x20 字符串/code/0x22 PAM.cpp}
 
-% 来源：contents/0x20 字符串/0x22 字符串 II.tex:258
+% 来源：contents/0x20 字符串/0x22 字符串 II.tex
 \InputCode{cpp}{contents/0x20 字符串/code/0x22 PAM half.cpp}
 
-% 来源：contents/0x20 字符串/0x22 字符串 II.tex:260
+% 来源：contents/0x20 字符串/0x22 字符串 II.tex
 \subsubsection{Palindrome Series}
 
-% 来源：contents/0x20 字符串/0x22 字符串 II.tex:307
+% 来源：contents/0x20 字符串/0x22 字符串 II.tex
 \InputCode{cpp}{contents/0x20 字符串/code/0x22 PAM series-link.cpp}
 
-% 来源：contents/0x30 数学/0x31 数学 多项式.tex:1
+% 来源：contents/0x30 数学/0x31 数学 多项式.tex
 \section{0x31\ 数学\ 多项式}
 
-% 来源：contents/0x30 数学/0x31 数学 多项式.tex:4
+% 来源：contents/0x30 数学/0x31 数学 多项式.tex
 \subsection{拉格朗日插值}
 
-% 来源：contents/0x30 数学/0x31 数学 多项式.tex:25
+% 来源：contents/0x30 数学/0x31 数学 多项式.tex
 \InputCode{cpp}{contents/0x30 数学/code/0x31 拉格朗日插值.cpp}
 
-% 来源：contents/0x30 数学/0x31 数学 多项式.tex:43
+% 来源：contents/0x30 数学/0x31 数学 多项式.tex
 \InputCode{cpp}{contents/0x30 数学/code/0x31 拉格朗日插值求系数.cpp}
 
-% 来源：contents/0x30 数学/0x31 数学 多项式.tex:70
+% 来源：contents/0x30 数学/0x31 数学 多项式.tex
 \InputCode{cpp}{contents/0x30 数学/code/0x31 连续点值的拉格朗日插值.cpp}
 
-% 来源：contents/0x30 数学/0x31 数学 多项式.tex:72
+% 来源：contents/0x30 数学/0x31 数学 多项式.tex
 \subsection{FFT}
 
-% 来源：contents/0x30 数学/0x31 数学 多项式.tex:270
+% 来源：contents/0x30 数学/0x31 数学 多项式.tex
 \subsubsection{FFT 多项式乘法}
 
-% 来源：contents/0x30 数学/0x31 数学 多项式.tex:282
+% 来源：contents/0x30 数学/0x31 数学 多项式.tex
 \InputCode{cpp}{contents/0x30 数学/code/0x31 FFT.cpp}
 
-% 来源：contents/0x30 数学/0x31 数学 多项式.tex:284
+% 来源：contents/0x30 数学/0x31 数学 多项式.tex
 \subsection{NTT}
 
-% 来源：contents/0x30 数学/0x31 数学 多项式.tex:336
+% 来源：contents/0x30 数学/0x31 数学 多项式.tex
 \InputCode{cpp}{contents/0x30 数学/code/0x31 NTT.cpp}
 
-% 来源：contents/0x30 数学/0x31 数学 多项式.tex:338
+% 来源：contents/0x30 数学/0x31 数学 多项式.tex
 \subsection{MTT}
 
-% 来源：contents/0x30 数学/0x31 数学 多项式.tex:344
+% 来源：contents/0x30 数学/0x31 数学 多项式.tex
 \subsubsection{三模 NTT}
 
-% 来源：contents/0x30 数学/0x31 数学 多项式.tex:358
+% 来源：contents/0x30 数学/0x31 数学 多项式.tex
 \InputCode{cpp}{contents/0x30 数学/code/0x31 MTT（三模 NTT）.cpp}
 
-% 来源：contents/0x30 数学/0x31 数学 多项式.tex:811
+% 来源：contents/0x30 数学/0x31 数学 多项式.tex
 \subsection{多项式多点求值}
 
-% 来源：contents/0x30 数学/0x31 数学 多项式.tex:835
+% 来源：contents/0x30 数学/0x31 数学 多项式.tex
 \InputCode{cpp}{contents/0x30 数学/code/0x31 多项式多点求值（多项式取模）.cpp}
 
-% 来源：contents/0x30 数学/0x31 数学 多项式.tex:927
+% 来源：contents/0x30 数学/0x31 数学 多项式.tex
 \subsection{多项式全家桶⭐}
 
-% 来源：contents/0x30 数学/0x31 数学 多项式.tex:942
+% 来源：contents/0x30 数学/0x31 数学 多项式.tex
 \InputCode{cpp}{contents/0x30 数学/code/0x31 多项式全家桶.cpp}
 
-% 来源：contents/0x30 数学/0x31 数学 多项式.tex:944
+% 来源：contents/0x30 数学/0x31 数学 多项式.tex
 \subsection{Bostan-Mori}
 
-% 来源：contents/0x30 数学/0x31 数学 多项式.tex:946
+% 来源：contents/0x30 数学/0x31 数学 多项式.tex
 \subsubsection{分式远处系数}
 
-% 来源：contents/0x30 数学/0x31 数学 多项式.tex:972
+% 来源：contents/0x30 数学/0x31 数学 多项式.tex
 \InputCode{cpp}{contents/0x30 数学/code/0x31 分式远处系数.cpp}
 
-% 来源：contents/0x30 数学/0x31 数学 多项式.tex:978
+% 来源：contents/0x30 数学/0x31 数学 多项式.tex
 \subsection{常系数齐次线性递推}
 
-% 来源：contents/0x30 数学/0x31 数学 多项式.tex:982
+% 来源：contents/0x30 数学/0x31 数学 多项式.tex
 \subsubsection{Fiduccia 算法}
 
-% 来源：contents/0x30 数学/0x31 数学 多项式.tex:998
+% 来源：contents/0x30 数学/0x31 数学 多项式.tex
 \InputCode{cpp}{contents/0x30 数学/code/0x31 常系数齐次线性递推（Fiduccia）.cpp}
 
-% 来源：contents/0x30 数学/0x31 数学 多项式.tex:1000
+% 来源：contents/0x30 数学/0x31 数学 多项式.tex
 \subsubsection{递推式转分式}
 
-% 来源：contents/0x30 数学/0x31 数学 多项式.tex:1023
+% 来源：contents/0x30 数学/0x31 数学 多项式.tex
 \InputCode{cpp}{contents/0x30 数学/code/0x31 常系数齐次线性递推（Bostan-Mori）.cpp}
 
-% 来源：contents/0x30 数学/0x31 数学 多项式.tex:1025
+% 来源：contents/0x30 数学/0x31 数学 多项式.tex
 \subsection{整式递推}
 
-% 来源：contents/0x30 数学/0x31 数学 多项式.tex:1029
+% 来源：contents/0x30 数学/0x31 数学 多项式.tex
 \subsubsection{应用：快速阶乘算法}
 
-% 来源：contents/0x30 数学/0x31 数学 多项式.tex:1065
+% 来源：contents/0x30 数学/0x31 数学 多项式.tex
 \InputCode{cpp}{contents/0x30 数学/code/0x31 快速阶乘算法.cpp}
 
-% 来源：contents/0x30 数学/0x32 数学 集合幂级数.tex:1
+% 来源：contents/0x30 数学/0x32 数学 集合幂级数.tex
 \section{0x32\ 数学\ 集合幂级数}
 
-% 来源：contents/0x30 数学/0x32 数学 集合幂级数.tex:4
+% 来源：contents/0x30 数学/0x32 数学 集合幂级数.tex
 \subsection{FWT}
 
-% 来源：contents/0x30 数学/0x32 数学 集合幂级数.tex:106
+% 来源：contents/0x30 数学/0x32 数学 集合幂级数.tex
 \subsubsection{位运算卷积}
 
-% 来源：contents/0x30 数学/0x32 数学 集合幂级数.tex:146
+% 来源：contents/0x30 数学/0x32 数学 集合幂级数.tex
 \InputCode{cpp}{contents/0x30 数学/code/0x32 FWT.cpp}
 
-% 来源：contents/0x30 数学/0x32 数学 集合幂级数.tex:148
+% 来源：contents/0x30 数学/0x32 数学 集合幂级数.tex
 \subsection{子集 dp}
 
-% 来源：contents/0x30 数学/0x32 数学 集合幂级数.tex:158
+% 来源：contents/0x30 数学/0x32 数学 集合幂级数.tex
 \begin{minted}{cpp}
 // 注意：要先枚举维度 i，再枚举状态 S
 for (int i = 0; i < m; i ++) {
@@ -452,7 +452,7 @@ for (int i = 0; i < m; i ++) {
 }
 \end{minted}
 
-% 来源：contents/0x30 数学/0x32 数学 集合幂级数.tex:175
+% 来源：contents/0x30 数学/0x32 数学 集合幂级数.tex
 \begin{minted}{cpp}
 for (int s = 1; s <= m; s ++) {
     for (int S = 0; S < (1 << m); S ++) {
@@ -474,25 +474,25 @@ for (int s = 1; s <= m; s ++) {
 }
 \end{minted}
 
-% 来源：contents/0x30 数学/0x32 数学 集合幂级数.tex:196
+% 来源：contents/0x30 数学/0x32 数学 集合幂级数.tex
 \subsection{子集卷积}
 
-% 来源：contents/0x30 数学/0x32 数学 集合幂级数.tex:221
+% 来源：contents/0x30 数学/0x32 数学 集合幂级数.tex
 \InputCode{cpp}{contents/0x30 数学/code/0x32 子集卷积.cpp}
 
-% 来源：contents/0x30 数学/0x32 数学 集合幂级数.tex:233
+% 来源：contents/0x30 数学/0x32 数学 集合幂级数.tex
 \InputCode{cpp}{contents/0x30 数学/code/0x32 半在线子集卷积.cpp}
 
-% 来源：contents/0x30 数学/0x33 数学 组合计数.tex:1
+% 来源：contents/0x30 数学/0x33 数学 组合计数.tex
 \section{0x33\ 数学\ 组合计数}
 
-% 来源：contents/0x30 数学/0x33 数学 组合计数.tex:139
+% 来源：contents/0x30 数学/0x33 数学 组合计数.tex
 \subsection{组合数常见求法}
 
-% 来源：contents/0x30 数学/0x33 数学 组合计数.tex:141
+% 来源：contents/0x30 数学/0x33 数学 组合计数.tex
 \subsubsection{求法 1：递推}
 
-% 来源：contents/0x30 数学/0x33 数学 组合计数.tex:151
+% 来源：contents/0x30 数学/0x33 数学 组合计数.tex
 \begin{minted}{cpp}
 for (int i = 0; i <= n; i ++) {
     C[i][0] = C[i][i] = 1;
@@ -502,76 +502,76 @@ for (int i = 0; i <= n; i ++) {
 }
 \end{minted}
 
-% 来源：contents/0x30 数学/0x33 数学 组合计数.tex:160
+% 来源：contents/0x30 数学/0x33 数学 组合计数.tex
 \subsubsection{求法 2：预处理阶乘与阶乘逆元}
 
-% 来源：contents/0x30 数学/0x33 数学 组合计数.tex:180
+% 来源：contents/0x30 数学/0x33 数学 组合计数.tex
 \InputCode{cpp}{contents/0x30 数学/code/0x33 组合数（预处理阶乘与阶乘逆元）.cpp}
 
-% 来源：contents/0x30 数学/0x33 数学 组合计数.tex:634
+% 来源：contents/0x30 数学/0x33 数学 组合计数.tex
 \subsection{图论计数}
 
-% 来源：contents/0x30 数学/0x33 数学 组合计数.tex:636
+% 来源：contents/0x30 数学/0x33 数学 组合计数.tex
 \subsubsection{有标号无向连通图计数}
 
-% 来源：contents/0x30 数学/0x33 数学 组合计数.tex:661
+% 来源：contents/0x30 数学/0x33 数学 组合计数.tex
 \paragraph{算法二：多项式 ln}
 
-% 来源：contents/0x30 数学/0x33 数学 组合计数.tex:669
+% 来源：contents/0x30 数学/0x33 数学 组合计数.tex
 \InputCode{cpp}{contents/0x30 数学/code/0x33 有标号无向连通图计数.cpp}
 
-% 来源：contents/0x30 数学/0x33 数学 组合计数.tex:671
+% 来源：contents/0x30 数学/0x33 数学 组合计数.tex
 \subsubsection{有标号无向欧拉图计数}
 
-% 来源：contents/0x30 数学/0x33 数学 组合计数.tex:681
+% 来源：contents/0x30 数学/0x33 数学 组合计数.tex
 \InputCode{cpp}{contents/0x30 数学/code/0x33 有标号无向欧拉图计数.cpp}
 
-% 来源：contents/0x30 数学/0x33 数学 组合计数.tex:683
+% 来源：contents/0x30 数学/0x33 数学 组合计数.tex
 \subsubsection{有标号无向二分图计数}
 
-% 来源：contents/0x30 数学/0x33 数学 组合计数.tex:715
+% 来源：contents/0x30 数学/0x33 数学 组合计数.tex
 \InputCode{cpp}{contents/0x30 数学/code/0x33 有标号无向二分图计数.cpp}
 
-% 来源：contents/0x30 数学/0x33 数学 组合计数.tex:717
+% 来源：contents/0x30 数学/0x33 数学 组合计数.tex
 \subsubsection{有标号 DAG 计数}
 
-% 来源：contents/0x30 数学/0x33 数学 组合计数.tex:740
+% 来源：contents/0x30 数学/0x33 数学 组合计数.tex
 \InputCode{cpp}{contents/0x30 数学/code/0x33 有标号 DAG 计数.cpp}
 
-% 来源：contents/0x30 数学/0x33 数学 组合计数.tex:742
+% 来源：contents/0x30 数学/0x33 数学 组合计数.tex
 \subsubsection{有标号弱连通 DAG 计数}
 
-% 来源：contents/0x30 数学/0x33 数学 组合计数.tex:752
+% 来源：contents/0x30 数学/0x33 数学 组合计数.tex
 \InputCode{cpp}{contents/0x30 数学/code/0x33 有标号弱连通 DAG 计数.cpp}
 
-% 来源：contents/0x30 数学/0x33 数学 组合计数.tex:754
+% 来源：contents/0x30 数学/0x33 数学 组合计数.tex
 \subsubsection{有标号强连通图计数}
 
-% 来源：contents/0x30 数学/0x33 数学 组合计数.tex:797
+% 来源：contents/0x30 数学/0x33 数学 组合计数.tex
 \InputCode{cpp}{contents/0x30 数学/code/0x33 有标号强连通图计数.cpp}
 
-% 来源：contents/0x30 数学/0x34 数学 初等数论.tex:1
+% 来源：contents/0x30 数学/0x34 数学 初等数论.tex
 \section{0x34\ 数学\ 初等数论}
 
-% 来源：contents/0x30 数学/0x34 数学 初等数论.tex:4
+% 来源：contents/0x30 数学/0x34 数学 初等数论.tex
 \subsection{质数🚩}
 
-% 来源：contents/0x30 数学/0x34 数学 初等数论.tex:39
+% 来源：contents/0x30 数学/0x34 数学 初等数论.tex
 \subsubsection{埃氏筛}
 
-% 来源：contents/0x30 数学/0x34 数学 初等数论.tex:63
+% 来源：contents/0x30 数学/0x34 数学 初等数论.tex
 \InputCode{cpp}{contents/0x30 数学/code/0x34 埃氏筛.cpp}
 
-% 来源：contents/0x30 数学/0x34 数学 初等数论.tex:65
+% 来源：contents/0x30 数学/0x34 数学 初等数论.tex
 \subsubsection{线性筛}
 
-% 来源：contents/0x30 数学/0x34 数学 初等数论.tex:75
+% 来源：contents/0x30 数学/0x34 数学 初等数论.tex
 \InputCode{cpp}{contents/0x30 数学/code/0x34 线性筛.cpp}
 
-% 来源：contents/0x30 数学/0x34 数学 初等数论.tex:77
+% 来源：contents/0x30 数学/0x34 数学 初等数论.tex
 \subsection{狄利克雷前缀和}
 
-% 来源：contents/0x30 数学/0x34 数学 初等数论.tex:83
+% 来源：contents/0x30 数学/0x34 数学 初等数论.tex
 \begin{minted}{cpp}
 // 注意：要先枚举质数 prime[j]
 for (int j = 1; j <= primeCount; j ++) {
@@ -581,7 +581,7 @@ for (int j = 1; j <= primeCount; j ++) {
 }
 \end{minted}
 
-% 来源：contents/0x30 数学/0x34 数学 初等数论.tex:94
+% 来源：contents/0x30 数学/0x34 数学 初等数论.tex
 \begin{minted}{cpp}
 // 注意：要先枚举质数 prime[j]
 for (int j = 1; j <= primeCount; j ++) {
@@ -591,7 +591,7 @@ for (int j = 1; j <= primeCount; j ++) {
 }
 \end{minted}
 
-% 来源：contents/0x30 数学/0x34 数学 初等数论.tex:105
+% 来源：contents/0x30 数学/0x34 数学 初等数论.tex
 \begin{minted}{cpp}
 // 注意：要先枚举质数 prime[j]
 for (int j = 1; j <= primeCount; j ++) {
@@ -601,7 +601,7 @@ for (int j = 1; j <= primeCount; j ++) {
 }
 \end{minted}
 
-% 来源：contents/0x30 数学/0x34 数学 初等数论.tex:116
+% 来源：contents/0x30 数学/0x34 数学 初等数论.tex
 \begin{minted}{cpp}
 // 注意：要先枚举质数 prime[j]
 for (int j = 1; j <= primeCount; j ++) {
@@ -611,19 +611,19 @@ for (int j = 1; j <= primeCount; j ++) {
 }
 \end{minted}
 
-% 来源：contents/0x30 数学/0x34 数学 初等数论.tex:161
+% 来源：contents/0x30 数学/0x34 数学 初等数论.tex
 \subsection{Pollard-Rho 质因数分解}
 
-% 来源：contents/0x30 数学/0x34 数学 初等数论.tex:204
+% 来源：contents/0x30 数学/0x34 数学 初等数论.tex
 \InputCode{cpp}{contents/0x30 数学/code/0x34 素性测试与质因数分解（Miller-Rabin + Pollard-Rho）.cpp}
 
-% 来源：contents/0x30 数学/0x34 数学 初等数论.tex:334
+% 来源：contents/0x30 数学/0x34 数学 初等数论.tex
 \subsection{最大公约数常见求法}
 
-% 来源：contents/0x30 数学/0x34 数学 初等数论.tex:338
+% 来源：contents/0x30 数学/0x34 数学 初等数论.tex
 \subsubsection{求法 1：辗转相除法}
 
-% 来源：contents/0x30 数学/0x34 数学 初等数论.tex:356
+% 来源：contents/0x30 数学/0x34 数学 初等数论.tex
 \begin{minted}{cpp}
 // 辗转相除法
 int gcd(int a, int b) {
@@ -631,16 +631,16 @@ int gcd(int a, int b) {
 }
 \end{minted}
 
-% 来源：contents/0x30 数学/0x34 数学 初等数论.tex:363
+% 来源：contents/0x30 数学/0x34 数学 初等数论.tex
 \subsubsection{求法 2：更相减损术}
 
-% 来源：contents/0x30 数学/0x34 数学 初等数论.tex:388
+% 来源：contents/0x30 数学/0x34 数学 初等数论.tex
 \InputCode{cpp}{contents/0x30 数学/code/0x34 gcd（更相减损术）.cpp}
 
-% 来源：contents/0x30 数学/0x34 数学 初等数论.tex:390
+% 来源：contents/0x30 数学/0x34 数学 初等数论.tex
 \subsubsection{求法 3：递推}
 
-% 来源：contents/0x30 数学/0x34 数学 初等数论.tex:396
+% 来源：contents/0x30 数学/0x34 数学 初等数论.tex
 \begin{minted}{cpp}
 for (int i = 0; i <= n; i ++) {
     g[i][0] = g[0][i] = i;
@@ -650,25 +650,25 @@ for (int i = 0; i <= n; i ++) {
 }
 \end{minted}
 
-% 来源：contents/0x30 数学/0x34 数学 初等数论.tex:405
+% 来源：contents/0x30 数学/0x34 数学 初等数论.tex
 \subsubsection{求法 4：基于值域预处理的快速 gcd}
 
-% 来源：contents/0x30 数学/0x34 数学 初等数论.tex:437
+% 来源：contents/0x30 数学/0x34 数学 初等数论.tex
 \InputCode{cpp}{contents/0x30 数学/code/0x34 gcd（基于值域预处理的快速 gcd）.cpp}
 
-% 来源：contents/0x30 数学/0x34 数学 初等数论.tex:439
+% 来源：contents/0x30 数学/0x34 数学 初等数论.tex
 \subsection{类欧几里得算法}
 
-% 来源：contents/0x30 数学/0x34 数学 初等数论.tex:473
+% 来源：contents/0x30 数学/0x34 数学 初等数论.tex
 \InputCode{cpp}{contents/0x30 数学/code/0x34 类欧几里得算法.cpp}
 
-% 来源：contents/0x30 数学/0x34 数学 初等数论.tex:515
+% 来源：contents/0x30 数学/0x34 数学 初等数论.tex
 \subsection{数论分块}
 
-% 来源：contents/0x30 数学/0x34 数学 初等数论.tex:519
+% 来源：contents/0x30 数学/0x34 数学 初等数论.tex
 \subsubsection{下取整数论分块}
 
-% 来源：contents/0x30 数学/0x34 数学 初等数论.tex:548
+% 来源：contents/0x30 数学/0x34 数学 初等数论.tex
 \begin{minted}{cpp}
 // h 表示 x 的上界
 for (int x = 1, nx; x <= h; x = nx + 1) {
@@ -680,10 +680,10 @@ for (int x = 1, nx; x <= h; x = nx + 1) {
 }
 \end{minted}
 
-% 来源：contents/0x30 数学/0x34 数学 初等数论.tex:563
+% 来源：contents/0x30 数学/0x34 数学 初等数论.tex
 \subsubsection{上取整数论分块}
 
-% 来源：contents/0x30 数学/0x34 数学 初等数论.tex:571
+% 来源：contents/0x30 数学/0x34 数学 初等数论.tex
 \begin{minted}{cpp}
 // h 表示 x 的上界
 for (int x = 1, nx; x <= h; x = nx + 1) {
@@ -695,10 +695,10 @@ for (int x = 1, nx; x <= h; x = nx + 1) {
 }
 \end{minted}
 
-% 来源：contents/0x30 数学/0x34 数学 初等数论.tex:582
+% 来源：contents/0x30 数学/0x34 数学 初等数论.tex
 \subsubsection{多维数论分块}
 
-% 来源：contents/0x30 数学/0x34 数学 初等数论.tex:592
+% 来源：contents/0x30 数学/0x34 数学 初等数论.tex
 \begin{minted}{cpp}
 // h 表示 x 的上界
 for (int x = 1, nx; x <= h; x = nx + 1) {
@@ -713,100 +713,100 @@ for (int x = 1, nx; x <= h; x = nx + 1) {
 }
 \end{minted}
 
-% 来源：contents/0x30 数学/0x34 数学 初等数论.tex:606
+% 来源：contents/0x30 数学/0x34 数学 初等数论.tex
 \subsection{积性函数与狄利克雷卷积}
 
-% 来源：contents/0x30 数学/0x34 数学 初等数论.tex:709
+% 来源：contents/0x30 数学/0x34 数学 初等数论.tex
 \subsubsection{线性筛筛积性函数}
 
-% 来源：contents/0x30 数学/0x34 数学 初等数论.tex:723
+% 来源：contents/0x30 数学/0x34 数学 初等数论.tex
 \InputCode{cpp}{contents/0x30 数学/code/0x34 线性筛筛积性函数.cpp}
 
-% 来源：contents/0x30 数学/0x34 数学 初等数论.tex:801
+% 来源：contents/0x30 数学/0x34 数学 初等数论.tex
 \subsection{杜教筛}
 
-% 来源：contents/0x30 数学/0x34 数学 初等数论.tex:852
+% 来源：contents/0x30 数学/0x34 数学 初等数论.tex
 \InputCode{cpp}{contents/0x30 数学/code/0x34 杜教筛.cpp}
 
-% 来源：contents/0x30 数学/0x34 数学 初等数论.tex:963
+% 来源：contents/0x30 数学/0x34 数学 初等数论.tex
 \subsection{模意义下逆元}
 
-% 来源：contents/0x30 数学/0x34 数学 初等数论.tex:975
+% 来源：contents/0x30 数学/0x34 数学 初等数论.tex
 \subsubsection{单个逆元的求解}
 
-% 来源：contents/0x30 数学/0x34 数学 初等数论.tex:981
+% 来源：contents/0x30 数学/0x34 数学 初等数论.tex
 \InputCode{cpp}{contents/0x30 数学/code/0x34 单个逆元的求解.cpp}
 
-% 来源：contents/0x30 数学/0x34 数学 初等数论.tex:989
+% 来源：contents/0x30 数学/0x34 数学 初等数论.tex
 \subsubsection{预处理线性逆元}
 
-% 来源：contents/0x30 数学/0x34 数学 初等数论.tex:1003
+% 来源：contents/0x30 数学/0x34 数学 初等数论.tex
 \InputCode{cpp}{contents/0x30 数学/code/0x34 预处理线性逆元.cpp}
 
-% 来源：contents/0x30 数学/0x34 数学 初等数论.tex:1005
+% 来源：contents/0x30 数学/0x34 数学 初等数论.tex
 \subsection{线性同余方程}
 
-% 来源：contents/0x30 数学/0x34 数学 初等数论.tex:1047
+% 来源：contents/0x30 数学/0x34 数学 初等数论.tex
 \InputCode{cpp}{contents/0x30 数学/code/0x34 exgcd（扩展欧几里得算法）.cpp}
 
-% 来源：contents/0x30 数学/0x34 数学 初等数论.tex:1087
+% 来源：contents/0x30 数学/0x34 数学 初等数论.tex
 \subsection{线性同余方程组}
 
-% 来源：contents/0x30 数学/0x34 数学 初等数论.tex:1117
+% 来源：contents/0x30 数学/0x34 数学 初等数论.tex
 \InputCode{cpp}{contents/0x30 数学/code/0x34 CRT（中国剩余定理）.cpp}
 
-% 来源：contents/0x30 数学/0x34 数学 初等数论.tex:1138
+% 来源：contents/0x30 数学/0x34 数学 初等数论.tex
 \InputCode{cpp}{contents/0x30 数学/code/0x34 exCRT（扩展中国剩余定理）.cpp}
 
-% 来源：contents/0x30 数学/0x34 数学 初等数论.tex:1140
+% 来源：contents/0x30 数学/0x34 数学 初等数论.tex
 \subsection{阶与原根}
 
-% 来源：contents/0x30 数学/0x34 数学 初等数论.tex:1257
+% 来源：contents/0x30 数学/0x34 数学 初等数论.tex
 \InputCode{cpp}{contents/0x30 数学/code/0x34 最小原根.cpp}
 
-% 来源：contents/0x30 数学/0x34 数学 初等数论.tex:1259
+% 来源：contents/0x30 数学/0x34 数学 初等数论.tex
 \InputCode{cpp}{contents/0x30 数学/code/0x34 所有原根.cpp}
 
-% 来源：contents/0x30 数学/0x34 数学 初等数论.tex:1276
+% 来源：contents/0x30 数学/0x34 数学 初等数论.tex
 \subsection{高次同余方程}
 
-% 来源：contents/0x30 数学/0x34 数学 初等数论.tex:1292
+% 来源：contents/0x30 数学/0x34 数学 初等数论.tex
 \InputCode{cpp}{contents/0x30 数学/code/0x34 BSGS（大步小步算法）.cpp}
 
-% 来源：contents/0x30 数学/0x34 数学 初等数论.tex:1308
+% 来源：contents/0x30 数学/0x34 数学 初等数论.tex
 \InputCode{cpp}{contents/0x30 数学/code/0x34 exBSGS（扩展大步小步算法）.cpp}
 
-% 来源：contents/0x40 数据结构/0x41 数据结构 序列结构.tex:1
+% 来源：contents/0x40 数据结构/0x41 数据结构 序列结构.tex
 \section{0x41\ 数据结构\ 序列结构}
 
-% 来源：contents/0x40 数据结构/0x41 数据结构 序列结构.tex:4
+% 来源：contents/0x40 数据结构/0x41 数据结构 序列结构.tex
 \subsection{线段树}
 
-% 来源：contents/0x40 数据结构/0x41 数据结构 序列结构.tex:10
+% 来源：contents/0x40 数据结构/0x41 数据结构 序列结构.tex
 \subsubsection{势能线段树}
 
-% 来源：contents/0x40 数据结构/0x41 数据结构 序列结构.tex:43
+% 来源：contents/0x40 数据结构/0x41 数据结构 序列结构.tex
 \InputCode{cpp}{contents/0x40 数据结构/code/0x41 吉老师线段树.cpp}
 
-% 来源：contents/0x40 数据结构/0x42 数据结构 树上结构.tex:1
+% 来源：contents/0x40 数据结构/0x42 数据结构 树上结构.tex
 \section{0x42\ 数据结构\ 树上结构}
 
-% 来源：contents/0x40 数据结构/0x42 数据结构 树上结构.tex:4
+% 来源：contents/0x40 数据结构/0x42 数据结构 树上结构.tex
 \subsection{并查集}
 
-% 来源：contents/0x40 数据结构/0x42 数据结构 树上结构.tex:6
+% 来源：contents/0x40 数据结构/0x42 数据结构 树上结构.tex
 \InputCode{cpp}{contents/0x40 数据结构/code/0x42 可撤销并查集.cpp}
 
-% 来源：contents/0x60 图论/0x65 图论 二分图与网络流.tex:1
+% 来源：contents/0x60 图论/0x65 图论 二分图与网络流.tex
 \section{0x65\ 图论\ 二分图与网络流}
 
-% 来源：contents/0x60 图论/0x65 图论 二分图与网络流.tex:4
+% 来源：contents/0x60 图论/0x65 图论 二分图与网络流.tex
 \subsection{最大流}
 
-% 来源：contents/0x60 图论/0x65 图论 二分图与网络流.tex:6
+% 来源：contents/0x60 图论/0x65 图论 二分图与网络流.tex
 \subsubsection{Dinic}
 
-% 来源：contents/0x60 图论/0x65 图论 二分图与网络流.tex:8
+% 来源：contents/0x60 图论/0x65 图论 二分图与网络流.tex
 \InputCode{cpp}{contents/0x60 图论/code/0x65 最大流（Dinic）.cpp}
 
 \end{document}

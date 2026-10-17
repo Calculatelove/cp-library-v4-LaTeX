@@ -41,6 +41,15 @@ class CheckFullTests(unittest.TestCase):
         chars = [self.char(100, 140, page=1, size=c.TITLEPAGE_SIZE + 4), self.char(100, 110, page=2)]
         self.assertEqual(c.title_pages(chars), [1])
 
+    def test_commit_stamp(self):
+        """扉页提交信息：读出日期、短哈希与未提交修改标签；提交说明中的哈希不干扰，没有眉题时返回 None。"""
+        head = ['算法竞赛小记', '（代码版）', 'Competitive Programming Library', 'Calculatelove', 'LAST COMMIT']
+        self.assertEqual(c.commit_stamp(head + ['2026-10-17', '1422e16', '含未提交修改', 'fix: 回退 abcdef1']),
+                         ('2026-10-17', '1422e16', True))
+        self.assertEqual(c.commit_stamp(head + ['2026-10-17', '1422e16', 'fix: 修复']),
+                         ('2026-10-17', '1422e16', False))
+        self.assertIsNone(c.commit_stamp(head[:-1]))
+
     def test_card_line_numbers_are_identified_narrowly(self):
         """框外行号可跳过；同位置的正文数字、错误字号或偏移的数字仍须检查。"""
         span = {'chars': [{'c': ch} for ch in '123'], 'font': 'MapleMono-NF-CN-Regular',

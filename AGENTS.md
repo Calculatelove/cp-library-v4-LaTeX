@@ -20,7 +20,7 @@ C.L. 的算法竞赛第四版笔记，已由 Markdown 迁移为 LaTeX，内容�
 
 - 入口：`main-portrait.tex`、`main-landscape.tex` 手写，除布局一行外逐行相同；`main-code.tex` 由 `scripts/generate-code.py` 以横版入口为模板生成，不要手工编辑。
 - 入口只含：不带排版选项的文档类声明；依次 `\input` 的 `preamble/packages.tex`、`preamble/layout-<版本>.tex`、`preamble/mystyle.tex`；标题、作者、日期、英文书名、扉页配图等元信息；`\maketitle`、`\tableofcontents` 与章节。某版确需不同的设置放进该版布局。
-- 正文：19 篇章节在 `contents/0xP0 类名/`，代码在各大类的 `code/`，图片在 `figures/`；章节文件只含正文。
+- 正文：章节在 `contents/0xP0 类名/`，代码在各大类的 `code/`，图片在 `figures/`；章节文件只含正文。
 - 导言区：各版参数在 `layout-<版本>.tex`，三版共用的实现在 `preamble/shared/`，四个自定义接口在 `mystyle.tex`。
 - 不创建 `setup.tex`、合并各版参数的 `layout-common.tex`、`contents/chapters.tex`、`contents/code-index.tex` 或顶层的 `tests/` 目录（工具测试在 `scripts/tests/`，样张在 `preamble/tests/`），也不加 `\InputChapter` 之类的封装；`contents/` 下不建 README 等说明文件。
 - 从根目录编译，路径一律相对项目根目录；保留真实文件名，包括中文、空格与大小写。
@@ -51,6 +51,7 @@ C.L. 的算法竞赛第四版笔记，已由 Markdown 迁移为 LaTeX，内容�
 - 归属：全局规则写在这里，排版规则写在 `preamble/AGENTS.md`，正文写法写在 `WRITING.md`；现状、用法、设计决定与理由写在对应目录的 README；只关乎某几行代码的原因写成注释；过程留给 Git 历史。其他地方只放链接，不复述。
 - 原位更新：决定变了就改原句，删除失效的说法；不在文末追加“某某调整（日期）”。
 - 按影响更新：接口、命令、目录职责或长期约束变化时才改文档；普通修复不留完成记录。
+- 不在文档、注释或生成文件里写随正文变化的数字、位置或行号，如整书页数、警告的数量与位置、章节数、来源行号（用户确认）：正文几乎每次提交都在变，这类内容很快失效。
 - 设计决定标明“用户确认”并附一句理由；有参考价值的否决方案写一句。精简文档时不得丢失用户的决定，也不得降低验收要求。
 - 验证状态写在被验证对象的 README，只留最新一条：日期、基于的提交、工作区有无未提交修改、运行的命令、自动检查范围、人工查看范围、未验证的部分。此后相关文件再改动，即视为不覆盖新改动。
 - 不用“本轮、本次、当时、仍为”等相对说法，需要时写绝对日期。

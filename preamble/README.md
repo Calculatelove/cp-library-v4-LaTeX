@@ -70,6 +70,6 @@
 - 未做实物打印验收；完整 PDF 没有逐页做视觉检查。
 - 五级标题只完成了配置，正文尚未使用。
 - 双栏版中，推导用的 `aligned` 整组不可拆分，可能在栏底留下空白；用户确认不处理。
-- 横版有行内公式越出所在栏；整书末轮日志另有 Overfull、Underfull 与 amsmath 警告。数量随正文变化，见 `scripts/README.md` 的“整书警告”。
+- 双栏栏宽较窄，较长的行内公式可能越出所在栏，由 `scripts/check-full.py` 报出；整书末轮日志中的 Overfull、Underfull 与 amsmath 等警告随正文变化，见 `scripts/README.md` 的“整书警告”。
 
 验证状态见 `tests/README.md`（样张）。
