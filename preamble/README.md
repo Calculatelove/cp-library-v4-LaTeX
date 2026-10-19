@@ -58,6 +58,7 @@
 - 行号（用户确认）：仅 `\InputCode` 在卡片左边框外悬挂行号，沿用代码字体，4 pt、正体、`808080`，右对齐，距边框 1 mm；不压缩代码宽度，便于双栏查阅。每个文件从 1 开始，空行也显示编号，折行只在首个视觉行显示编号，跨页与跨栏连续（`mystyle.tex`）。
 - 代码配色：四色。名称与标点 `30343B`，关键字、类型、数字与预处理 `506B82`，字符串 `58715D`，注释 `70757D`。不用斜体，也不用粗体区分 token；C++ 另把 `vector`、`string`、`pair` 当作类型名（`shared/colors.tex`、`shared/code.tex`）。
 - 标题：竖版的四、五级标题与正文同字号，用苹方 Semibold 独立成行（`layout-portrait.tex`）。
+- 列表（用户确认）：二级无序列表用空心圆点 `\textopenbullet`（U+25E6）；Latin Modern 中它与一级的实心圆点 `\textbullet` 外框相同，两级只差填充（`layout-<版本>.tex`）。
 - 目录：显示到三级；书签到五级，初始只显示一级（二至五级闭合）。条目采用方案 A：一级用苹方 Semibold；二、三级用宋体配 Latin Modern Roman，带点线；每级多缩进两个“中”的字宽；父条目不与首个子条目分开（`shared/toc.tex`）。
 - 双栏：`emergencystretch` 为 6em，试过 3em 后撤回；页眉显示页顶所在的章；`\textwidth` 按当前栏宽解释（`layout-landscape.tex`、`shared/twocolumn.tex`）。
 - 扉页：提交信息为眉题式三行，不用“·”串联；横版、代码版居中竖排；代码版书名后悬挂“（代码版）”，不参与居中（`shared/titlepage.tex`）。

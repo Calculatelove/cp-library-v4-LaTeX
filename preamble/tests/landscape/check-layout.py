@@ -1,4 +1,4 @@
-"""检查横版或代码版样张的纸张、阅读流向、页眉、代码配色与跨栏、引用跨栏、目录及图片；需要 PyMuPDF。
+"""检查横版或代码版样张的纸张、阅读流向、页眉、代码配色与跨栏、引用跨栏、列表符号、目录及图片；需要 PyMuPDF。
 
 用法（从任意目录）：python3 preamble/tests/landscape/check-layout.py [landscape|code]
 默认检查 preamble/tests/build/landscape/ 的样张；code 检查 preamble/tests/build/code/ 的样张。
@@ -94,6 +94,16 @@ if 'interfaces' in SAMPLES[edition]:
                         segments.append((i, col))
             c.check(numbers == [f'{i:03d}' for i in range(1, 66)], '65 段引用应完整、按序', len(numbers), numbers[:3])
             c.check(segments[:3] == [(0, 0), (0, 1), (1, 0)], '引用应从左栏跨到右栏、再到下一页', segments[:3])
+    with c.section('interfaces：列表符号'):
+        with c.open(OUT / 'interfaces.pdf', HINT) as doc:
+            marks = [(char['c'], span['font'], round(span['size'], 2))
+                     for page in doc for block in page.get_text('rawdict')['blocks']
+                     for line in block.get('lines', ()) for span in line['spans']
+                     for char in span['chars'] if char['c'] in '•◦']
+            c.check([m[0] for m in marks] == ['•', '◦'], '一级、二级列表符号应依次为实心、空心圆点', marks)
+            # Latin Modern 中两个圆点的外框相同；同字体、同字号即保证二级圆点与一级同径同高。
+            c.check(len(set(m[1:] for m in marks)) == 1 and marks[0][1] == 'LMRoman10-Regular',
+                    '两级圆点应为同字号的 Latin Modern Roman 常规体', marks)
 
 with c.section('toc-layout：目录'):
     with c.open(OUT / 'toc-layout.pdf', HINT) as doc:

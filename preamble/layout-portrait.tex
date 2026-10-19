@@ -30,6 +30,8 @@
 \widowpenalty=10000
 \displaywidowpenalty=10000
 \setlist{topsep=3pt,itemsep=1pt,parsep=1pt,partopsep=0pt,leftmargin=*}
+% 二级无序列表用空心圆点（用户确认）；Latin Modern 的 U+25E6 与一级圆点外框相同，只差填充。
+\renewcommand{\labelitemii}{\labelitemfont\textopenbullet}
 
 \titleformat{\section}{\sffamily\bfseries\fontsize{22}{28}\selectfont}{}{0pt}{}[\thispagestyle{plain}]
 \titleformat{\subsection}{\sffamily\bfseries\fontsize{14}{19}\selectfont}{}{0pt}{}

@@ -10,7 +10,7 @@
 | `toc-layout.tex` | 单栏三级目录、各级长标题续行与页码对齐；页底空间不足时，三级标题组整体移到下一页（第 2 页特意留白以构造边界） | `toc-layout.pdf` |
 | `code-cards.tex` | 语言图标与通用图标、长标题换行、短代码与跨页卡片、框外行号、折行与空行编号 | `code-cards.pdf` |
 | `symbols.tex` | ⭐、🚩 在标题、目录、页眉、正文、引用块中的字号与字重，文字提取与书签；断言正文与 22 pt 粗体标题中两个符号的宽度 | `symbols.pdf` |
-| `preview.tex` | 综合样张：扉页、目录、正文、标题层级、页眉页码、脚注、嵌套列表、高亮、代码与引用跨页，以及 Maple 行内代码（中文、易混淆字符、运算符与转义符号） | `preview.pdf` |
+| `preview.tex` | 综合样张：扉页、目录、正文、标题层级、页眉页码、脚注、嵌套的无序与有序列表、高亮、代码与引用跨页，以及 Maple 行内代码（中文、易混淆字符、运算符与转义符号） | `preview.pdf` |
 | `section-breaks.tex` | 一级标题前分页：以页码断言检查空小标题、空一级标题、普通正文、目录、显式分页与星号标题；应为 7 页，目录后 A—F 各占一页 | `section-breaks.pdf` |
 | `heading-levels.tex` | 四、五级标题与三级标题、正文、公式、引用块、高亮、列表的衔接，以及长标题换行；第 2—5 页把正文推到页底，断言剩余空间介于标题本身与标题加首行之间，否则编译报错 | `heading-levels.pdf` |
 | `math-latin-modern.tex`、`math-stix.tex` | 默认数学字体 Latin Modern Math 与 STIX Two Math 的对照，正文相同（`math-content.tex`，不能单独编译）：行内公式、黑板粗体、花体、粗体希腊字母、求和、积分、分式、矩阵与引用块；`\boldsymbol` 作用于含分式、定界符与 min 算子的表达式；递推式中的 log 与粗体 log；普通、上下标与粗体的 `\mathrm{base}`，以及 `\text{base}` | `math-latin-modern.pdf`、`math-stix.pdf` |

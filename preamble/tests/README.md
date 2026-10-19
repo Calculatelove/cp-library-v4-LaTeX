@@ -43,7 +43,7 @@ bash preamble/tests/code/run.sh
 | `python3 preamble/tests/portrait/check-titlepage.py` | 竖版扉页 |
 | `python3 preamble/tests/portrait/check-headings.py` | 竖版四、五级标题 |
 | `python3 preamble/tests/portrait/check-syntax-colors.py` | 竖版代码配色与卡片 |
-| `python3 preamble/tests/landscape/check-layout.py [code]` | 横版（或代码版）的纸张、流向、页眉、代码配色与跨栏、引用、目录、图片 |
+| `python3 preamble/tests/landscape/check-layout.py [code]` | 横版（或代码版）的纸张、流向、页眉、代码配色与跨栏、引用、列表符号、目录、图片 |
 | `python3 preamble/tests/landscape/check-titlepage.py [code]` | 横版（或代码版）扉页 |
 
 `scripts/check.sh --full` 依次编译四组样张并运行上表的全部检查。检查通过后，仍要渲染查看 PDF 的边框、字形、长标题，以及跨页、跨栏的连接处。苹方简体与香港字形共用 TTC 中的轮廓表，`pdffonts` 可能显示 `PingFangHK`，不能据此判断字体被替换。
@@ -52,4 +52,4 @@ bash preamble/tests/code/run.sh
 
 ## 验证状态
 
-2026-10-17，基于提交 `1422e16`；工作区有书签初始显示状态、检查脚本与文档的未提交修改。在 `LC_ALL=zh_CN.UTF-8` 下运行 `scripts/check.sh --full`：四组共 28 份样张收敛，严格日志检查与七项 PDF 检查通过。以同一提交的干净副本重建修改前样张，逐页对比页面内容（文字与位置）、字体、颜色、矢量图形、图片与链接，均无差异；书签的层级、标题、页面与目标不变，可展开条目由全部展开改为闭合（初始只显示一级）。未验证：样张页面的人工视觉检查、实物打印。
+2026-10-20，基于提交 `280dd35`；工作区有二级列表符号（三版布局）、竖版综合样张、横版布局检查与文档的未提交修改。在 `LC_ALL=zh_CN.UTF-8` 下运行 `scripts/check.sh --full`：四组共 28 份样张收敛，严格日志检查与七项 PDF 检查通过，含新增的列表符号检查。以同一提交的干净副本重建修改前样张，逐页对比文字与位置、字体、颜色、矢量图形、图片、链接与书签：25 份无差异；横版 `preview`、`interfaces` 的二级列表符号由粗体短横改为空心圆点，二级条目文字右移 2.03 pt；竖版 `preview` 新增两条二级条目，同页其后的内容下移，指向它们的目录链接、书签与脚注链接随之移动。人工查看：渲染竖版、横版 `preview` 的列表区域，量得空心圆点与一级圆点的墨迹外径、中心高度相同，二级条目续行与本条正文对齐。未验证：其余样张页面的人工视觉检查、实物打印。
