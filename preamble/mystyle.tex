@@ -90,7 +90,9 @@
       lefttitle=2.5mm,righttitle=2.5mm,toptitle=1.5mm,bottomtitle=1.5mm,
       fonttitle=\normalfont,
       % 各版可设置此样式；未设置时保留接口默认外观。
-      input-code-title/.try
+      input-code-title/.try,
+      % 前后距由各版设定；未设置时（如接口样张）沿用 tcolorbox 的默认前后距。
+      book-box-spacing/.try
     ]
     \xeCJKsetup{CJKecglue={}}
     % 行号向卡片左边框外悬挂；零宽度编号盒不挤占代码区，也不影响折行。
@@ -132,13 +134,17 @@
   arc=0pt,
   boxsep=0pt,
   % 左竖线外侧至正文约一个中文字宽，包含竖线自身的厚度。
-  left=\ccwd,right=2mm,top=2mm,bottom=2mm
+  left=\ccwd,right=2mm,top=2mm,bottom=2mm,
+  % 前后距与代码卡片相同，由各版设定；未设置时沿用 tcolorbox 的默认前后距。
+  book-box-spacing/.try
 }
 
 % Markdown 水平分隔线：按当前容器的 \linewidth 排版，不改变分页。
+% 横线按正常行距排在上一行之后，下方另加 0.4 倍行距，补足下一行汉字的字面高度；
+% 横线与上下两行文字的字面因此各隔约一行（用户确认）。
 \definecolor{SeparatorRule}{HTML}{A0A0A0}
 \NewDocumentCommand{\Separator}{}{%
-  \par\addvspace{\baselineskip}%
+  \par
   \noindent{\color{SeparatorRule}\rule{\linewidth}{0.4pt}}\par
-  \addvspace{\baselineskip}%
+  \addvspace{0.4\baselineskip}%
 }

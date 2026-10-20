@@ -15,6 +15,7 @@
 | `heading-levels.tex` | 四、五级标题与三级标题、正文、公式、引用块、高亮、列表的衔接，以及长标题换行；第 2—5 页把正文推到页底，断言剩余空间介于标题本身与标题加首行之间，否则编译报错 | `heading-levels.pdf` |
 | `math-latin-modern.tex`、`math-stix.tex` | 默认数学字体 Latin Modern Math 与 STIX Two Math 的对照，正文相同（`math-content.tex`，不能单独编译）：行内公式、黑板粗体、花体、粗体希腊字母、求和、积分、分式、矩阵与引用块；`\boldsymbol` 作用于含分式、定界符与 min 算子的表达式；递推式中的 log 与粗体 log；普通、上下标与粗体的 `\mathrm{base}`，以及 `\text{base}` | `math-latin-modern.pdf`、`math-stix.pdf` |
 | `syntax-colors.tex` | 四色配色与常规直立字形；正文在 `../fixtures/syntax-colors-body.tex`，与横版、代码版共用 | `syntax-colors.pdf` |
+| `block-spacing.tex` | 代码卡片与引用块前后、二级列表、分隔线的竖向间距；正文在 `../fixtures/block-spacing-body.tex`，与横版、代码版共用 | `block-spacing.pdf` |
 
 ## PDF 检查
 
@@ -23,6 +24,7 @@
 | `check-titlepage.py` | PDF 标题与作者取自入口元信息；书名、英文书名、作者的字体、字号与基线位置，水平居中，各页一致；配图在 130 × 110 mm 区域内等比缩放，不与文字重叠；提交信息为眉题式三行：眉题“LAST COMMIT”，日期与哈希（Maple Mono，哈希为 `506B82`），提交说明与资源逐字一致（`--` 不被替换为连接号）；各行不含“·”；dirty 时第二行末尾有带唯一细框的标签；相邻汉字的步进等于字号（TikZ 的 `align=center` 会拉开字距）；超长说明居中换行、向上增长，不进入下边距；提交信息缺失时只显示标题区；扉页无页码，其后正文照常编号 |
 | `check-headings.py` | 四、五级标题为苹方 Semibold 10.5 pt，独立成行，与其后第一行同页；四级标题上下的基线距为 24/20 pt（容差 1 pt），三级更大，三级紧接四级时介于正文行距与 24 pt 之间；页底的标题移到下一页页首；书签层级为 4、5 |
 | `check-syntax-colors.py` | `syntax-colors.pdf` 与 `code-cards.pdf` 中的代码只用四种颜色，没有粗体或斜体；跨页卡片的续页颜色不变；行号单独检查字体、4 pt 字号、灰色、框外 1 mm 位置及折行、空行编号 |
+| `check-spacing.py` | `block-spacing.pdf`：正文、卡片、引用块之间的盒前距为 9.5 pt，盒后下一行基线距盒底为段距加行距；盒后的标题与正文后的标题基线距相同；二级列表父项到首个子项为行距加 1 pt，同级条目为行距加 2 pt；分隔线顶边距上一行基线为段距加行距减线宽，下一行基线距线底为 0.4 倍行距加段距与行距。断言由 `../pdfcheck.py` 的 `check_block_spacing` 与横版、代码版共用 |
 
 ## 运行
 
@@ -32,6 +34,7 @@ bash preamble/tests/portrait/run.sh titlepage symbols
 python3 preamble/tests/portrait/check-titlepage.py
 python3 preamble/tests/portrait/check-headings.py
 python3 preamble/tests/portrait/check-syntax-colors.py
+python3 preamble/tests/portrait/check-spacing.py
 ```
 
 编译方式、产物位置与 PDF 检查的共同约定见 `../README.md`。字体需要 Songti SC、PingFang SC 与 Maple Mono NF CN（常规、粗体、斜体、粗斜体）；Latin Modern Roman、Latin Modern Math 与 STIX Two Math 使用 TeX Live 提供的字体文件。

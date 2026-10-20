@@ -12,6 +12,8 @@
 | `quoteblock.tex` | 多段正文、列表、行间公式、标准 `quote` 与跨页引用块；在引用块内与块后断言段间距为 `3pt plus 1pt minus 1pt`、无首行缩进。每页都应有浅灰背景与左侧竖线，竖线外侧到文字约一个中文字宽。不检验嵌套 |
 | `separator.tex` | 普通正文、列表与 `quoteblock` 中横线的宽度与上下间距；不分页 |
 
+代码卡片与引用块的前后距由各版布局设定（`book-box-spacing`，见 `../../shared/README.md`）；本目录不载入布局，沿用 tcolorbox 的默认前后距，前后距在各版的 `block-spacing` 样张中检验。
+
 代码资源在 `../fixtures/`：`示例 文件_1.cpp`、`sample.py`、`sample.sh`、`Makefile test` 与 `long-code.cpp`。
 
 ## 运行

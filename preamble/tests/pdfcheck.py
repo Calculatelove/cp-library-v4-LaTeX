@@ -263,3 +263,93 @@ def hairline_frames(page):
     return [d['rect'] for d in page.get_drawings()
             if d.get('color') and all(abs(a - b / 255) < 0.005 for a, b in zip(d['color'], (209, 209, 214)))
             and abs(d.get('width', 0) - pt(0.4)) < 0.02]
+
+
+def _fill_is(drawing, rgb):
+    return drawing.get('fill') and all(abs(a - b / 255) < 0.005 for a, b in zip(drawing['fill'], rgb))
+
+
+def check_block_spacing(checker, doc, baselineskip, parskip, box_before, box_after, itemsep=1, parsep=1):
+    """检查 fixtures/block-spacing-body.tex 的竖向间距；长度参数为 TeX pt，取值与该版布局一致。
+
+    标记行（LINE-、HEAD-、ITEM- 加组号）取基线；代码卡片取 D1D1D6 外框，引用块取 F7F7F7 背景，
+    分隔线取 A0A0A0 描边的中线（线宽 0.4 pt）。盒前的标记行没有下伸笔画，盒顶到其基线即为前距。
+    """
+    tolerance = pt(0.05)
+    marks, boxes, rules = {}, [], []
+    for page in doc:
+        half = page.rect.width / 2
+        for row in text_rows(page, min_size=9):
+            found = re.search(r'(LINE|HEAD|ITEM)-[A-D]\d', compact(row['text']))
+            if found:
+                checker.check(found[0] not in marks, f'标记“{found[0]}”只应出现一次')
+                marks[found[0]] = (page.number, int(row['x0'] > half), row['y'])
+        for d in page.get_drawings():
+            r = d['rect']
+            where = (page.number, int(r.x0 > half))
+            if _fill_is(d, (209, 209, 214)):
+                boxes.append((*where, r.y0, r.y1, '卡片'))
+            elif _fill_is(d, (247, 247, 247)):
+                boxes.append((*where, r.y0, r.y1, '引用块'))
+            elif d.get('color') and all(abs(a - b / 255) < .005 for a, b in zip(d['color'], (160, 160, 160))):
+                rules.append((*where, r.y0))
+    missing = [m for m in ('LINE-A1', 'LINE-A2', 'LINE-A4', 'LINE-A5', 'HEAD-B1', 'HEAD-B2', 'LINE-B2',
+                           'HEAD-B3', 'ITEM-C1', 'ITEM-C2', 'ITEM-C3', 'ITEM-C4', 'LINE-D1', 'LINE-D2')
+               if m not in marks]
+    checker.require(not missing, '应找到全部标记行', missing)
+
+    def after(where, y):
+        """同页同栏中，顶边在 y 以下的第一个盒。"""
+        found = sorted((b for b in boxes if b[:2] == where[:2] and b[2] >= y - tolerance), key=lambda b: b[2])
+        checker.require(found, '标记之后应有盒', where, y)
+        return found[0]
+
+    def before(where, y):
+        """同页同栏中，底边在 y 以上的最后一个盒。"""
+        found = sorted((b for b in boxes if b[:2] == where[:2] and b[3] <= y + tolerance), key=lambda b: b[3])
+        checker.require(found, '标记之前应有盒', where, y)
+        return found[-1]
+
+    def close(actual, expected, message):
+        checker.check(abs(actual - pt(expected)) < tolerance, message,
+                      f'实测 {to_pt(actual):.3f} pt', f'应为 {expected:.3f} pt')
+
+    next_line = box_after + parskip + baselineskip
+    # A 组：正文 → 卡片 → 卡片 → 正文；正文 → 引用块 → 卡片 → 引用块 → 正文。
+    a1, a4 = marks['LINE-A1'], marks['LINE-A4']
+    card1 = after(a1, a1[2])
+    card2 = after(card1, card1[3])
+    quote1 = after(a4, a4[2])
+    card3 = after(quote1, quote1[3])
+    quote2 = after(card3, card3[3])
+    checker.check([b[4] for b in (card1, card2, quote1, card3, quote2)] == ['卡片', '卡片', '引用块', '卡片', '引用块'],
+                  '盒的顺序应与样张一致', [b[4] for b in (card1, card2, quote1, card3, quote2)])
+    close(card1[2] - a1[2], box_before, '正文 → 卡片：盒顶距上一行的底应为盒前距')
+    close(card2[2] - card1[3], box_before, '卡片 → 卡片：间距应为盒前距')
+    close(marks['LINE-A2'][2] - before(marks['LINE-A2'], marks['LINE-A2'][2])[3], next_line,
+          '卡片 → 正文：基线距盒底应为盒后距 + 段距 + 行距')
+    close(quote1[2] - a4[2], box_before, '正文 → 引用块：盒顶距上一行的底应为盒前距')
+    close(card3[2] - quote1[3], box_before, '引用块 → 卡片：间距应为盒前距')
+    close(quote2[2] - card3[3], box_before, '卡片 → 引用块：间距应为盒前距')
+    close(marks['LINE-A5'][2] - before(marks['LINE-A5'], marks['LINE-A5'][2])[3], next_line,
+          '引用块 → 正文：基线距盒底应为盒后距 + 段距 + 行距')
+    # B 组：盒后的标题以盒底为准，与正文后的标题以上一行基线为准相同。
+    card4 = before(marks['HEAD-B2'], marks['HEAD-B2'][2])
+    checker.check(card4 == after(marks['HEAD-B1'], marks['HEAD-B1'][2]), 'HEAD-B1 与 HEAD-B2 之间应恰有一张卡片')
+    checker.check(abs((marks['HEAD-B2'][2] - card4[3]) - (marks['HEAD-B3'][2] - marks['LINE-B2'][2])) < tolerance,
+                  '卡片 → 标题应与正文 → 标题的基线距相同',
+                  f'{to_pt(marks["HEAD-B2"][2] - card4[3]):.3f} pt',
+                  f'{to_pt(marks["HEAD-B3"][2] - marks["LINE-B2"][2]):.3f} pt')
+    # C 组：二级列表不加上下间距，子项紧随父项；同级条目之间为条目间距 + 段间距。
+    items = [marks[f'ITEM-C{i}'][2] for i in range(1, 5)]
+    close(items[1] - items[0], baselineskip + parsep, '一级条目 → 首个二级条目：应为行距 + 段间距')
+    close(items[2] - items[1], baselineskip + itemsep + parsep, '二级条目之间：应为行距 + 条目间距 + 段间距')
+    close(items[3] - items[2], baselineskip + itemsep + parsep, '末个二级条目 → 下一个一级条目：应为行距 + 条目间距 + 段间距')
+    # D 组：横线按正常行距排在上一行之后，下方另加 0.4 倍行距。
+    d1, d2 = marks['LINE-D1'], marks['LINE-D2']
+    found = [r for r in rules if r[:2] == d1[:2] and d1[2] < r[2] < d2[2]]
+    checker.require(len(found) == 1, 'LINE-D1 与 LINE-D2 之间应恰有一条分隔线', found)
+    middle = found[0][2]
+    close(middle - pt(0.2) - d1[2], parskip + baselineskip - 0.4, '分隔线顶边距上一行基线应为段距 + 行距 − 线宽')
+    close(d2[2] - (middle + pt(0.2)), 0.4 * baselineskip + parskip + baselineskip,
+          '下一行基线距分隔线底边应为 0.4 倍行距 + 段距 + 行距')

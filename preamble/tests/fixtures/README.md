@@ -38,5 +38,6 @@
 | `twocolumn-flow-body.tex` | `landscape/`、`code/` 的 `flow.tex` |
 | `twocolumn-code-cards-body.tex` | `landscape/`、`code/` 的 `code-cards.tex` |
 | `twocolumn-toc-layout-body.tex` | `landscape/`、`code/` 的 `toc-layout.tex` |
+| `block-spacing-body.tex` | `portrait/`、`landscape/`、`code/` 的 `block-spacing.tex` |
 
 包装文件中 `\input{…}` 行末的 `%` 用于去掉换行产生的空格，使排版结果与正文直接写在样张里时相同。修改这些正文后，引用它的各版样张都要重新编译并检查。

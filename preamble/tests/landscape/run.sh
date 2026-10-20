@@ -4,7 +4,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/../../.."
 if (( $# == 0 )); then
-    set -- titlepage flow preview code-cards syntax-colors interfaces toc-layout images
+    set -- titlepage flow preview code-cards syntax-colors interfaces block-spacing toc-layout images
 fi
 for test in "$@"; do
     bash scripts/xelatex-converge.sh --quiet --strict \

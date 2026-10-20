@@ -32,8 +32,17 @@
 \widowpenalty=10000
 \displaywidowpenalty=10000
 \setlist{topsep=3pt,itemsep=1pt,parsep=1pt,partopsep=0pt,leftmargin=*}
+% 二级列表紧随父项，不加上下间距（用户确认）；否则子项离父项比同级条目之间还远。
+\setlist[2]{topsep=0pt}
 % 二级无序列表用空心圆点（用户确认）；Latin Modern 的 U+25E6 与一级圆点外框相同，只差填充。
 \renewcommand{\labelitemii}{\labelitemfont\textopenbullet}
+% 代码卡片与引用块的前后距（用户确认），由 shared/code.tex 的 book-box-spacing 使用。
+% 前距从上一行文字的底量到盒顶，盒与盒之间也取这个距离，紧跟标题时不加；
+% 盒后把 \prevdepth 归零，下一行按段距与行距接排，另加后距。两者使正文与盒、盒与盒之间的空白一致。
+\newlength{\BookBoxBeforeSkip}
+\setlength{\BookBoxBeforeSkip}{9pt}
+\newlength{\BookBoxAfterSkip}
+\setlength{\BookBoxAfterSkip}{1.5pt}
 
 \titleformat{\section}{\sffamily\bfseries\fontsize{16}{21}\selectfont}{}{0pt}{\BookChapterAnchor}
 \titleformat{\subsection}{\sffamily\bfseries\fontsize{12}{17}\selectfont}{}{0pt}{}

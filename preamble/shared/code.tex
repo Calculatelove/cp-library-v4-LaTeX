@@ -39,3 +39,13 @@
 \newCJKfontfamily\BookCodeTitleCJK{PingFang SC Medium}
 % coltext 同时保证 tcolorbox 续页恢复深灰，而非默认纯黑。
 \tcbset{input-code-title/.style={coltext=BookCodeText,fonttitle=\mdseries\upshape\BookCodeTitleLatin\BookCodeTitleCJK\fontsize{9}{12}\selectfont}}
+% 代码卡片与引用块共用的前后距，取代 tcolorbox 默认的 beforeafter skip balanced；
+% 长度 \BookBoxBeforeSkip、\BookBoxAfterSkip 由各版布局设定。
+% 盒前用 tcolorbox 的 before skip：盒顶距上一行的底为前距，盒与盒之间也是这个距离。
+% 紧跟标题时 tcolorbox 不执行盒前设置（\iftcb@nobreak），标题与盒之间不受影响。
+% 盒后把 \prevdepth 归零再加后距：后接正文时按段距与行距接排，后接标题时盒底相当于上一行的基线。
+\makeatletter
+\tcbset{book-box-spacing/.style={
+  before skip=\BookBoxBeforeSkip,
+  after={\tcb@parfillskip@check\par\ifvmode\prevdepth\z@\addvspace{\BookBoxAfterSkip}\fi}}}
+\makeatother

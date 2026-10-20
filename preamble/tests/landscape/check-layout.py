@@ -1,4 +1,4 @@
-"""检查横版或代码版样张的纸张、阅读流向、页眉、代码配色与跨栏、引用跨栏、列表符号、目录及图片；需要 PyMuPDF。
+"""检查横版或代码版样张的纸张、阅读流向、页眉、代码配色与跨栏、引用跨栏、列表符号、块间距、目录及图片；需要 PyMuPDF。
 
 用法（从任意目录）：python3 preamble/tests/landscape/check-layout.py [landscape|code]
 默认检查 preamble/tests/build/landscape/ 的样张；code 检查 preamble/tests/build/code/ 的样张。
@@ -13,8 +13,8 @@ import pdfcheck as pc  # noqa: E402
 from pdfcheck import fitz  # noqa: E402
 
 SAMPLES = {
-    'landscape': ('flow', 'code-cards', 'syntax-colors', 'interfaces', 'toc-layout', 'images'),
-    'code': ('flow', 'code-cards', 'syntax-colors', 'toc-layout'),
+    'landscape': ('flow', 'code-cards', 'syntax-colors', 'interfaces', 'block-spacing', 'toc-layout', 'images'),
+    'code': ('flow', 'code-cards', 'syntax-colors', 'block-spacing', 'toc-layout'),
 }
 edition = sys.argv[1] if len(sys.argv) > 1 else 'landscape'
 if edition not in SAMPLES:
@@ -104,6 +104,11 @@ if 'interfaces' in SAMPLES[edition]:
             # Latin Modern 中两个圆点的外框相同；同字体、同字号即保证二级圆点与一级同径同高。
             c.check(len(set(m[1:] for m in marks)) == 1 and marks[0][1] == 'LMRoman10-Regular',
                     '两级圆点应为同字号的 Latin Modern Roman 常规体', marks)
+
+with c.section('block-spacing：卡片、引用块、二级列表与分隔线'):
+    with c.open(OUT / 'block-spacing.pdf', HINT) as doc:
+        # 横版、代码版布局一致：行距 14 pt、段距 2 pt、盒前距 9 pt、盒后距 1.5 pt。
+        pc.check_block_spacing(c, doc, baselineskip=14, parskip=2, box_before=9, box_after=1.5)
 
 with c.section('toc-layout：目录'):
     with c.open(OUT / 'toc-layout.pdf', HINT) as doc:

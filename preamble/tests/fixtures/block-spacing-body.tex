@@ -1,0 +1,46 @@
+% 竖版、横版、代码版样张 block-spacing 共用的正文，由各版目录的 block-spacing.tex 引入，不能单独编译。
+% 检验代码卡片与引用块的前后距、二级列表与分隔线的竖向间距，断言见 preamble/tests/pdfcheck.py 的 check_block_spacing。
+% 盒前的标记行（LINE-A1、LINE-A4）只用大写字母、连字符与平底数字（不用底部有弧的 3），
+% 基线以下没有笔画，便于比较盒顶到基线的距离。
+% 三组内容各从新的一页（双栏为新的一栏）开始，互不影响。
+\section{Block spacing}
+LINE-A1
+
+\InputCode{bash}{preamble/tests/fixtures/sample.sh}
+\InputCode{cpp}{preamble/tests/fixtures/示例 文件_1.cpp}
+LINE-A2 卡片之后的正文。
+
+LINE-A4
+\begin{quoteblock}
+QUOTE-A1 引用块。
+\end{quoteblock}
+\InputCode{bash}{preamble/tests/fixtures/sample.sh}
+\begin{quoteblock}
+QUOTE-A2 卡片之后的引用块。
+\end{quoteblock}
+LINE-A5 引用块之后的正文。
+\newpage
+\subsection{Headings}
+\subsubsection{HEAD-B1}
+\InputCode{bash}{preamble/tests/fixtures/sample.sh}
+\subsubsection{HEAD-B2}
+LINE-B1 卡片之后的标题，其后的正文。
+
+LINE-B2
+\subsubsection{HEAD-B3}
+LINE-B3 正文之后的标题，其后的正文。
+\newpage
+LINE-C1
+\begin{itemize}
+  \item ITEM-C1 一级条目。
+  \begin{itemize}
+    \item ITEM-C2 二级条目。
+    \item ITEM-C3 二级条目。
+  \end{itemize}
+  \item ITEM-C4 一级条目。
+\end{itemize}
+LINE-C2 列表之后的正文。
+
+LINE-D1
+\Separator{}
+LINE-D2 分隔线之后的正文。
