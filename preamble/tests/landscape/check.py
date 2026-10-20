@@ -1,8 +1,10 @@
-"""检查横版或代码版样张的纸张、阅读流向、页眉、代码配色与跨栏、引用跨栏、列表符号、块间距、目录及图片；需要 PyMuPDF。
+"""检查横版或代码版样张的扉页、纸张、阅读流向、页眉、代码配色与跨栏、引用跨栏、列表符号、块间距、目录及图片；
+需要 PyMuPDF。
 
-用法（从任意目录）：python3 preamble/tests/landscape/check-layout.py [landscape|code]
+用法（从任意目录）：python3 preamble/tests/landscape/check.py [landscape|code]
 默认检查 preamble/tests/build/landscape/ 的样张；code 检查 preamble/tests/build/code/ 的样张。
-代码版布局参数与横版相同，样张正文共用，只是没有 interfaces、images 两份样张。
+代码版布局参数与横版相同，样张正文共用，只是没有 interfaces、images 两份样张；扉页另查书名后悬挂的“（代码版）”。
+竖版的检查在 preamble/tests/portrait/check.py。
 """
 from pathlib import Path
 import re
@@ -13,15 +15,16 @@ import pdfcheck as pc  # noqa: E402
 from pdfcheck import fitz  # noqa: E402
 
 SAMPLES = {
-    'landscape': ('flow', 'code-cards', 'syntax-colors', 'interfaces', 'block-spacing', 'toc-layout', 'images'),
-    'code': ('flow', 'code-cards', 'syntax-colors', 'block-spacing', 'toc-layout'),
+    'landscape': ('titlepage', 'flow', 'code-cards', 'syntax-colors', 'interfaces', 'block-spacing', 'toc-layout',
+                  'images'),
+    'code': ('titlepage', 'flow', 'code-cards', 'syntax-colors', 'block-spacing', 'toc-layout'),
 }
 edition = sys.argv[1] if len(sys.argv) > 1 else 'landscape'
 if edition not in SAMPLES:
     sys.exit(f'未知版本：{edition}（可用 landscape 或 code）')
 OUT = pc.BUILD / edition
 HINT = f'请先运行 bash preamble/tests/{edition}/run.sh'
-c = pc.Checker({'landscape': '横版布局', 'code': '代码版布局'}[edition])
+c = pc.Checker({'landscape': '横版', 'code': '代码版'}[edition])
 
 
 def locate(doc, text):
@@ -42,6 +45,12 @@ def column_texts(page):
     return [(col, page.get_text(clip=fitz.Rect(left, pc.HEADER_BOTTOM, right, pc.BODY_BOTTOM)))
             for col, (left, right) in enumerate([(0, half), (half, page.rect.width)])]
 
+
+# 与 layout-landscape.tex、layout-code.tex 一致：\TitlePageSetup 的取值（mm），四边 12 mm。
+pc.check_titlepage(c, OUT / 'titlepage.pdf', HINT,
+                   dict(title=57, english=43.5, author=32, image=-17, stamp=-88, image_width=110, image_height=70),
+                   landscape=True, side=12, bottom=12, header_bottom=pc.HEADER_BOTTOM,
+                   marker='（代码版）' if edition == 'code' else '', body_header='扉页之后')
 
 with c.section('flow：纸张、连续章节、栏边界与页眉'):
     with c.open(OUT / 'flow.pdf', HINT) as doc:

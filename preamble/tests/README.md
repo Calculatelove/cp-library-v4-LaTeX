@@ -7,11 +7,11 @@
 | 目录或文件 | 内容 |
 | --- | --- |
 | `mystyle/` | 四个自定义接口的独立样张，不加载各版布局 |
-| `portrait/` | 竖版：扉页、目录、标题层级、分页、单色符号、代码卡片与配色、块间距、数学字体对照与综合样张，以及四个 PDF 检查脚本 |
-| `landscape/` | 横版：扉页、分栏与连续章节、页眉、目录、接口跨栏、块间距、图片，以及布局与扉页两个检查脚本（加参数 `code` 检查代码版） |
-| `code/` | 代码版：扉页、连续章节、代码卡片、配色、块间距与目录；检查复用 `landscape/` 的脚本 |
+| `portrait/` | 竖版：扉页、目录、标题层级、分页、单色符号、代码卡片与配色、块间距、数学字体对照与综合样张，以及 PDF 检查脚本 `check.py` |
+| `landscape/` | 横版：扉页、分栏与连续章节、页眉、目录、接口跨栏、块间距、图片，以及 PDF 检查脚本 `check.py`（加参数 `code` 检查代码版） |
+| `code/` | 代码版：扉页、连续章节、代码卡片、配色、块间距与目录；检查复用 `landscape/check.py` |
 | `fixtures/` | 共用的代码与扉页资源，以及几版共用的样张正文（`*-body.tex`） |
-| `pdfcheck.py` | 各组 PDF 检查脚本共用的检查工具、单位与几何常量 |
+| `pdfcheck.py` | 各组 `check.py` 共用的检查工具、单位、几何常量，以及几版共用的断言 |
 | `build/` | 各组的 PDF、日志、缓存与渲染图，按组分目录；被 Git 忽略 |
 
 ## 编译
@@ -27,25 +27,26 @@ bash preamble/tests/landscape/run.sh
 bash preamble/tests/code/run.sh
 ```
 
+四个 `run.sh` 只差组名与样张列表，但仍各组一份，不合并成一个带参数的脚本：每份只有十余行，合并后各 README 与检查提示中的命令都要改。
+
 依赖 XeLaTeX、`latexminted` 与 `packages.tex` 中的宏包。`mystyle/` 的样张使用 TeX Live 的 Fandol 字体，另需 Maple Mono NF CN 提供代码标题的图标。其余三组使用各版的设计字体：Songti SC、PingFang SC、Maple Mono NF CN，以及 TeX Live 的 Latin Modern 字体与项目内的 Noto Emoji。各组的其他依赖见其 README。
 
 ## PDF 检查
 
-`check-*.py` 读取 `build/` 中的样张 PDF，需要 Python 3 与 PyMuPDF（`python3 -m pip install --user pymupdf`），不由 `run.sh` 自动调用。它们共用本目录的 `pdfcheck.py`：
+每组的 PDF 检查都在本组目录的 `check.py` 中，按样张分小节；代码版复用 `landscape/check.py`，加参数 `code`。几版共用的断言写成 `pdfcheck.py` 中的函数，由各版传入与本版布局一致的参数（用户确认）：按样张拆分时，竖版、横版各写一份扉页检查，断言容易走样。
+
+`check.py` 读取 `build/` 中的样张 PDF，需要 Python 3 与 PyMuPDF（`python3 -m pip install --user pymupdf`），不由 `run.sh` 自动调用。`pdfcheck.py` 提供：
 
 - 用 `Checker` 做显式检查，不用 `assert`，`python3 -O` 下照常生效；
 - 每项失败只记录、不中断，按小节输出“通过”或“未通过”，最后列出全部未通过项并以 1 退出；
 - 统一单位：PDF 坐标的单位是 bp，`mm()`、`pt()` 把毫米、TeX pt 换算为 bp，`to_pt()` 反向换算；
-- 提供横版与代码版共用的几何常量（页眉线、正文下缘、栏分界）与代码配色，以及读取文字行、代码文字、扉页信息的函数。
+- 几何常量：竖版的页眉线，横版与代码版共用的页眉线、正文下缘与栏分界；代码配色；读取文字行与代码文字的函数；
+- 几版共用的断言：扉页 `check_titlepage`、代码配色 `check_code_palette`、框外行号 `check_code_line_numbers`、块间距 `check_block_spacing`。
 
 | 命令（从任意目录运行） | 检查的样张 |
 | --- | --- |
-| `python3 preamble/tests/portrait/check-titlepage.py` | 竖版扉页 |
-| `python3 preamble/tests/portrait/check-headings.py` | 竖版四、五级标题 |
-| `python3 preamble/tests/portrait/check-syntax-colors.py` | 竖版代码配色与卡片 |
-| `python3 preamble/tests/portrait/check-spacing.py` | 竖版块间距：卡片与引用块的前后距、二级列表、分隔线 |
-| `python3 preamble/tests/landscape/check-layout.py [code]` | 横版（或代码版）的纸张、流向、页眉、代码配色与跨栏、引用、列表符号、块间距、目录、图片 |
-| `python3 preamble/tests/landscape/check-titlepage.py [code]` | 横版（或代码版）扉页 |
+| `python3 preamble/tests/portrait/check.py` | 竖版：扉页、代码配色与卡片、块间距、四五级标题 |
+| `python3 preamble/tests/landscape/check.py [code]` | 横版（或代码版）：扉页、纸张、流向、页眉、代码配色与跨栏、引用、列表符号、块间距、目录、图片 |
 
 `scripts/check.sh --full` 依次编译四组样张并运行上表的全部检查。检查通过后，仍要渲染查看 PDF 的边框、字形、长标题，以及跨页、跨栏的连接处。苹方简体与香港字形共用 TTC 中的轮廓表，`pdffonts` 可能显示 `PingFangHK`，不能据此判断字体被替换。
 
@@ -53,4 +54,4 @@ bash preamble/tests/code/run.sh
 
 ## 验证状态
 
-2026-10-20，基于提交 `7cccf14`；工作区有卡片与引用块的前后距（三版布局、`shared/code.tex`、`mystyle.tex`）、二级列表的上下间距（三版布局）、分隔线的上下留白（`mystyle.tex`）、新样张 `block-spacing` 及其检查、文档的未提交修改。在 `LC_ALL=zh_CN.UTF-8` 下运行 `./run.sh all` 与 `scripts/check.sh --full`：四组共 31 份样张收敛，严格日志检查与八项 PDF 检查通过，含新增的块间距检查；另用修改前的导言区编译竖版 `block-spacing`，确认该检查报出旧实现的 10 项不符。以同一提交的干净副本重建修改前样张，逐页对比文字与位置、字体、颜色、矢量图形、图片、链接与书签：原有 28 份中 18 份无差异；10 份只有位置变化，即 mystyle `separator`，竖版 `code-cards`、`heading-levels`、`math-latin-modern`、`preview`、`symbols`，横版 `code-cards`、`interfaces`、`preview`，代码版 `code-cards`，它们的文字序列、字体、颜色、矢量图形的种类与数量、书签与链接都与修改前相同。三版整书与同一提交修改前的构建对比：页数不变；文字序列、字体、颜色、图片、书签标题与层级、链接相同，差异只有扉页的未提交修改标签、目录中随内容移动的页码及相应书签目标，以及卡片与引用块跨页跨栏的分段数；末轮警告与越栏警告不变。人工查看：渲染竖版整书中引用块接卡片、二级列表与分隔线的区域。未验证：其余样张与整书页面的人工视觉检查、实物打印。
+2026-10-20，基于提交 `da845cc`；工作区有合并 PDF 检查脚本的未提交修改：各组只留 `check.py`，扉页的公共断言移入 `pdfcheck.py` 的 `check_titlepage`，并同步 `scripts/check.sh`、相关 README、`preamble/AGENTS.md` 与 `heading-levels.tex` 的一条注释。修改前在同一提交上运行 `scripts/check.sh --full` 作为对照；修改后在 `LC_ALL=zh_CN.UTF-8` 下运行 `scripts/check.sh` 与 `scripts/check.sh --full`：四组共 31 份样张收敛，严格日志检查与三项样张 PDF 检查通过。横版 1148 项、代码版 1150 项，分别等于修改前布局、扉页两项检查之和；竖版 442 项，比修改前四项检查之和多 13 项，都是扉页新增的断言：A4 纵向 1 项，书名行文字、书名行无版本标记、扉页无页眉各 3 项，配图区域不与文字相交 1 项，日期与哈希为 8 pt 2 项；原先只查哈希颜色的一项改为同时查日期颜色。另给 `check_titlepage` 传入另一版的版面参数，以及横版样张上并不存在的版本标记，确认它报出未通过；确认竖版页眉线能截到正文页的页眉。整书越栏检查用 `build/` 中构建自 `da845cc` 的 PDF，结果与修改前相同。人工查看：无，导言区与样张的排版内容没有改动（`heading-levels.tex` 只改了注释）。未验证：未运行 `./run.sh all`，没有对样张与整书做人工视觉检查。

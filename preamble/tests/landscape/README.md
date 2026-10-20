@@ -15,8 +15,7 @@
 | `block-spacing.tex` | 代码卡片与引用块前后、二级列表、分隔线的竖向间距，三组各占一栏 |
 | `toc-layout.tex` | 两页真实目录、三级长标题、父子条目保护、通栏居中的目录标题、88 个条目与 90 个五层书签 |
 | `images.tex` | 图片按局部栏宽解释 `\textwidth`：106 mm 的图与整栏图，分组结束后整页宽度不变 |
-| `check-layout.py` | 从 PDF 检查纸张、阅读流向、章名、代码完整性、框外行号的位置与连续编号、引用段落顺序、列表符号、块间距（盒前距 9 pt、盒后距 1.5 pt）、配色与字重、目录分栏、链接目标与书签；加参数 `code` 检查代码版样张 |
-| `check-titlepage.py` | 书名区的位置与居中、110 × 70 mm 配图区域、眉题式提交信息、未提交修改标签、原样输出、换行与底边、页眉页码及 PDF 文档属性；加参数 `code` 检查代码版，另查书名后悬挂的“（代码版）” |
+| `check.py` | 从 PDF 按样张分小节检查：扉页的书名区位置与居中、110 × 70 mm 配图区域、眉题式提交信息、未提交修改标签、原样输出、换行与底边、页眉页码及 PDF 文档属性（断言由 `../pdfcheck.py` 的 `check_titlepage` 与竖版共用）；纸张、阅读流向、章名、代码完整性、框外行号的位置与连续编号、引用段落顺序、列表符号、块间距（盒前距 9 pt、盒后距 1.5 pt）、配色与字重、目录分栏、链接目标与书签。加参数 `code` 检查代码版样张，扉页另查书名后悬挂的“（代码版）” |
 
 `flow`、`code-cards`、`toc-layout` 的正文在 `../fixtures/twocolumn-*-body.tex`，与代码版共用；`syntax-colors`、`block-spacing` 的正文在 `../fixtures/syntax-colors-body.tex`、`../fixtures/block-spacing-body.tex`，与竖版、代码版共用。本目录的这五份样张只保留载入横版布局的包装。人工长代码在 `../fixtures/landscape-long.cpp`。
 
@@ -25,8 +24,7 @@
 ```sh
 bash preamble/tests/landscape/run.sh
 bash preamble/tests/landscape/run.sh flow toc-layout
-python3 preamble/tests/landscape/check-layout.py
-python3 preamble/tests/landscape/check-titlepage.py
+python3 preamble/tests/landscape/check.py
 pdftoppm -scale-to 1600 -png preamble/tests/build/landscape/toc-layout.pdf preamble/tests/build/landscape/toc-layout
 ```
 

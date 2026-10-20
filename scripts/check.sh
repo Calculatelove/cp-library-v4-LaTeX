@@ -43,14 +43,9 @@ if [[ "$full" == true ]]; then
     for group in mystyle portrait landscape code; do
         step "编译 $group 样张" bash "preamble/tests/$group/run.sh"
     done
-    step '竖版扉页' python3 preamble/tests/portrait/check-titlepage.py
-    step '竖版四、五级标题' python3 preamble/tests/portrait/check-headings.py
-    step '竖版代码配色' python3 preamble/tests/portrait/check-syntax-colors.py
-    step '竖版块间距' python3 preamble/tests/portrait/check-spacing.py
-    step '横版布局' python3 preamble/tests/landscape/check-layout.py
-    step '横版扉页' python3 preamble/tests/landscape/check-titlepage.py
-    step '代码版布局' python3 preamble/tests/landscape/check-layout.py code
-    step '代码版扉页' python3 preamble/tests/landscape/check-titlepage.py code
+    step '竖版样张检查' python3 preamble/tests/portrait/check.py
+    step '横版样张检查' python3 preamble/tests/landscape/check.py
+    step '代码版样张检查' python3 preamble/tests/landscape/check.py code
     for edition in landscape code; do
         pdf="build/$edition/main-$edition.pdf"
         if [[ -f "$pdf" ]]; then

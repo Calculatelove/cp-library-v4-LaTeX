@@ -1,10 +1,12 @@
-"""preamble/tests 各检查脚本共用的 PDF 检查工具；需要 PyMuPDF。
+"""preamble/tests 各组 check.py 共用的 PDF 检查工具；需要 PyMuPDF。
 
 - Checker：显式检查。失败只记录、不中断，最后统一汇总并以非零状态退出；
   不使用 assert，`python3 -O` 下照常生效。
 - 单位：PDF 坐标的单位是 bp（1/72 in）。mm()、pt() 把毫米、TeX pt 换算为 bp，
   to_pt() 把 bp 换算回 TeX pt。不再使用含义容易混淆的 PT 常量。
-- 横版与代码版共用的几何常量，以及多个脚本共用的文字行、代码配色和扉页读取函数。
+- 几何常量：竖版的页眉线，横版与代码版共用的页眉线、正文下缘与栏分界；代码配色；读取文字行与代码文字的函数。
+- 几版共用的断言：扉页 check_titlepage、代码配色 check_code_palette、框外行号 check_code_line_numbers、
+  块间距 check_block_spacing。各版的 check.py 传入与本版布局一致的参数。
 """
 from contextlib import contextmanager
 from pathlib import Path
@@ -40,6 +42,9 @@ def to_pt(value):
 
 
 A4_SHORT, A4_LONG = mm(210), mm(297)
+
+# 竖版页眉文字位于此线以上（页眉字框下缘约 53 bp，正文顶约 69 bp），单位 bp。
+PORTRAIT_HEADER_BOTTOM = 60
 
 # 横版与代码版（A4 横向双栏）共用的几何，单位 bp。
 HEADER_BOTTOM = 48           # 页眉文字位于此线以上
@@ -263,6 +268,192 @@ def hairline_frames(page):
     return [d['rect'] for d in page.get_drawings()
             if d.get('color') and all(abs(a - b / 255) < 0.005 for a, b in zip(d['color'], (209, 209, 214)))
             and abs(d.get('width', 0) - pt(0.4)) < 0.02]
+
+
+# titlepage 样张的标题区：文字、苹方字重、字号（pt）、颜色，以及 \TitlePageSetup 中给出其基线位置的键。
+TITLEPAGE_ROWS = [('算法竞赛小记', 'Semibold', 44, 0x1D1D1F, 'title'),
+                  ('Competitive Programming Library', 'Regular', 15, 0x6E6E73, 'english'),
+                  ('Calculatelove', 'Medium', 12, 0x1D1D1F, 'author')]
+
+
+def check_titlepage(checker, path, hint, setup, *, landscape, side, bottom, header_bottom,
+                    marker='', body_header=None):
+    """检查 titlepage 样张（4 页），分小节记录，小节名以“titlepage：”开头。
+
+    setup 为该版 \\TitlePageSetup 的取值，单位 mm，以纸张中心为原点、向上为正：title、english、author、
+    image、stamp 与 image_width、image_height。landscape 表示 A4 横向；side、bottom 为左右与下边距（mm）；
+    header_bottom 为页眉文字区的下缘（bp）。marker 为第 1、2 页书名后悬挂的版本标记；body_header 为
+    第 4 页页眉应含的文字，为 None 时不查第 4 页的页眉。
+    """
+    title, author = TITLEPAGE_ROWS[0][0], TITLEPAGE_ROWS[2][0]
+    pages = []
+    with checker.section('titlepage：读取样张'):
+        with checker.open(path, hint) as doc:
+            checker.check(doc.metadata['title'] == title + marker, 'PDF 文档属性中的标题', doc.metadata['title'])
+            checker.check(doc.metadata['author'] == author, 'PDF 文档属性中的作者', doc.metadata['author'])
+            checker.require(len(doc) == 4, '样张应为 4 页', len(doc))
+            pages = [text_rows(page) for page in doc]
+            images = [[info['bbox'] for info in page.get_image_info()] for page in doc]
+            advances = [cjk_advances(doc[i]) for i in range(2)]
+            frames = [hairline_frames(page) for page in doc]
+            headers = [page.get_text(clip=fitz.Rect(0, 0, page.rect.width, header_bottom)).strip()
+                       for page in doc]
+            width, height = doc[0].rect.width, doc[0].rect.height
+    if not pages:
+        return
+
+    cx, cy = width / 2, height / 2
+    stamp_south = cy - mm(setup['stamp'])
+
+    with checker.section('titlepage：纸张与标题区'):
+        paper = (A4_LONG, A4_SHORT) if landscape else (A4_SHORT, A4_LONG)
+        checker.check(abs(width - paper[0]) < 0.1 and abs(height - paper[1]) < 0.1,
+                      f'纸张应为 A4 {"横" if landscape else "纵"}向', (width, height))
+        # 三页位置一致，不随配图、提交信息或版本标记变化；三行均以页面中轴居中。
+        for number in range(3):
+            head = pages[number][:3]
+            checker.require(len(head) == 3, f'第 {number + 1} 页应有三行标题区', [r['text'] for r in head])
+            for row, (text, weight, size, color, key) in zip(head, TITLEPAGE_ROWS):
+                span = row['spans'][0]
+                checker.check(span['text'] == text, f'第 {number + 1} 页标题区文字应为“{text}”', span['text'])
+                checker.check('PingFang' in span['font'] and weight in span['font'], f'“{text}”应为苹方 {weight}',
+                              span['font'])
+                checker.check(abs(span['size'] - pt(size)) < 0.05 and span['color'] == color, f'“{text}”的字号与颜色',
+                              round(span['size'], 2), f"{span['color']:06X}")
+                checker.check(abs(row['y'] - (cy - mm(setup[key]))) < 0.3, f'“{text}”的基线位置', row['y'])
+                checker.check(abs((span['bbox'][0] + span['bbox'][2]) / 2 - cx) < 0.5, f'“{text}”应以页面中轴居中',
+                              span['bbox'])
+            # 版本标记：苹方常规体 22 pt、次要灰，与书名同基线，紧接书名右侧，不参与居中；第 3 页不设版本标记。
+            tag_text = marker if number < 2 else ''
+            title_row = head[0]
+            checker.check(title_row['text'] == title + tag_text, f'第 {number + 1} 页书名行', title_row['text'])
+            if tag_text:
+                if checker.check(len(title_row['spans']) == 2, '书名行应由书名与版本标记两段组成',
+                                 [s['text'] for s in title_row['spans']]):
+                    name, tag = title_row['spans']
+                    checker.check(tag['text'] == tag_text, '版本标记文字', tag['text'])
+                    checker.check('PingFang' in tag['font'] and 'Regular' in tag['font'], '版本标记应为苹方 Regular',
+                                  tag['font'])
+                    checker.check(abs(tag['size'] - pt(22)) < 0.05 and tag['color'] == 0x6E6E73, '版本标记的字号与颜色',
+                                  round(tag['size'], 2), f"{tag['color']:06X}")
+                    checker.check(abs(tag['origin'][1] - name['origin'][1]) < 0.1, '版本标记应与书名同基线',
+                                  tag['origin'], name['origin'])
+                    checker.check(abs(tag['bbox'][0] - name['bbox'][2]) < 0.5, '版本标记应紧接书名右侧',
+                                  tag['bbox'], name['bbox'])
+                    checker.check(tag['bbox'][2] < width - mm(side), '版本标记不应进入右边距', tag['bbox'])
+            else:
+                checker.check(len(title_row['spans']) == 1, f'第 {number + 1} 页书名行不应有版本标记',
+                              [s['text'] for s in title_row['spans']])
+            # 扉页不显示页眉页码。
+            checker.check(not headers[number], f'第 {number + 1} 页不应有页眉', headers[number])
+            checker.check(not any(r['text'].strip().isdigit() for r in pages[number]), f'第 {number + 1} 页不应显示页码')
+
+    with checker.section('titlepage：配图区域'):
+        # 在 image_width × image_height 区域内等比缩放：横向配图（800 × 300 像素）占满区域宽度，
+        # 纵向配图（300 × 800 像素）占满区域高度；中心按 \TitlePageSetup 的 image 定位。
+        w, h = setup['image_width'], setup['image_height']
+        center = cy - mm(setup['image'])
+        for number, (iw, ih) in ((0, (w, w * 300 / 800)), (1, (h * 300 / 800, h))):
+            if not checker.check(len(images[number]) == 1, f'第 {number + 1} 页应有一张配图', images[number]):
+                continue
+            x0, y0, x1, y1 = images[number][0]
+            checker.check(abs((x1 - x0) - mm(iw)) < 0.5 and abs((y1 - y0) - mm(ih)) < 0.5,
+                          f'第 {number + 1} 页配图尺寸', (x1 - x0, y1 - y0))
+            checker.check(abs((x0 + x1) / 2 - cx) < 0.5 and abs((y0 + y1) / 2 - center) < 0.5,
+                          f'第 {number + 1} 页配图中心', ((x0 + x1) / 2, (y0 + y1) / 2))
+            stamp_top = pages[number][3]['y'] - pt(6.5)
+            checker.check(pages[number][2]['y'] < y0 and y1 < stamp_top,
+                          f'第 {number + 1} 页配图不应与标题区、提交信息重叠', (y0, y1, stamp_top))
+        checker.check(images[2] == [], '第 3 页不应有配图', images[2])
+        # 配图区域本身也不与标题区、提交信息相交（区域上缘在作者基线之下，下缘在眉题之上）。
+        area_top, area_bottom = center - mm(h / 2), center + mm(h / 2)
+        checker.check(pages[0][2]['y'] < area_top and area_bottom < pages[0][3]['y'] - pt(6.5),
+                      '配图区域不应与标题区、提交信息相交', (area_top, area_bottom))
+
+    with checker.section('titlepage：眉题式提交信息'):
+        # 眉题、日期与哈希、提交说明各占一行，不使用“·”等分隔符。
+        for number, (date, digest, dirty) in enumerate((('2026-10-15', '0123abc', False),
+                                                       ('2026-10-15', 'abcdef0', True))):
+            eyebrow, ident = pages[number][3], pages[number][4]
+            span = eyebrow['spans'][0]
+            checker.check(compact(eyebrow['text']) == 'LASTCOMMIT', f'第 {number + 1} 页眉题文字', eyebrow['text'])
+            checker.check('PingFang' in span['font'] and 'Medium' in span['font'], '眉题应为苹方 Medium', span['font'])
+            checker.check(abs(span['size'] - pt(6.5)) < 0.05 and span['color'] == 0x6E6E73, '眉题的字号与颜色',
+                          round(span['size'], 2), f"{span['color']:06X}")
+            checker.check(abs((eyebrow['x0'] + eyebrow['x1']) / 2 - cx) < 0.5, '眉题应水平居中',
+                          eyebrow['x0'], eyebrow['x1'])
+            checker.check(compact(ident['text']) == date + digest + ('含未提交修改' if dirty else ''),
+                          f'第 {number + 1} 页日期与哈希行', ident['text'])
+            code = [s for s in ident['spans'] if s['text'].strip() in (date, digest)]
+            checker.check(len(code) == 2 and all('MapleMono' in s['font'] for s in code), '日期与哈希应为 Maple Mono',
+                          [(s['text'], s['font']) for s in code])
+            checker.check(all(abs(s['size'] - pt(8)) < 0.05 for s in code), '日期与哈希应为 8 pt',
+                          [round(s['size'], 2) for s in code])
+            checker.check(len(code) == 2 and code[0]['color'] == 0x6E6E73 and code[1]['color'] == 0x506B82,
+                          '日期应为次要灰、哈希应为灰蓝色', [f"{s['color']:06X}" for s in code])
+            checker.check(not any('·' in r['text'] for r in pages[number][3:]), '提交信息不应使用“·”分隔',
+                          [r['text'] for r in pages[number]])
+            if dirty:
+                # 未提交修改：深色 6.5 pt 文字，外有一个 0.4 pt 浅灰细框；连同细框整行居中。
+                tag = next((s for s in ident['spans'] if '含未提交修改' in s['text']), None)
+                checker.require(tag is not None, f'第 {number + 1} 页应有“含未提交修改”标签')
+                checker.check(tag['color'] == 0x1D1D1F and abs(tag['size'] - pt(6.5)) < 0.05, '标签文字的颜色与字号',
+                              f"{tag['color']:06X}", round(tag['size'], 2))
+                checker.require(len(frames[number]) == 1, '标签外应有一个细框', frames[number])
+                frame = frames[number][0]
+                checker.check(frame.x0 < tag['bbox'][0] and tag['bbox'][2] < frame.x1, '细框应在水平方向包住标签文字',
+                              frame, tag['bbox'])
+                checker.check(frame.y0 < tag['origin'][1] < frame.y1, '细框应在竖直方向包住标签基线',
+                              frame, tag['origin'])
+                checker.check(len(code) == 2 and abs((code[0]['bbox'][0] + frame.x1) / 2 - cx) < 0.5,
+                              '连同细框整行应居中', frame)
+            else:
+                checker.check(frames[number] == [], '干净状态不应有细框', frames[number])
+                checker.check(abs((ident['x0'] + ident['x1']) / 2 - cx) < 0.5, '日期与哈希行应水平居中',
+                              ident['x0'], ident['x1'])
+
+    with checker.section('titlepage：提交说明原样输出与换行'):
+        # 第 1 页：特殊字符原样输出（`--` 不被替换为连接号），提交说明为苹方。
+        second = pages[0][5]
+        checker.check(compact(second['text']) == compact(commit_subject('titlepage-special.commit')),
+                      '第 1 页提交说明应原样输出', second['text'])
+        checker.check('--' in second['text'] and '–' not in second['text'], '`--` 不应被替换为连接号', second['text'])
+        checker.check(all('PingFang' in s['font'] for s in second['spans']), '提交说明应为苹方',
+                      [s['font'] for s in second['spans']])
+        checker.check(len(pages[0]) == 6, '第 1 页应共 6 行', [r['text'] for r in pages[0]])
+        # 第 2 页：超长说明居中换行，整体向上增长、底边不变。
+        rest = pages[1][5:]
+        checker.check(len(rest) >= 2, '第 2 页超长说明应换行', [r['text'] for r in rest])
+        long_subject = commit_subject('titlepage-long-dirty.commit')
+        checker.check(compact(''.join(r['text'] for r in rest)) == compact(long_subject), '第 2 页提交说明应完整')
+        checker.check(all(abs((r['x0'] + r['x1']) / 2 - cx) < 1 for r in rest), '换行后每行都应居中',
+                      [(r['x0'], r['x1']) for r in rest])
+        checker.check(pages[1][3]['y'] < pages[0][3]['y'], '超长说明应使提交信息整体向上增长',
+                      pages[1][3]['y'], pages[0][3]['y'])
+
+    with checker.section('titlepage：字距与底边'):
+        # 居中不拉开字距：汉字步进等于字号（短行也不把 xeCJK 字间胶撑开）。
+        for number in range(2):
+            checker.check(advances[number], f'第 {number + 1} 页应找到相邻汉字')
+            checker.check(all(abs(step - size) < 0.1 for step, size in advances[number]),
+                          f'第 {number + 1} 页居中不应拉开字距', advances[number][:5])
+        # 提交信息贴近底边：末行基线位于底边以上 3 bp 内，且不进入下边距。
+        for number in range(2):
+            last = pages[number][-1]
+            checker.check(stamp_south - 3 < last['y'] <= stamp_south, f'第 {number + 1} 页提交信息末行应贴近底边',
+                          last['y'], stamp_south)
+            checker.check(last['bottom'] <= height - mm(bottom),
+                          f'第 {number + 1} 页提交信息不应进入 {bottom} mm 下边距', last['bottom'])
+
+    with checker.section('titlepage：无提交信息与正文页'):
+        # 第 3 页：提交信息文件不存在、未设版本标记时只显示标题区。
+        checker.check([r['text'] for r in pages[2]] == [row[0] for row in TITLEPAGE_ROWS], '第 3 页只应显示标题区',
+                      [r['text'] for r in pages[2]])
+        # 第 4 页：扉页之后照常显示页码；给出 body_header 时，页眉也应恢复。
+        if body_header is not None:
+            checker.check(body_header in headers[3], '第 4 页页眉应恢复', headers[3])
+        checker.check(any(r['text'] == '4' and r['y'] > height - mm(20) for r in pages[3]), '第 4 页应显示页码 4',
+                      [r['text'] for r in pages[3]])
 
 
 def _fill_is(drawing, rgb):

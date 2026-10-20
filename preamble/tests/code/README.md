@@ -11,12 +11,11 @@
 | `block-spacing.tex` | 代码卡片与引用块前后、二级列表、分隔线的竖向间距 |
 | `toc-layout.tex` | 双栏目录、长条目与标题组分页 |
 
-后五份的正文与横版共用（`syntax-colors`、`block-spacing` 还与竖版共用），放在 `../fixtures/*-body.tex`；本目录只保留载入代码版布局的包装。检查复用横版的脚本，加参数 `code`：`check-layout.py code` 检查后五份，断言与横版相同；`check-titlepage.py code` 检查扉页，另查书名后悬挂的“（代码版）”与书名同基线、不参与居中。
+后五份的正文与横版共用（`syntax-colors`、`block-spacing` 还与竖版共用），放在 `../fixtures/*-body.tex`；本目录只保留载入代码版布局的包装。检查复用横版的 `check.py`，加参数 `code`：断言与横版相同，扉页另查书名后悬挂的“（代码版）”与书名同基线、不参与居中。
 
 ```sh
 bash preamble/tests/code/run.sh
-python3 preamble/tests/landscape/check-layout.py code
-python3 preamble/tests/landscape/check-titlepage.py code
+python3 preamble/tests/landscape/check.py code
 ```
 
 编译方式、产物位置与依赖见 `../README.md`。代码版入口的生成及其测试见 `scripts/README.md`；整书的越栏检查用 `python3 scripts/check-full.py build/code/main-code.pdf`。

@@ -20,7 +20,7 @@ scripts/check.sh --full   # 另编译四组导言区样张并运行全部样张 
 ```
 
 - 快速检查：`tests/` 中的全部单元测试（含竖版、横版入口的一致性）、`generate-code.py --check`（代码版入口是否最新）与 `check-docs.py`。
-- `--full` 另外依次运行 `preamble/tests` 四组样张的 `run.sh`，以及竖版扉页、标题、配色、块间距，横版与代码版的布局、扉页，共八项 PDF 检查。`build/` 中已有完整横版、代码版 PDF 时，再运行 `check-full.py`，越栏只输出警告。`check.sh` 不构建整书，所以这些 PDF 可能落后于源码，可对照输出中的扉页提交。
+- `--full` 另外依次运行 `preamble/tests` 四组样张的 `run.sh`，以及竖版、横版、代码版的样张 PDF 检查（各组的 `check.py`）。`build/` 中已有完整横版、代码版 PDF 时，再运行 `check-full.py`，越栏只输出警告。`check.sh` 不构建整书，所以这些 PDF 可能落后于源码，可对照输出中的扉页提交。
 - 某一步失败不会中断后续步骤，最后汇总列出失败的步骤；有失败时返回 1，用法错误返回 2。PDF 检查需要 PyMuPDF，见 `preamble/tests/README.md`。
 
 ## 整书构建
