@@ -138,12 +138,11 @@ def chapter_code(root, chapter):
                 files += 1
             else:
                 inline += 1
-            # 来源只写文件、不写行号：行号随正文增删而变，会让只改正文的提交也改动入口（用户确认）。
             for level, hline, heading in stack:
                 if hline not in emitted:
-                    lines.extend([f'% 来源：{chapter}', heading, ''])
+                    lines.extend([heading, ''])
                     emitted.add(hline)
-            lines.extend([f'% 来源：{chapter}', raw, ''])
+            lines.extend([raw, ''])
         elif kind == 'input':
             raise ValueError(f'{chapter}:{line}: 不支持章节内嵌套 input')
     return lines, references, files, inline

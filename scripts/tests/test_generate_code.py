@@ -96,14 +96,14 @@ class GeneratorTests(unittest.TestCase):
             r'\input{preamble/packages.tex}', r'\input{preamble/layout-code.tex}', r'\input{preamble/mystyle.tex}', '',
             r'\title{书名}', r'\date{}', r'\EditionLabel{代码版}', '',
             r'\begin{document}', '', r'\maketitle', '', r'\tableofcontents', '',
-            '% 来源：contents/0x11 a.tex', r'\section{甲}', '',
-            '% 来源：contents/0x11 a.tex', '\\begin{minted}{cpp}\nint a;\n\\end{minted}', '',
+            r'\section{甲}', '',
+            '\\begin{minted}{cpp}\nint a;\n\\end{minted}', '',
             '% 横版入口中的注释', '',
             r'\end{document}', ''])
         self.assertEqual(result, expected)
 
     def test_prose_edits_keep_entry(self):
-        """来源注释不含行号：只增删正文或注释行时，代码版入口不变。"""
+        """入口不含来源与行号：只增删正文或注释行时，代码版入口不变。"""
         chapter = '\\section{甲}\n正文。\n\\begin{minted}{cpp}\nint a;\n\\end{minted}\n'
         edited = chapter.replace('正文。\n', '正文。\n\n新增的一段正文。\n% 新增的注释\n')
         results = []
