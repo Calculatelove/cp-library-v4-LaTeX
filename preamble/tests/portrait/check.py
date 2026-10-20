@@ -16,7 +16,7 @@ c = pc.Checker('竖版')
 # 与 layout-portrait.tex 一致：\TitlePageSetup 的取值（mm），左右边距 20 mm、下边距 15 mm。
 # 第 4 页以一级标题开头，竖版一级标题所在页按 plain 样式不显示页眉，所以不查它的页眉。
 pc.check_titlepage(c, OUT / 'titlepage.pdf', HINT,
-                   dict(title=80, english=66.5, author=55, image=-20, stamp=-131.5, image_width=130, image_height=110),
+                   dict(title=80, english=66.5, author=55, image=-1, stamp=-131.5, image_width=80, image_height=80),
                    landscape=False, side=20, bottom=15, header_bottom=pc.PORTRAIT_HEADER_BOTTOM)
 
 for name in ('syntax-colors', 'code-cards'):

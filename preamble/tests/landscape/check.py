@@ -48,7 +48,7 @@ def column_texts(page):
 
 # 与 layout-landscape.tex、layout-code.tex 一致：\TitlePageSetup 的取值（mm），四边 12 mm。
 pc.check_titlepage(c, OUT / 'titlepage.pdf', HINT,
-                   dict(title=57, english=43.5, author=32, image=-17, stamp=-88, image_width=110, image_height=70),
+                   dict(title=57, english=43.5, author=32, image=-24, stamp=-88, image_width=80, image_height=80),
                    landscape=True, side=12, bottom=12, header_bottom=pc.HEADER_BOTTOM,
                    marker='（代码版）' if edition == 'code' else '', body_header='扉页之后')
 
