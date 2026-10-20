@@ -274,6 +274,8 @@ def hairline_frames(page):
 TITLEPAGE_ROWS = [('算法竞赛小记', 'Semibold', 44, 0x1D1D1F, 'title'),
                   ('Competitive Programming Library', 'Regular', 15, 0x6E6E73, 'english'),
                   ('Calculatelove', 'Medium', 12, 0x1D1D1F, 'author')]
+# titlepage 样张中 \RepositoryURL 的取值，含 ~ _ %，检验按原样读取。
+TITLEPAGE_REPOSITORY = 'https://example.com/~cl/cp_library%20v4'
 
 
 def check_titlepage(checker, path, hint, setup, *, landscape, side, bottom, header_bottom,
@@ -296,6 +298,9 @@ def check_titlepage(checker, path, hint, setup, *, landscape, side, bottom, head
             images = [[info['bbox'] for info in page.get_image_info()] for page in doc]
             advances = [cjk_advances(doc[i]) for i in range(2)]
             frames = [hairline_frames(page) for page in doc]
+            links = [[(link.get('uri'), link['from'], doc.xref_get_key(link['xref'], 'Border')[1])
+                      for link in page.get_links()] for page in doc]
+            hash_boxes = doc[0].search_for('0123abc')
             headers = [page.get_text(clip=fitz.Rect(0, 0, page.rect.width, header_bottom)).strip()
                        for page in doc]
             width, height = doc[0].rect.width, doc[0].rect.height
@@ -411,6 +416,19 @@ def check_titlepage(checker, path, hint, setup, *, landscape, side, bottom, head
                 checker.check(frames[number] == [], '干净状态不应有细框', frames[number])
                 checker.check(abs((ident['x0'] + ident['x1']) / 2 - cx) < 0.5, '日期与哈希行应水平居中',
                               ident['x0'], ident['x1'])
+
+    with checker.section('titlepage：提交哈希链接'):
+        # 第 1 页设了仓库地址：只有哈希是链接，指向“<仓库地址>/commit/<短哈希>”，无边框，区域与哈希字框一致。
+        # 第 2 页清空了仓库地址，第 3 页没有提交信息：都不应有链接。哈希的字体与颜色不变，见上一小节。
+        checker.require(len(links[0]) == 1, '第 1 页应恰有一个链接', links[0])
+        uri, area, border = links[0][0]
+        checker.check(uri == f'{TITLEPAGE_REPOSITORY}/commit/0123abc', '哈希的链接地址', uri)
+        checker.check(compact(border) == '[000]', '链接不应有边框', border)
+        checker.require(len(hash_boxes) == 1, '第 1 页应找到一处哈希', hash_boxes)
+        checker.check(all(abs(a - b) < 0.5 for a, b in zip(area, hash_boxes[0])), '链接区域应与哈希字框一致',
+                      area, hash_boxes[0])
+        for number in (1, 2):
+            checker.check(links[number] == [], f'第 {number + 1} 页不应有链接', links[number])
 
     with checker.section('titlepage：提交说明原样输出与换行'):
         # 第 1 页：特殊字符原样输出（`--` 不被替换为连接号），提交说明为苹方。

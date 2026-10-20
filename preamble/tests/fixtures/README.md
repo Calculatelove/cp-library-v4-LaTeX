@@ -26,7 +26,7 @@
 | `titlepage-long-dirty.commit` | 中西文混排的超长提交说明，检验居中换行与底边对齐；状态为 dirty |
 | `titlepage-wide.png`、`titlepage-tall.png` | 800 × 300 与 300 × 800 像素的人工配图（ImageMagick 生成），分别检验配图区域的宽度与高度约束 |
 
-竖版的配图区为 130 × 110 mm，横版与代码版为 110 × 70 mm。`.commit` 文件逐行原样读取，修改时保持四行结构，不要加入 TeX 转义。
+配图区尺寸以各版布局的 `\TitlePageSetup` 为准。`.commit` 文件逐行原样读取，修改时保持四行结构，不要加入 TeX 转义。
 
 ## 共用样张正文
 

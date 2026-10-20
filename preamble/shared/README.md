@@ -11,7 +11,7 @@
 | `toc.tex` | 关闭标题自动编号，目录深度与书签，目录条目排版（`\BookTOCEntry`） | 三版 |
 | `twocolumn.tex` | 启动双栏、通栏目录标题、页顶所在章的页眉（`\BookChapterAnchor`）、图片按栏宽解释 `\textwidth` | 横版、代码版 |
 | `code.tex` | Pygments 词法配色、minted 默认设置、代码卡片标题，以及代码卡片与引用块的前后距（`book-box-spacing`） | 三版 |
-| `titlepage.tex` | 扉页与提交信息读取（`\TitlePageReadCommit`），元信息命令（`\EnglishTitle`、`\TitlePageImage`、`\EditionLabel`），版面参数接口（`\TitlePageSetup`） | 三版 |
+| `titlepage.tex` | 扉页与提交信息读取（`\TitlePageReadCommit`），元信息命令（`\EnglishTitle`、`\TitlePageImage`、`\EditionLabel`、`\RepositoryURL`），版面参数接口（`\TitlePageSetup`） | 三版 |
 
 ## 载入顺序
 
