@@ -2,13 +2,11 @@
 
 本目录存放章节以外的素材文件，例如扉页配图，不放 `.tex` 代码。扉页外观代码在 `preamble/shared/titlepage.tex`，章节图片仍放在 `contents/` 各大类的 `figures/`。
 
-| 文件 | 用途 |
-| --- | --- |
-| `cl-logo-c4.png` | 三版扉页共用的占位配图，由用户提供；1254 × 1254 像素，带透明通道，圆形以外的四角全透明。由 `main-portrait.tex`、`main-landscape.tex` 的 `\TitlePageImage` 引用；代码版入口由 `scripts/generate-code.py` 以横版入口为模板生成，沿用同一路径。 |
+三版扉页共用一张配图，由用户提供，用的是哪个文件以 `main-portrait.tex`、`main-landscape.tex` 中 `\TitlePageImage` 的路径为准；代码版入口由 `scripts/generate-code.py` 以横版入口为模板生成，沿用同一路径。本文不逐个记录目录中的图片（用户确认）：配图可能经常更换，逐个记录很快会过时。
 
 ## 使用规则
 
-- 路径相对于项目根目录，保留真实文件名，例如 `\TitlePageImage{assets/cl-logo-c4.png}`。入口不写 `\TitlePageImage` 或参数为空时，扉页中部留白；路径写错时编译报错。
+- 路径相对于项目根目录，保留真实文件名，例如 `\TitlePageImage{assets/<文件名>.png}`。入口不写 `\TitlePageImage` 或参数为空时，扉页中部留白；路径写错时编译报错。
 - 路径须与 Git 中的文件名逐字一致，包括大小写。macOS 默认不区分大小写：本机能编译，不代表在区分大小写的系统上也能找到文件；只改文件名大小写时 Git 也不会记录，须用 `git mv -f 旧名 新名`。
 - 扉页配图在页面中部的固定区域内等比缩放并居中：三版均为宽 80 mm、高 80 mm。标题区与底部提交信息的位置不随图片比例变化。更换配图时，修改竖版、横版两个入口中的路径，再重新生成代码版入口（`./run.sh code`、`./run.sh all` 会自动生成）。单元测试会检查两个入口除布局一行外逐行相同，并检查各入口中的路径与 Git 中的文件名逐字一致。
 - 打印建议使用矢量 PDF；位图在成品尺寸下至少 300 dpi（宽 80 mm 约 945 像素）。需要透明背景时，使用带透明通道的 PNG 或 PDF。
