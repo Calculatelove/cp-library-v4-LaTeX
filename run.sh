@@ -3,6 +3,7 @@
 # 用法：./run.sh [portrait|landscape|code|all]；默认 portrait。
 # 编译收敛循环在 scripts/xelatex-converge.sh，与 preamble/tests 的运行脚本共用。
 set -euo pipefail
+SECONDS=0
 
 usage() {
     printf '用法：%s [portrait|landscape|code|all]\n默认编译 portrait；产物写入 build/<版本>/。\n' "${0##*/}"
@@ -75,9 +76,30 @@ build_target() {
         rm -f -- "$output_dir/$job.$extension"
     done
     rm -rf -- "$output_dir/_minted" "$output_dir/_minted-$job"
-    printf '\nPDF 已生成：%s/%s/%s.pdf\n' "$project_dir" "$output_dir" "$job"
 }
 
+format_duration() {
+    local seconds="$1"
+    if (( seconds == 0 )); then
+        printf '不足 1 秒'
+        return
+    fi
+    if (( seconds >= 3600 )); then printf '%s 小时 ' "$((seconds / 3600))"; fi
+    if (( seconds >= 60 )); then printf '%s 分 ' "$((seconds / 60 % 60))"; fi
+    printf '%s 秒' "$((seconds % 60))"
+}
+
+summary=''
 for target in "${targets[@]}"; do
+    started=$SECONDS
     build_target "$target"
+    elapsed=$((SECONDS - started))
+    case "$target" in
+        portrait) label=竖版 ;;
+        landscape) label=横版 ;;
+        code) label=代码版 ;;
+    esac
+    printf -v summary '%s\n- %s：%s\n  PDF：%s/build/%s/main-%s.pdf\n' \
+        "$summary" "$label" "$(format_duration "$elapsed")" "$project_dir" "$target" "$target"
 done
+printf '\n构建完成，总耗时：%s\n%s' "$(format_duration "$SECONDS")" "$summary"
