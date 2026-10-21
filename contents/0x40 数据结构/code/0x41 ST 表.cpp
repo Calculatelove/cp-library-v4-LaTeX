@@ -5,13 +5,13 @@ struct SparseTable {
     std::vector<std::vector<T>> f;
 
     SparseTable() {}
-    SparseTable(int n, std::vector<int> a) {
+    SparseTable(int n, std::vector<T> a) {
         init(n, a);
     }
 
-    void init(int n, std::vector<int> a) {
+    void init(int n, std::vector<T> a) {
         t = std::__lg(n);
-        f.assign(t + 1, std::vector<int>(n + 1, 0));
+        f.assign(t + 1, std::vector<T>(n + 1));
         for (int i = 1; i <= n; i ++) {
             f[0][i] = a[i];
         }
