@@ -3,24 +3,6 @@
 \input{preamble/layout-portrait.tex}
 \input{preamble/mystyle.tex}
 \begin{document}
-% 中文与符号之间应为正常的四分之一 em，而非 emoji 字体的整格空格。
-\newsavebox{\SymbolJoined}
-\newsavebox{\SymbolChinese}
-\newsavebox{\SymbolSingle}
-\newcommand{\CheckSymbolGap}[1]{%
-  \sbox{\SymbolJoined}{前#1}%
-  \sbox{\SymbolChinese}{前}%
-  \sbox{\SymbolSingle}{#1}%
-  \ifdim\dimexpr\wd\SymbolJoined-\wd\SymbolChinese-\wd\SymbolSingle\relax>.3em
-    \errmessage{Chinese-symbol gap exceeds 0.3em}%
-  \fi
-  \ifdim\dimexpr\wd\SymbolJoined-\wd\SymbolChinese-\wd\SymbolSingle\relax<.2em
-    \errmessage{Chinese-symbol gap below 0.2em}%
-  \fi
-}
-\CheckSymbolGap{⭐}\CheckSymbolGap{🚩}
-{\sffamily\bfseries\fontsize{22}{28}\selectfont
- \CheckSymbolGap{⭐}\CheckSymbolGap{🚩}}
 \tableofcontents
 \section{符号检验⭐🚩}
 \subsection{多项式全家桶⭐}

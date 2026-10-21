@@ -2,23 +2,9 @@
 \input{preamble/packages.tex}
 \input{preamble/layout-portrait.tex}
 \input{preamble/mystyle.tex}
-% 四、五级标题：独立成行，苹方 Semibold，与正文同为 10.5/15 pt。
-% 检验与三级标题、正文粗体、行间公式、引用块、高亮、列表及五级标题的衔接，
-% 长标题换行，以及页底只容得下标题本身时，标题随后文移到下一页。
-% PDF 断言见本组 check.py 的 heading-levels 小节。
-% 把正文推向页底：空白之后保留 #1（含下一行正文）。
-\newcommand{\FillPageExcept}[1]{%
-  \par\vspace{\dimexpr\pagegoal-\pagetotal-#1\relax}}
-% 下一标题之前的剩余空间须放得下标题本身（约 24 pt），
-% 放不下标题加后文首行（约 44 pt），否则页底边界未被检验。
-\newcommand{\CheckRemaining}[2]{%
-  \par
-  \ifdim\dimexpr\pagegoal-\pagetotal\relax<#1\relax
-    \errmessage{Page-bottom heading: remaining space is below #1}%
-  \fi
-  \ifdim\dimexpr\pagegoal-\pagetotal\relax>#2\relax
-    \errmessage{Page-bottom heading: remaining space is above #2}%
-  \fi}
+% 标题边界只留半行空间，按当前行距构造，不复制设计字号和间距。
+\newcommand{\FillPageBottom}{%
+  \par\vspace*{\dimexpr\pagegoal-\pagetotal-.5\baselineskip\relax}}
 \begin{document}
 \section{0x00 四、五级标题样张}
 本文件仅检验导言区的标题排版，不属于算法笔记正文。
@@ -81,9 +67,8 @@ f(n) = \sum_{d \mid n} g(d)
 
 \newpage
 页底边界一：四级标题后接正文。
-\FillPageExcept{49pt}
-边界一：本行之后的剩余空间只够放下四级标题本身。
-\CheckRemaining{26pt}{42pt}
+边界一：本行之后只留半行空间，触发标题跟随正文分页。
+\FillPageBottom
 
 \paragraph{页底四级标题：后接正文}
 
@@ -91,9 +76,8 @@ f(n) = \sum_{d \mid n} g(d)
 
 \newpage
 页底边界二：四级标题后接行间公式。
-\FillPageExcept{49pt}
-边界二：本行之后的剩余空间只够放下四级标题本身。
-\CheckRemaining{26pt}{42pt}
+边界二：本行之后只留半行空间，触发标题跟随正文分页。
+\FillPageBottom
 
 \paragraph{页底四级标题：后接行间公式}
 

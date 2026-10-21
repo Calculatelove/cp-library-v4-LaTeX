@@ -6,13 +6,6 @@
 \author{C.L.}
 \date{}
 \begin{document}
-% 宽度检验：左右各 20 mm，回退旧版边距时应明确失败。
-\ifdim\dimexpr\textwidth-170mm\relax>0.1pt
-  \errmessage{Portrait text width must be 170 mm}
-\fi
-\ifdim\dimexpr170mm-\textwidth\relax>0.1pt
-  \errmessage{Portrait text width must be 170 mm}
-\fi
 \maketitle
 \newpage
 \tableofcontents

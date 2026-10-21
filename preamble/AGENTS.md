@@ -14,18 +14,20 @@
 
 | 改动 | 至少要做 |
 | --- | --- |
-| 某一版的布局 | 编译该版全部样张并运行其 PDF 检查；`./run.sh <版本>` 重建该版整书 |
-| `shared/`、`mystyle.tex`、`packages.tex` | `./run.sh all` 与 `scripts/check.sh --full`，并用 `scripts/compare-pdf.py` 与修改前的三版 PDF 及全部样张逐页比较文字与位置、字体、颜色、矢量图形、书签和链接（用户确认） |
-| 纸张、边距、栏距或扉页版面 | 同步 `scripts/check-full.py`、`tests/pdfcheck.py` 中的几何常量与各组 `check.py` 传入的版面参数 |
+| 某一版的布局 | 编译该版回归样张并运行其 PDF 检查；按改动查看相关视觉样张；`./run.sh <版本>` 重建该版整书 |
+| `shared/`、`mystyle.tex`、`packages.tex` | `./run.sh all` 与 `scripts/check.sh --full`，并用 `scripts/compare-pdf.py` 与修改前的三版 PDF 及回归样张逐页比较文字与位置、字体、颜色、矢量图形、书签和链接；差异供审阅，有意的视觉变化不要求与基线相同（用户确认：保留影响检查，减少设计调整的维护负担） |
+| 纸张、边距、栏距或扉页版面 | 重建相关 PDF；检查从 PDF 读取编译时的版心与扉页标记，不另抄设计数值 |
 | `tests/fixtures/*-body.tex` | 重新编译并检查引用它的各版样张 |
 | 升级 minted 或 Pygments | 运行 `scripts/check.sh --full`；代码配色依赖它们的内部 token 接口 |
 
 ## 样张与检查
 
-- 每个自定义命令或环境在 `tests/` 都有可从根目录编译的效果检验；新增接口或改变外观时同步补充。
+- 每个自定义命令或环境在 `tests/` 都有可从根目录编译的效果检验；新增功能时补充功能场景；改变外观时查看相关样张。
 - 样张只检验 `preamble/`，不引用 `contents/` 章节；产物只写入 `tests/build/`。
 - 样张应覆盖中文及带空格的路径、多语言代码、跨页或跨栏。编译通过后仍要检查 PDF；改动后重新验证，历史结果不能作为新实现的证据。
-- 每组样张的 PDF 检查都写在本组的 `check.py`，几版共用的断言放进 `tests/pdfcheck.py`，由各版传入本版参数；检查整本笔记的脚本放在 `scripts/`。检查使用 `tests/pdfcheck.py` 的显式检查，不用裸 `assert`；几版内容相同的样张正文放在 `tests/fixtures/*-body.tex`。
+- 每组样张的 PDF 检查都写在本组的 `check.py`，几版共用的断言放进 `tests/pdfcheck.py`；检查整本笔记的脚本放在 `scripts/`。检查使用 `tests/pdfcheck.py` 的显式检查，不用裸 `assert`；几版内容相同的样张正文放在 `tests/fixtures/*-body.tex`。
+
+- 自动回归只锁定内容完整性、功能与结构关系，不锁定具体字体名、字号、色值、间距或自然分页位置（用户确认：视觉调整通常不应要求修改测试）。精确外观用样张目视验收；改变功能约定时同步修改对应测试。边界样张按可用空间构造，并确认实际触发跨页、跨栏，不能仅删除固定页码断言而让场景失效。
 
 ## 字体与环境
 

@@ -1,0 +1,25 @@
+% 构建脚本在源文件之前载入：只记录检查所需的版心与扉页标记，不产生可见内容。
+% 尺寸随每页输出写入 PDF，避免检查旧 PDF 时误用当前源码的布局。
+\makeatletter
+\newif\ifBuildPDFTitlePage
+\AddToHook{begindocument}{%
+  \@ifundefined{TitlePageSetup}{}{%
+    \AddToHook{cmd/maketitle/before}{\clearpage\BuildPDFTitlePagetrue}%
+    \AddToHook{cmd/maketitle/after}{\BuildPDFTitlePagefalse}}%
+}
+\AddToHook{shipout/background}{%
+  \begingroup
+  \@tempdima=\dimexpr1in+\hoffset+\oddsidemargin\relax
+  \if@twoside\ifodd\value{page}\else
+    \@tempdima=\dimexpr1in+\hoffset+\evensidemargin\relax
+  \fi\fi
+  \@tempdimb=\dimexpr1in+\voffset+\topmargin+\headheight+\headsep\relax
+  \special{pdf:put @thispage << /BookGeometry [
+    \strip@pt\paperwidth\space \strip@pt\paperheight\space
+    \strip@pt\@tempdima\space \strip@pt\@tempdimb\space
+    \strip@pt\columnwidth\space \strip@pt\columnsep\space
+    \strip@pt\textheight\space \if@twocolumn2\else1\fi]
+    /BookTitlePage \ifBuildPDFTitlePage true\else false\fi\space >>}%
+  \endgroup
+}
+\makeatother

@@ -4,7 +4,7 @@
 导言区改动的比较范围见 preamble/AGENTS.md。坐标与字号取到 0.01 bp，更小的差别不计。
 
 用法（从任意目录）：
-  python3 scripts/compare-pdf.py --save <基线目录>   保存已构建的三版整书与全部样张；须为新目录或空目录
+  python3 scripts/compare-pdf.py --save <基线目录>   保存已构建的三版整书与回归样张；须为新目录或空目录
   python3 scripts/compare-pdf.py <基线目录>          与项目中相对路径相同的 PDF 逐份比较
   python3 scripts/compare-pdf.py <旧> <新>           比较两个 PDF，或两个目录中相对路径相同的 PDF
 返回值：0 全部相同；1 有差异或缺少对应的 PDF；2 用法错误或找不到输入。
