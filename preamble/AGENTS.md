@@ -5,7 +5,7 @@
 ## 分工
 
 - `packages.tex`：只加载宏包并维护加载顺序；ctex 加载前所需的字体选项也放在这里。
-- `layout-<版本>.tex`：只放本版参数（纸张、边距、栏距、字号、段落、标题样式、扉页版面）和本版专用的做法。三版各自维护；代码版取值目前与横版相同，但不引用横版布局。
+- `layout-<版本>.tex`：只放本版参数（纸张、边距、栏距、字号、段落、标题样式、扉页版面）和本版专用的做法。三版各自维护；代码版取值目前与横版相同，但不引用横版布局。两份除注释外须逐行相同（`scripts/tests/test_layouts.py`），所以代码版只有扉页样张；要分开取值时，先加回代码版的其余样张，见 `tests/code/README.md`。
 - `shared/`：只放三版共用的实现，不放参数，由各版布局按顺序 `\input`，入口不直接引用。某版需要不同取值时，增加参数或在该版布局中覆盖，不在共用文件里按版本分支（用户确认）。
 - `mystyle.tex`：只有 `\Highlight`、`\InputCode`、`quoteblock`、`\Separator` 四个自定义接口。新增接口或改变外观须经用户确认。
 - 命名：共用实现的命令、颜色和计数器以 `Book` 开头，expl3 变量用 `book` 模块名；供入口或样张调用的命令（`\EnglishTitle`、`\TitlePageImage`、`\EditionLabel`、`\RepositoryURL`、`\TitlePageReadCommit`、`\TitlePageSetup`）不加前缀。
@@ -15,7 +15,7 @@
 | 改动 | 至少要做 |
 | --- | --- |
 | 某一版的布局 | 编译该版全部样张并运行其 PDF 检查；`./run.sh <版本>` 重建该版整书 |
-| `shared/`、`mystyle.tex`、`packages.tex` | `./run.sh all` 与 `scripts/check.sh --full`，并与修改前的三版 PDF 及全部样张逐页比较文字与位置、字体、颜色、矢量图形、书签和链接（用户确认） |
+| `shared/`、`mystyle.tex`、`packages.tex` | `./run.sh all` 与 `scripts/check.sh --full`，并用 `scripts/compare-pdf.py` 与修改前的三版 PDF 及全部样张逐页比较文字与位置、字体、颜色、矢量图形、书签和链接（用户确认） |
 | 纸张、边距、栏距或扉页版面 | 同步 `scripts/check-full.py`、`tests/pdfcheck.py` 中的几何常量与各组 `check.py` 传入的版面参数 |
 | `tests/fixtures/*-body.tex` | 重新编译并检查引用它的各版样张 |
 | 升级 minted 或 Pygments | 运行 `scripts/check.sh --full`；代码配色依赖它们的内部 token 接口 |

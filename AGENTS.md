@@ -38,9 +38,9 @@ C.L. 的算法竞赛第四版笔记，已由 Markdown 迁移为 LaTeX，内容�
 
 ## 验证入口
 
-- `scripts/check.sh`：单元测试、入口一致性、代码版入口是否最新、文档检查，约 1 秒；每次改动后运行。
+- `scripts/check.sh`：单元测试、入口与布局一致性、代码版入口是否最新、文档检查，约 1 秒；每次改动后运行。
 - `scripts/check.sh --full`：另编译四组样张并运行全部样张 PDF 检查，约 2 分钟；不重建三版整书。
-- `./run.sh [portrait|landscape|code|all]`：构建整书，默认竖版；结束时打印末轮警告汇总。判断排版改动的影响时，与同一提交上改动前的构建对照，见 `scripts/README.md`。
+- `./run.sh [portrait|landscape|code|all]`：构建整书，默认竖版；结束时打印末轮警告汇总。判断排版改动的影响时，与同一提交上改动前的构建对照（`scripts/compare-pdf.py` 逐页比较），见 `scripts/README.md`。
 - `python3 scripts/check-full.py [PDF]`：检查横版、代码版整书的越栏；返回 0 也可能带有警告。
 - 不用根目录单轮 XeLaTeX 代替脚本，以免污染根目录或留下未收敛的产物。依赖 XeLaTeX 与 `latexminted`，不开启不受限 shell escape。
 - 用户的终端是 UTF-8 区域设置，脚本由 macOS 自带的 bash 3.2 执行；agent 的终端若是 C 区域设置，验证时加 `LC_ALL=zh_CN.UTF-8`。

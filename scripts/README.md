@@ -10,7 +10,8 @@
 | `commit-info.sh` | 输出扉页使用的提交信息 |
 | `xelatex-converge.sh` | 用 XeLaTeX 编译到目录与交叉引用稳定；根目录 `run.sh` 与 `preamble/tests` 各组的 `run.sh` 共用 |
 | `check-full.py` | 先核对纸张与栏边几何，再检查完整横版、代码版 PDF 的两栏文字越界 |
-| `tests/` | 上述工具的单元测试与入口一致性检查，见其 README |
+| `compare-pdf.py` | 逐页比较改动前后的整书与样张 PDF |
+| `tests/` | 上述工具的单元测试，以及入口与布局的一致性检查，见其 README |
 
 ## 一键检查
 
@@ -19,7 +20,7 @@ scripts/check.sh          # 快速检查，约 1 秒；建议每次提交前运�
 scripts/check.sh --full   # 另编译四组导言区样张并运行全部样张 PDF 检查，约 2 分钟
 ```
 
-- 快速检查：`tests/` 中的全部单元测试（含竖版、横版入口的一致性）、`generate-code.py --check`（代码版入口是否最新）与 `check-docs.py`。
+- 快速检查：`tests/` 中的全部单元测试（含入口与布局的一致性）、`generate-code.py --check`（代码版入口是否最新）与 `check-docs.py`。
 - `--full` 另外依次运行 `preamble/tests` 四组样张的 `run.sh`，以及竖版、横版、代码版的样张 PDF 检查（各组的 `check.py`）。`build/` 中已有完整横版、代码版 PDF 时，再运行 `check-full.py`，越栏只输出警告。`check.sh` 不构建整书，所以这些 PDF 可能落后于源码，可对照输出中的扉页提交。
 - 某一步失败不会中断后续步骤，最后汇总列出失败的步骤；有失败时返回 1，用法错误返回 2。PDF 检查需要 PyMuPDF，见 `preamble/tests/README.md`。
 
@@ -52,7 +53,7 @@ mkdir -p preamble/tests/build/landscape
 
 整书有已知的 Overfull、Underfull 等警告。页数以及警告的数量和位置都随正文变化，正文几乎每次提交都会改变它们，所以不写进文档（用户确认）。
 
-- 判断排版或脚本改动的影响时，在同一提交上分别构建改动前、后的版本（改动前用该提交的干净副本），对比末轮警告汇总、页数与页面内容，结果在汇报中说明。导言区改动的比较范围见 `preamble/AGENTS.md`。
+- 判断排版或脚本改动的影响时，在同一提交上分别构建改动前、后的版本（改动前用该提交的干净副本），对比末轮警告汇总，并用 `compare-pdf.py` 逐页比较 PDF（见“逐页比较”），结果在汇报中说明。导言区改动的比较范围见 `preamble/AGENTS.md`。
 - 日志中 xeCJK 的字体族重定义提示是预期的；不应出现缺字或字体替换。
 
 ## 文档与脚本检查
@@ -158,6 +159,23 @@ python3 scripts/check-full.py build/code/main-code.pdf
 
 读取、扉页提交识别、几何自检、越界判定分别是独立的函数，由 `main()` 调用；`tests/test_check_full.py` 用构造的数据测试，不依赖 `build/` 中的 PDF。
 
+## 逐页比较
+
+`compare-pdf.py` 逐页比较改动前、后的 PDF，只需要 PyMuPDF：
+
+```sh
+python3 scripts/compare-pdf.py --save <基线目录>   # 改动前：保存已构建的三版整书与全部样张
+python3 scripts/compare-pdf.py <基线目录>          # 改动后重新构建，再与基线比较
+python3 scripts/compare-pdf.py <旧> <新>           # 两个 PDF，或两个目录中相对路径相同的 PDF
+```
+
+- 基线包含 `build/<版本>/main-<版本>.pdf` 与 `preamble/tests` 各组 `run.sh` 列出的样张，只保存已构建的；基线目录须是新目录或空目录，以免混入旧基线。
+- 比较纸张、文字及其字体、字号、颜色与位置，以及矢量图形、图片、链接（含目标位置）和书签；坐标与字号取到 0.01 bp。文字不同时先按字符对齐，再比较对上的字。
+- 有差异的 PDF 按类别各输出一行：字体、字号、颜色按“旧 → 新”汇总次数与涉及的字符，位置给出移动的字数与最大位移，并附页码；最后汇总相同、有差异与缺少对应 PDF 的份数。
+- 只有一边的工作区有未提交修改时，整书扉页会因“含未提交修改”标签报出差异，属于预期。
+- 返回值：0 表示全部相同；1 表示有差异或缺少对应的 PDF；2 表示用法错误或找不到输入。
+- 读取与差异判定是独立的函数；`tests/test_compare_pdf.py` 用构造的数据测试差异判定。
+
 ## 修改须知
 
 以下行为是约定，修改脚本时须保持。有单元测试的部分见 `tests/README.md`；`run.sh` 与 `xelatex-converge.sh` 没有单元测试，改动后要手工验证相应分支。
@@ -166,5 +184,6 @@ python3 scripts/check-full.py build/code/main-code.pdf
 - `generate-code.py`：所有检查通过后才原子替换入口，失败不覆盖旧入口；`--check` 不写文件；不写死书籍信息。
 - `commit-info.sh`：取 HEAD；dirty 判定排除 `build/`；不在 Git 仓库中、没有 git 或尚无提交时不输出内容，返回 0。
 - `check-full.py`：几何常量与横版、代码版的布局一致；越栏只输出警告。
+- `compare-pdf.py`：只读比较，不改动构建产物；`--save` 只写入新目录或空目录，不覆盖、不删除已有文件。
 - 脚本由 macOS 自带的 bash 3.2 执行。`$变量名` 后紧跟中文等非 ASCII 字符时写成 `${变量名}`，否则在 UTF-8 区域设置下，bash 会把多字节字符的前几个字节读进变量名，在 `set -u` 下报 unbound variable（`check-docs.py` 会检查）。也不要用关联数组、`${var,,}`、`mapfile` 等 bash 4 才有的写法。
 - 用户的终端是 UTF-8 区域设置；agent 的终端若是 C 区域设置，验证时加 `LC_ALL=zh_CN.UTF-8`。

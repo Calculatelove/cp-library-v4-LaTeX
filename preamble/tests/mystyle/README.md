@@ -9,7 +9,7 @@
 | `highlight.tex` | 中文短语、粗体、行内公式，以及高亮前后的正文。编译时比较高亮内容与原内容的宽度、高度和深度，确认没有额外内边距；颜色不影响后文 |
 | `input-code.tex` | 默认与显式文件名、中文和带空格的路径、C++ / Python / Bash / Makefile 高亮、各语言的 `\setminted` 设置；编译时断言卡片内部没有额外的列表间距 |
 | `input-code-pages.tex` | 长代码跨页，续页不重复标题 |
-| `quoteblock.tex` | 多段正文、列表、行间公式、标准 `quote` 与跨页引用块；在引用块内与块后断言段间距为 `3pt plus 1pt minus 1pt`、无首行缩进。每页都应有浅灰背景与左侧竖线，竖线外侧到文字约一个中文字宽。不检验嵌套 |
+| `quoteblock.tex` | 多段正文、列表、行间公式、标准 `quote` 与跨页引用块；编译时断言引用块内与块后的段间距没有被重置；跨页时每页都应有浅灰背景与左侧竖线。不检验嵌套 |
 | `separator.tex` | 普通正文、列表与 `quoteblock` 中横线的宽度与上下间距；不分页 |
 
 代码卡片与引用块的前后距由各版布局设定（`book-box-spacing`，见 `../../shared/README.md`）；本目录不载入布局，沿用 tcolorbox 的默认前后距，前后距在各版的 `block-spacing` 样张中检验。
