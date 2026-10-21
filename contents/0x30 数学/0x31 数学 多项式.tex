@@ -520,7 +520,9 @@ g(l, r) = g(l, \mathrm{mid}) \times g(\mathrm{mid} + 1, r)
 还有一种基于长链剖分的做法，时间复杂度 $\mathcal{O}(n \log n)$，详见 \href{https://www.cnblogs.com/zkyJuruo/p/18809573}{zak 的博客}。
 \end{quoteblock}
 
-\subsection{多项式除法（暴力）}
+\subsection{多项式初等运算}
+
+\subsubsection{多项式除法（暴力）}
 
 \Highlight{多项式除法}：给出两个多项式 $A(x), B(x)$，你需要求出多项式 $C(x)$，满足 $B(x)C(x) = A(x)$。
 
@@ -540,7 +542,7 @@ c_i = \frac{1}{b_0}\left( a_i - \sum_{j = 0}^{i - 1}c_jb_{i - j} \right)
 
 时间复杂度 $\mathcal{O}(nm)$。实际上是 $(n - m)m$。
 
-\subsection{多项式导数/积分}
+\subsubsection{多项式导数/积分}
 
 \Highlight{多项式形式导数}：
 \[
@@ -551,7 +553,7 @@ f'(x) = \left( \sum\limits_{i = 0}^na_ix^i \right)' = \sum\limits_{i = 1}^n ia_i
 \int f(x) \mathrm{dx} = \int \left( \sum\limits_{i = 0}^n a_ix^i \right) \mathrm{dx} = \sum\limits_{i = 0}^n \frac{1}{i + 1}a_ix^{i + 1}
 \]
 
-\subsection{多项式牛顿迭代}
+\subsubsection{多项式牛顿迭代}
 
 问题：已知函数 $g$，假设满足 $g(f(x)) = 0$ 的函数 $f(x) = h(x)$，我们需要求出 $h \bmod x^n$（在这里，我们将 $f(x)$ 看成函数 $g(f(x))$ 的自变量，则我们要求的就是 $g(f(x)) = 0$ 模 $x^n$ 意义下的零点）。
 
@@ -575,7 +577,7 @@ h_1(x) \equiv h_0(x) - \frac{g(h_0(x))}{g'(h_0(x))} \pmod{x^n}
 \]
 时间复杂度 $T(n) = T\left(\frac{n}{2}\right) + \mathcal{O}(n \log n) = \mathcal{O}(n \log n)$。
 
-\subsection{多项式求逆}
+\subsubsection{多项式求逆}
 
 \Highlight{多项式逆}：给出一个多项式 $A(x)$，你需要求出多项式 $B(x)$，满足 $A(x) \times B(x) = 1$。一般我们只需要求出 $B \bmod{x^m}$ 的结果。
 
@@ -617,7 +619,7 @@ h_1(x) \equiv 2h_0(x) - A(x)h_0^2(x) \pmod{x^m}
 
 时间复杂度 $\mathcal{O}(m \log m)$。
 
-\subsection{多项式开方}
+\subsubsection{多项式开方}
 
 \Highlight{多项式开方}：给出一个多项式 $A(x)$，你需要求出多项式 $B(x)$，满足 $B^2(x) \equiv A(x)$。一般我们只需要求出 $B \bmod x^m$ 的结果。
 
@@ -638,7 +640,7 @@ h_1(x) \equiv \frac{h_0^2(x) + A(x)}{2h_0(x)} \pmod{x^m}
 By the way：注意到 $\sqrt{A(x)} = e^{\frac{1}{2}\ln A(x)}$，可以直接套用多项式 ln 与多项式 exp 的模板。
 \end{quoteblock}
 
-\subsection{多项式带余除法}
+\subsubsection{多项式带余除法}
 
 \Highlight{多项式带余除法}：给出一个 $n$ 次多项式 $A(x)$ 和一个 $m$ 次多项式 $B(x)$，你需要求出多项式 $Q(x), R(x)$ 满足：
 
@@ -663,7 +665,7 @@ A^R(x) = Q^R(x) \times B^R(x) \pmod{x^{n - m + 1}}
 
 时间复杂度 $\mathcal{O}(n \log n)$。
 
-\subsection{多项式 ln/exp}
+\subsubsection{多项式 ln/exp}
 
 \begin{quoteblock}
 $e$ 在模 $998244353$ 下没有意义。同理，$\ln 2$ 在模 $998244353$ 下没有意义。
@@ -710,7 +712,7 @@ h_1(x) \equiv h_0(x)\left( 1 - \ln h_0(x) + A(x) \right) \pmod{x^m}
 
 时间复杂度 $\mathcal{O}(m \log m)$。
 
-\subsection{多项式快速幂}
+\subsubsection{多项式快速幂}
 
 \Highlight{多项式快速幂}：给出一个多项式 $A(x)$，你需要求出 $A^k(x) \bmod{x^m}$。
 
@@ -775,7 +777,7 @@ f^P(x) \equiv f(x^P) \pmod P
 \end{itemize}
 \end{quoteblock}
 
-\subsection{少项式快速幂}
+\subsubsection{少项式快速幂}
 
 \Highlight{少项式快速幂}：给出一个次数不高的多项式 $A(x)$，你需要求出 $A^k(x) \bmod x^m$。
 
