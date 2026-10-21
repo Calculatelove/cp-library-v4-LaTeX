@@ -48,7 +48,7 @@ bash preamble/tests/code/run.sh
 | `python3 preamble/tests/portrait/check.py` | 竖版：扉页、代码配色与卡片、块间距、四五级标题 |
 | `python3 preamble/tests/landscape/check.py [code]` | 横版（或代码版）：扉页、纸张、流向、页眉、代码配色与跨栏、引用、列表符号、块间距、目录、图片 |
 
-`scripts/check.sh --full` 依次编译四组样张并运行上表的全部检查。检查通过后，仍要渲染查看 PDF 的边框、字形、长标题，以及跨页、跨栏的连接处。苹方简体与香港字形共用 TTC 中的轮廓表，`pdffonts` 可能显示 `PingFangHK`，不能据此判断字体被替换。
+`scripts/check.sh --full` 依次编译四组样张并运行上表的全部检查。检查通过后，仍要渲染查看 PDF 的边框、字形、长标题，以及跨页、跨栏的连接处。苹方同一字重的 HK、MO、TC、SC 四个字面共用 TTC 中的一份 CFF 轮廓表，表内字体名为 `PingFangHK-<字重>`；xdvipdfmx 按它命名嵌入字体，所以 `pdffonts` 与 PyMuPDF 总显示 `PingFangHK`，不能据此判断用了哪个字面。字形由 XeTeX 选中的字面决定；要核对，就比较 PDF 中各字的 CID 与 SC 字面 cmap 的映射。
 
 根目录 `run.sh` 只构建三版整书，不运行这些检验；整书产物在根目录的 `build/<版本>/`，与本目录的 `build/` 互不影响。整书的越栏检查是 `scripts/check-full.py`。
 
