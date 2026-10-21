@@ -6,6 +6,7 @@
 
 | 源码 | 检验内容 | PDF（在 `../build/portrait/`） |
 | --- | --- | --- |
+| `quotes.tex` | 中文双引号随字体族切换：正文、粗斜体、嵌套恢复、三级目录、页眉、行内代码、minted、卡片标题与代码、其他标点、窄行禁则及 Unicode 书签；与双反引号写法比较字形与相对位置；正文在 `../fixtures/quotes-body.tex`，PDF 断言复用 `../pdfcheck.py` 的 `check_quotes` | `quotes.pdf` |
 | `titlepage.tex` | 扉页：横、竖两种配图与无配图；提交说明含全部 TeX 特殊字符、超长换行、dirty 标签，以及提交信息文件不存在；仓库地址含 `~`、`_`、`%`，第 1 页有地址行与提交信息，第 2 页清空地址，第 3 页只有地址行；扉页后的正文页码。用 `\TitlePageReadCommit{<文件>}` 改读 `../fixtures/` 中的提交信息，不依赖本仓库的 Git 状态 | `titlepage.pdf` |
 | `toc-layout.tex` | 单栏三级目录、各级长标题续行与页码对齐；页底空间不足时，三级标题组整体移到下一页（第 2 页特意留白以构造边界） | `toc-layout.pdf` |
 | `code-cards.tex` | 语言图标与通用图标、长标题换行、短代码与跨页卡片、框外行号、折行与空行编号 | `code-cards.pdf` |

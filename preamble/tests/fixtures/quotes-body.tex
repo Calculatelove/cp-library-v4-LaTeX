@@ -1,0 +1,48 @@
+% 共用引号样张：真实目录、字体嵌套、代码隔离与窄行断行。
+\tableofcontents
+\section{引号“一级”}
+\subsection{引号“二级”}
+\subsubsection{引号“三级”}
+正文“常规”与\textbf{粗体“加粗”}，\textit{斜体“倾斜”}。
+
+\noindent 新版：总工作量由“叶子层”主导。\par
+\noindent 参考：总工作量由``叶子层''主导。\par
+\noindent 原样：{\XeTeXcharclass"201C=\XeTeXcharclass"300C
+\XeTeXcharclass"201D=\XeTeXcharclass"300D
+总工作量由“叶子层”主导。}\par
+
+% 同字体内与显式恢复中文分类的对照比较，避免只看字体而漏掉间距变化。
+\textsf{苹方现状：总工作量由“叶子层”主导。}\par
+\textsf{苹方对照：\XeTeXcharclass"201C=\XeTeXcharclass"300C
+\XeTeXcharclass"201D=\XeTeXcharclass"300D
+总工作量由“叶子层”主导。}\par
+\texttt{代码现状：中文“引号”保持原样。}\par
+\texttt{代码对照：\XeTeXcharclass"201C=\XeTeXcharclass"300C
+\XeTeXcharclass"201D=\XeTeXcharclass"300D
+中文“引号”保持原样。}\par
+
+\textsf{苹方“外层”\textrm{宋体“内层”}苹方“返回”}正文“恢复”。
+
+\texttt{代码“行内”}\quad\mintinline{cpp}{/* “内联” */}
+
+\textbf{\texttt{代码“粗码”}}正文“码后”。
+
+\begin{itemize}
+\item 列表“项目”与\Highlight{高亮“强调”}。
+\end{itemize}
+\begin{quoteblock}
+引用“段落”与嵌套的\textsf{苹方“引用”}。
+\end{quoteblock}
+\InputCode[卡片“标题”]{cpp}{preamble/tests/fixtures/quotes.cpp}
+\begin{minted}{cpp}
+// 独立“注释”
+const char* s = "直接“字符串”";
+\end{minted}
+正文“块后”。其他标点：‘单引号’、（括号）、《书名》、——、……。
+
+% 不用显式禁断点干预结果：检查开引号不落在行尾、闭引号不落在行首。
+\noindent\parbox{7em}{窄行甲乙丙“开头”丁戊己庚辛“结尾”，后面继续“标点”。}
+\quad\parbox{8em}{窄行甲乙丙“开头”丁戊己庚辛“结尾”，后面继续“标点”。}
+
+\newpage
+正文“换页”。本页用于检验页眉中的章节引号仍为苹方。

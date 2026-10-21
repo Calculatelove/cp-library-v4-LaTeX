@@ -1,4 +1,4 @@
-"""检查竖版样张：扉页、代码配色与卡片、块间距，以及四、五级标题；需要 PyMuPDF。
+"""检查竖版样张：扉页、代码配色与卡片、块间距、引号字体切换，以及四、五级标题；需要 PyMuPDF。
 
 用法（从任意目录）：python3 preamble/tests/portrait/check.py
 横版、代码版的检查在 preamble/tests/landscape/check.py。
@@ -12,6 +12,10 @@ import pdfcheck as pc  # noqa: E402
 OUT = pc.BUILD / 'portrait'
 HINT = '请先运行 bash preamble/tests/portrait/run.sh'
 c = pc.Checker('竖版')
+
+with c.section('quotes：引号字体、切换恢复与断行'):
+    with c.open(OUT / 'quotes.pdf', HINT) as doc:
+        pc.check_quotes(c, doc)
 
 # 与 layout-portrait.tex 一致：\TitlePageSetup 的取值（mm），左右边距 20 mm、下边距 15 mm。
 # 第 4 页以一级标题开头，竖版一级标题所在页按 plain 样式不显示页眉，所以不查它的页眉。

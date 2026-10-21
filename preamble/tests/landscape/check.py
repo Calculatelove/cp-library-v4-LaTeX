@@ -1,4 +1,4 @@
-"""检查横版或代码版样张的扉页、纸张、阅读流向、页眉、代码配色与跨栏、引用跨栏、列表符号、块间距、目录及图片；
+"""检查横版或代码版样张的扉页、纸张、阅读流向、页眉、代码配色与跨栏、引用跨栏、列表符号、块间距、引号字体切换、目录及图片；
 需要 PyMuPDF。
 
 用法（从任意目录）：python3 preamble/tests/landscape/check.py [landscape|code]
@@ -25,6 +25,10 @@ if edition not in SAMPLES:
 OUT = pc.BUILD / edition
 HINT = f'请先运行 bash preamble/tests/{edition}/run.sh'
 c = pc.Checker({'landscape': '横版', 'code': '代码版'}[edition])
+
+with c.section('quotes：引号字体、切换恢复与断行'):
+    with c.open(OUT / 'quotes.pdf', HINT) as doc:
+        pc.check_quotes(c, doc)
 
 
 def locate(doc, text):

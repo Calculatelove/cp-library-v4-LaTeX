@@ -7,6 +7,7 @@
 | 文件 | 用途 |
 | --- | --- |
 | `示例 文件_1.cpp` | 中文、空格、下划线路径，默认与显式代码标题，C++ 高亮 |
+| `quotes.cpp` | 中文双引号在代码注释与字符串中的字体隔离 |
 | `sample.py` | Python 高亮与按语言设置字号 |
 | `sample.sh` | Bash 高亮 |
 | `Makefile test` | 含空格的路径与 Makefile 高亮 |
@@ -14,7 +15,7 @@
 | `line-number-wrap.cpp` | 四行人工代码，覆盖长行折行、空行编号、源文件行号及新卡片重新从 1 开始 |
 | `landscape-long.cpp` | 横版与代码版的人工长代码：100 个编号不同的声明，用于核对单个卡片跨栏、跨页的顺序与完整性；不是算法模板 |
 
-前五个由 `mystyle/` 的样张引用，布局样张也可以复用。
+`示例 文件_1.cpp`、`sample.py`、`sample.sh`、`Makefile test` 与 `long-code.cpp` 由 `mystyle/` 的样张引用，布局样张也可以复用。
 
 ## 扉页资源
 
@@ -34,6 +35,7 @@
 
 | 文件 | 引用它的样张 |
 | --- | --- |
+| `quotes-body.tex` | `portrait/`、`landscape/`、`code/` 的 `quotes.tex` |
 | `syntax-colors-body.tex` | `portrait/`、`landscape/`、`code/` 的 `syntax-colors.tex` |
 | `twocolumn-flow-body.tex` | `landscape/`、`code/` 的 `flow.tex` |
 | `twocolumn-code-cards-body.tex` | `landscape/`、`code/` 的 `code-cards.tex` |

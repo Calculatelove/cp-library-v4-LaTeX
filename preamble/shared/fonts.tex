@@ -10,6 +10,26 @@
 \setsansfont{PingFang SC}[BoldFont={PingFang SC Semibold}]
 \setCJKmainfont{Songti SC}[BoldFont={Songti SC Bold},ItalicFont={Songti SC}]
 \setCJKsansfont{PingFang SC}[BoldFont={PingFang SC Semibold}]
+% 宋体正文的双引号改用当前西文正文字形（用户确认），输入仍为 Unicode “”。
+% 跟随 NFSS 字体族选择：粗体/斜体保留规则，苹方与 Maple（含自定义代码字体）恢复原分类。
+% 保存 xeCJK 已分配的类号，不硬编码；半角左右标点类取自西文圆括号。
+% 不在 selectfont 中反复调用 xeCJKDeclareCharClass：它会全局追加字符范围表。
+% 这里只作局部 XeTeXcharclass 赋值，嵌套字体分组结束时自然恢复外层分类。
+\makeatletter
+\chardef\BookQuoteFullLeft=\XeTeXcharclass"201C
+\chardef\BookQuoteFullRight=\XeTeXcharclass"201D
+\chardef\BookQuoteHalfLeft=\XeTeXcharclass`\(
+\chardef\BookQuoteHalfRight=\XeTeXcharclass`\)
+\newcommand{\BookSelectQuoteClass}{%
+  \ifx\f@family\rmdefault
+    \XeTeXcharclass"201C=\BookQuoteHalfLeft
+    \XeTeXcharclass"201D=\BookQuoteHalfRight
+  \else
+    \XeTeXcharclass"201C=\BookQuoteFullLeft
+    \XeTeXcharclass"201D=\BookQuoteFullRight
+  \fi}
+\AddToHook{selectfont}[book/quotes]{\BookSelectQuoteClass}
+\makeatother
 % 单色符号使用项目内的静态字体；标题中也保持常规直立字重。
 % 只映射原稿实际使用的两个字符，不更改正文或全局字符分类。
 \newfontfamily\BookSymbolFont{NotoEmoji-Regular.ttf}[

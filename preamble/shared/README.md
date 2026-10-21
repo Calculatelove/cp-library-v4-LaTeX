@@ -6,7 +6,7 @@
 
 | 文件 | 内容 | 载入的版本 |
 | --- | --- | --- |
-| `fonts.tex` | 正文与导航字体，单色符号（⭐、🚩）映射，数学字体与 `\mathrm`，行内等宽与代码块字体（`fontfamily=bookcode`） | 三版 |
+| `fonts.tex` | 正文与导航字体、随字体族切换的双引号分类，单色符号（⭐、🚩）映射，数学字体与 `\mathrm`，行内等宽与代码块字体（`fontfamily=bookcode`） | 三版 |
 | `colors.tex` | 页眉页脚灰、目录点线、代码四色、扉页文字与细框 | 三版 |
 | `toc.tex` | 关闭标题自动编号，目录深度与书签，目录条目排版（`\BookTOCEntry`） | 三版 |
 | `twocolumn.tex` | 启动双栏、通栏目录标题、页顶所在章的页眉（`\BookChapterAnchor`）、图片按栏宽解释 `\textwidth` | 横版、代码版 |

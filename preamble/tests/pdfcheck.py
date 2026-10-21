@@ -6,7 +6,7 @@
   to_pt() 把 bp 换算回 TeX pt。不再使用含义容易混淆的 PT 常量。
 - 几何常量：竖版的页眉线，横版与代码版共用的页眉线、正文下缘与栏分界；代码配色；读取文字行与代码文字的函数。
 - 几版共用的断言：扉页 check_titlepage、代码配色 check_code_palette、框外行号 check_code_line_numbers、
-  块间距 check_block_spacing。各版的 check.py 传入与本版布局一致的参数。
+  块间距 check_block_spacing、引号字体与断行 check_quotes。各版的 check.py 传入与本版布局一致的参数。
 """
 from contextlib import contextmanager
 from pathlib import Path
@@ -607,3 +607,74 @@ def check_block_spacing(checker, doc, baselineskip, parskip, box_before, box_aft
     close(middle - pt(0.2) - d1[2], parskip + baselineskip - 0.4, '分隔线顶边距上一行基线应为段距 + 行距 − 线宽')
     close(d2[2] - (middle + pt(0.2)), 0.4 * baselineskip + parskip + baselineskip,
           '下一行基线距分隔线底边应为 0.4 倍行距 + 段距 + 行距')
+
+def check_quotes(c, doc):
+    """按 PDF 实际字形检查引号的字体、嵌套恢复、目录与断行；不依赖 TeX 内部状态。"""
+    rows = []
+    for page in doc:
+        for block in page.get_text('rawdict')['blocks']:
+            for line in block.get('lines', []):
+                chars = [(ch['c'], span['font'], span['size'], ch['origin'])
+                         for span in line['spans'] for ch in span['chars'] if not ch['c'].isspace()]
+                if chars:
+                    rows.append((''.join(ch[0] for ch in chars), chars))
+
+    def quotes_in(phrase):
+        found = []
+        for text, chars in rows:
+            start = text.find(phrase)
+            if start >= 0:
+                found.append([ch for ch in chars[start:start + len(phrase)] if ch[0] in '“”'])
+        c.require(bool(found), f'应找到样张文字：{phrase}')
+        c.require(all(len(pair) == 2 for pair in found), f'{phrase} 的引号应成对保留')
+        return found
+
+    for word, font in {
+        '常规': 'LMRoman10-Regular', '加粗': 'LMRoman10-Bold',
+        '倾斜': 'LMRoman10-Italic', '内层': 'LMRoman10-Regular',
+        '恢复': 'LMRoman10-Regular', '码后': 'LMRoman10-Regular',
+        '项目': 'LMRoman10-Regular', '强调': 'LMRoman10-Regular',
+        '段落': 'LMRoman10-Regular', '块后': 'LMRoman10-Regular',
+        '换页': 'LMRoman10-Regular', '外层': 'PingFangHK-Regular',
+        '返回': 'PingFangHK-Regular', '引用': 'PingFangHK-Regular',
+        '标题': 'PingFangHK-Medium', '行内': 'MapleMono-NF-CN-Regular',
+        '内联': 'MapleMono-NF-CN-Regular', '粗码': 'MapleMono-NF-CN-Bold',
+        '卡片注释': 'MapleMono-NF-CN-Regular', '卡片字符串': 'MapleMono-NF-CN-Regular',
+        '注释': 'MapleMono-NF-CN-Regular', '字符串': 'MapleMono-NF-CN-Regular',
+    }.items():
+        pairs = quotes_in(f'“{word}”')
+        c.check(all(ch[1] == font for pair in pairs for ch in pair),
+                f'“{word}”的引号字体应为 {font}', [[ch[1] for ch in pair] for pair in pairs])
+
+    for level in ('二级', '三级'):
+        pairs = quotes_in(f'引号“{level}”')
+        fonts = [pair[0][1] for pair in pairs]
+        c.check(sorted(fonts) == ['LMRoman10-Regular', 'PingFangHK-Semibold'],
+                f'{level}标题用苹方、目录条目用正文引号', fonts)
+    pairs = quotes_in('引号“一级”')
+    c.check(all('PingFang' in ch[1] for pair in pairs for ch in pair),
+            '一级标题、目录与页眉的引号应都为苹方')
+    c.check(any('Regular' in pair[0][1] for pair in pairs), '应实际检验到苹方常规字重的页眉引号')
+
+    def signature(prefix):
+        matches = [chars for text, chars in rows if text.startswith(prefix)]
+        c.require(len(matches) == 1, f'应找到唯一的 {prefix} 对照行')
+        chars = matches[0][len(prefix):]
+        x0, y0 = chars[0][3]
+        return [(ch, font, round(size, 3), round(pos[0] - x0, 2), round(pos[1] - y0, 2))
+                for ch, font, size, pos in chars]
+
+    c.check(signature('新版：') == signature('参考：'),
+            '正文 Unicode 双引号应与双反引号写法具有相同字形、字号及相对位置')
+    for current, original in [('苹方现状：', '苹方对照：'), ('代码现状：', '代码对照：')]:
+        c.check(signature(current) == signature(original),
+                f'{current}应保留原分类的字形与间距')
+    old = quotes_in('原样：总工作量由“叶子层”主导。')
+    c.check(all('Songti' in ch[1] for pair in old for ch in pair), '原样对照应仍为宋体引号')
+    for text, _ in rows:
+        c.check(not text.endswith('“') and not text.startswith('”'),
+                '开引号不能独占行尾，闭引号不能独占行首', text)
+    single = [ch for _, chars in rows for ch in chars if ch[0] in '‘’']
+    c.check(len(single) == 2 and all('Songti' in ch[1] for ch in single), '中文单引号保持宋体')
+    c.check([entry[1] for entry in doc.get_toc()] == ['引号“一级”', '引号“二级”', '引号“三级”'],
+            '书签应保留 Unicode 双引号及标题文本', doc.get_toc())
