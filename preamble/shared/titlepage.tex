@@ -1,4 +1,4 @@
-% 三版共用的扉页：书名、英文书名、作者、配图与 Last commit；设了版本标记时悬挂在书名右侧。
+% 三版共用的扉页：书名、英文书名、作者、配图，以及底部的仓库地址与 Last commit；设了版本标记时悬挂在书名右侧。
 % 由各版布局在 shared/fonts.tex、shared/colors.tex 之后 \input，再用 \TitlePageSetup 给出本版的版面参数。
 % 书名、作者、英文书名、配图路径、版本标记与仓库地址由入口提供；路径均相对于项目根目录。
 % 绝对定位依赖 TikZ 的 remember picture，至少编译两轮（根目录 run.sh 已保证）。
@@ -10,8 +10,8 @@
 % 提交说明原样输出：此字体族不启用 TeX 连字，-- 等不会被替换。
 \newfontfamily\BookTitlePagePlainLatin{PingFang SC}
 
-% 版面参数：以纸张中心为原点，书名、英文书名、作者的基线，配图区中心，提交信息底边的纵向位置，
-% 以及配图区的宽和高。配图在配图区内等比缩放后居中；标题区与提交信息的位置不随图片比例变化。
+% 版面参数：以纸张中心为原点，书名、英文书名、作者的基线，配图区中心，底部信息区底边的纵向位置，
+% 以及配图区的宽和高。配图在配图区内等比缩放后居中；标题区与底部信息区的位置不随图片比例变化。
 % 各版布局须给出全部 7 项，缺少时编译报错；数值按原文交给 TikZ 与 \setlength，不预先换算。
 \newlength{\BookTitlePageImageWidth}
 \newlength{\BookTitlePageImageHeight}
@@ -51,8 +51,9 @@
   \ifx\@author\BookTitlePage@DefaultAuthor\else\hypersetup{pdfauthor={\@author}}\fi}
 \makeatother
 
-% 仓库地址：设置后，提交哈希链接到 GitHub 上的该提交“<仓库地址>/commit/<短哈希>”，外观不变（hidelinks）。
-% 地址不带末尾的 /，按原样读取，~ _ % 等字符不需转义；不写或参数为空时哈希不加链接。
+% 仓库地址：设置后，底部信息区首行为 GitHub 标志加地址，整行链接到仓库；提交哈希链接到 GitHub 上的
+% 该提交“<仓库地址>/commit/<短哈希>”，外观不变（hidelinks）。地址不带末尾的 /，按原样读取，
+% ~ _ % 等字符不需转义；不写或参数为空时没有地址行，哈希也不加链接。
 \ExplSyntaxOn
 \str_new:N \g__book_titlepage_repository_str
 \NewDocumentCommand \RepositoryURL { v }
@@ -97,29 +98,75 @@
   }
 % 默认读取本次编译的 <jobname>.commit；样张可在 \maketitle 前改读其他文件。
 \AtBeginDocument { \TitlePageReadCommit { \c_sys_jobname_str .commit } }
-\NewDocumentCommand \BookTitlePageIfCommitTF { +m +m }
-  { \bool_if:NTF \g__book_titlepage_commit_bool {#1} {#2} }
-% 眉题式三行：眉题“LAST COMMIT”；日期与哈希，dirty 时附圆角细框标签；提交说明。
-% 不用分隔符串联，依靠换行、留白及字体差异区分标签与数值。
-% 设了仓库地址时，只有哈希本身是链接；dirty 时同样链接到所基于的提交。
-\NewDocumentCommand \BookTitlePageCommitText { }
+% 有提交信息或设了仓库地址时，排底部信息区。
+\NewDocumentCommand \BookTitlePageIfStampTF { +m +m }
   {
-    { \BookTitlePageEyebrow \fontsize { 6.5 } { 8 } \selectfont LAST ~ COMMIT } \\ [ 1.5pt ]
-    { \ttfamily \str_use:N \g__book_titlepage_date_str }
-    \hspace { 0.8em }
-    { \ttfamily \color { BookTitlePageAccent }
-      \str_if_empty:NTF \g__book_titlepage_repository_str
-        { \str_use:N \g__book_titlepage_hash_str }
-        {
-          \exp_args:Ne \href
-            { \g__book_titlepage_repository_str / commit / \g__book_titlepage_hash_str }
+    \bool_lazy_or:nnTF
+      { \g__book_titlepage_commit_bool }
+      { ! \str_if_empty_p:N \g__book_titlepage_repository_str }
+      {#1} {#2}
+  }
+% 仓库地址行（用户确认）：Nerd Fonts 的 GitHub 标志 oct-mark_github 加去掉开头 https:// 的地址，
+% 与日期同为等宽次要灰；整行链接到仓库，标志与地址作为整体居中。标志取自等宽字体，字形宽 1 em，
+% 步进却只有 0.6 em，所以放进 1 em 宽的盒子，再空 0.45 em 接地址。
+\str_new:N \l__book_titlepage_repository_text_str
+\cs_new_protected:Npn \__book_titlepage_repository_line:
+  {
+    \str_set_eq:NN \l__book_titlepage_repository_text_str \g__book_titlepage_repository_str
+    \str_if_eq:eeT
+      { \str_range:Nnn \l__book_titlepage_repository_text_str { 1 } { 8 } } { https:// }
+      {
+        \str_set:Ne \l__book_titlepage_repository_text_str
+          { \str_range:Nnn \l__book_titlepage_repository_text_str { 9 } { -1 } }
+      }
+    \exp_args:Ne \href { \g__book_titlepage_repository_str }
+      {
+        \ttfamily
+        \makebox [ 1em ] [ l ] { \symbol { "F408 } }
+        \hspace { 0.45em }
+        \str_use:N \l__book_titlepage_repository_text_str
+      }
+  }
+% 底部信息区：设了仓库地址时首行为地址行；有提交信息时其下为眉题式三行：眉题“LAST COMMIT”；
+% 日期与哈希，dirty 时附圆角细框标签；提交说明。不用分隔符串联，依靠换行、留白及字体差异区分标签与数值。
+% 只有哈希本身链接到提交；dirty 时同样链接到所基于的提交。
+% 间距（用户确认）：行高 11 pt；地址行到眉题的基线间距为 1.5 倍行高，眉题与它标注的两行按行高排成一组，
+% 组间空白约为组内的 2 倍。dirty 时标签细框高出数字约 1 pt、低于基线约 2 pt，日期行上下各补足这么多，
+% 使细框上下的空白与没有标签时接近。
+\bool_new:N \l__book_titlepage_dirty_bool
+\NewDocumentCommand \BookTitlePageStampText { }
+  {
+    \str_if_empty:NF \g__book_titlepage_repository_str
+      {
+        \__book_titlepage_repository_line:
+        \bool_if:NT \g__book_titlepage_commit_bool { \\ [ 5.5pt ] }
+      }
+    \bool_if:NT \g__book_titlepage_commit_bool
+      {
+        \str_if_eq:VnTF \g__book_titlepage_state_str { dirty }
+          { \bool_set_true:N \l__book_titlepage_dirty_bool }
+          { \bool_set_false:N \l__book_titlepage_dirty_bool }
+        { \BookTitlePageEyebrow \fontsize { 6.5 } { 8 } \selectfont LAST ~ COMMIT }
+        \bool_if:NTF \l__book_titlepage_dirty_bool { \\ [ 1pt ] } { \\ }
+        { \ttfamily \str_use:N \g__book_titlepage_date_str }
+        \hspace { 0.8em }
+        { \ttfamily \color { BookTitlePageAccent }
+          \str_if_empty:NTF \g__book_titlepage_repository_str
             { \str_use:N \g__book_titlepage_hash_str }
+            {
+              \exp_args:Ne \href
+                { \g__book_titlepage_repository_str / commit / \g__book_titlepage_hash_str }
+                { \str_use:N \g__book_titlepage_hash_str }
+            }
         }
-    }
-    \str_if_eq:VnT \g__book_titlepage_state_str { dirty }
-      { \hspace { 0.6em } \usebox \BookTitlePageDirtyBox }
-    \str_if_empty:NF \g__book_titlepage_subject_str
-      { \\ \BookTitlePagePlainLatin \str_use:N \g__book_titlepage_subject_str }
+        \bool_if:NT \l__book_titlepage_dirty_bool
+          { \hspace { 0.6em } \usebox \BookTitlePageDirtyBox }
+        \str_if_empty:NF \g__book_titlepage_subject_str
+          {
+            \bool_if:NTF \l__book_titlepage_dirty_bool { \\ [ 2pt ] } { \\ }
+            \BookTitlePagePlainLatin \str_use:N \g__book_titlepage_subject_str
+          }
+      }
   }
 \ExplSyntaxOff
 % 未提交修改标签：0.4 pt 浅灰圆角细框，与代码卡片同一视觉语言。
@@ -131,7 +178,7 @@
       inner xsep=1.3mm,inner ysep=0.45mm,text=BookTitlePageInk,
       font=\sffamily\fontsize{6.5}{8}\selectfont] (tag) {含未提交修改};}}
 
-% 版面以纸张中心为原点：标题区在上，配图居中偏下，提交信息贴近底边；双栏正文不影响绝对定位的扉页。
+% 版面以纸张中心为原点：标题区在上，配图居中偏下，底部信息区贴近底边；双栏正文不影响绝对定位的扉页。
 % 版本标记（用户确认，2026-10-15）：全角括号、苹方常规体 22 pt（书名字号的一半）、
 % 次要灰，与书名同基线，悬挂在书名右侧、不参与居中；书名仍以页面中轴居中，
 % 与英文书名、作者对齐。
@@ -163,12 +210,12 @@
           width=\BookTitlePageImageWidth,height=\BookTitlePageImageHeight,
           keepaspectratio]{\BookTitlePage@Image}};
       \fi
-      % 底边对齐：提交说明换行时向上增长，不进入下边距。
+      % 底边对齐：整块从底边向上排，地址行在提交信息之上，提交说明换行也向上增长，不进入下边距。
       % flush center 使用 fil 胶居中；align=center 的有限伸缩会拉开 xeCJK 字距。
-      \BookTitlePageIfCommitTF{%
+      \BookTitlePageIfStampTF{%
         \node[anchor=south,inner sep=0pt,text width=150mm,align=flush center,
           text=BookTitlePageSecondary,font=\sffamily\fontsize{8}{11}\selectfont]
-          at (0,\BookTitlePageStampY) {\BookTitlePageCommitText};
+          at (0,\BookTitlePageStampY) {\BookTitlePageStampText};
       }{}%
     \end{scope}
   \end{tikzpicture}%

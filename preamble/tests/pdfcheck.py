@@ -286,6 +286,9 @@ def check_titlepage(checker, path, hint, setup, *, landscape, side, bottom, head
     image、stamp 与 image_width、image_height。landscape 表示 A4 横向；side、bottom 为左右与下边距（mm）；
     header_bottom 为页眉文字区的下缘（bp）。marker 为第 1、2 页书名后悬挂的版本标记；body_header 为
     第 4 页页眉应含的文字，为 None 时不查第 4 页的页眉。
+
+    底部信息区：第 1 页为地址行加三行提交信息（clean），第 2 页清空了仓库地址、只有提交信息（dirty），
+    第 3 页没有提交信息、只有地址行。各页的文字行依次为标题区三行、底部信息区各行。
     """
     title, author = TITLEPAGE_ROWS[0][0], TITLEPAGE_ROWS[2][0]
     pages = []
@@ -309,6 +312,12 @@ def check_titlepage(checker, path, hint, setup, *, landscape, side, bottom, head
 
     cx, cy = width / 2, height / 2
     stamp_south = cy - mm(setup['stamp'])
+    # 第 1、2 页眉题所在的行：第 1 页的眉题之上还有地址行。
+    eyebrow_at = (4, 3)
+
+    def row_top(row):
+        """一行文字的大致上缘：基线向上一个字号（GitHub 标志高约 0.85 em，也在其内）。"""
+        return row['y'] - max(s['size'] for s in row['spans'])
 
     with checker.section('titlepage：纸张与标题区'):
         paper = (A4_LONG, A4_SHORT) if landscape else (A4_SHORT, A4_LONG)
@@ -366,20 +375,44 @@ def check_titlepage(checker, path, hint, setup, *, landscape, side, bottom, head
                           f'第 {number + 1} 页配图尺寸', (x1 - x0, y1 - y0))
             checker.check(abs((x0 + x1) / 2 - cx) < 0.5 and abs((y0 + y1) / 2 - center) < 0.5,
                           f'第 {number + 1} 页配图中心', ((x0 + x1) / 2, (y0 + y1) / 2))
-            stamp_top = pages[number][3]['y'] - pt(6.5)
+            stamp_top = row_top(pages[number][3])
             checker.check(pages[number][2]['y'] < y0 and y1 < stamp_top,
-                          f'第 {number + 1} 页配图不应与标题区、提交信息重叠', (y0, y1, stamp_top))
+                          f'第 {number + 1} 页配图不应与标题区、底部信息区重叠', (y0, y1, stamp_top))
         checker.check(images[2] == [], '第 3 页不应有配图', images[2])
-        # 配图区域本身也不与标题区、提交信息相交（区域上缘在作者基线之下，下缘在眉题之上）。
+        # 配图区域本身也不与标题区、底部信息区相交（区域上缘在作者基线之下，下缘在底部信息区首行之上）。
         area_top, area_bottom = center - mm(h / 2), center + mm(h / 2)
-        checker.check(pages[0][2]['y'] < area_top and area_bottom < pages[0][3]['y'] - pt(6.5),
-                      '配图区域不应与标题区、提交信息相交', (area_top, area_bottom))
+        checker.check(pages[0][2]['y'] < area_top and area_bottom < row_top(pages[0][3]),
+                      '配图区域不应与标题区、底部信息区相交', (area_top, area_bottom))
+
+    with checker.section('titlepage：仓库地址行'):
+        # 第 1、3 页设了仓库地址：底部信息区首行为 GitHub 标志（U+F408）加去掉 https:// 的地址，
+        # 8 pt Maple Mono、次要灰，标志放在 1 em 宽的盒子里、再空 0.45 em 接地址，两者作为整体居中；
+        # 整行链接到仓库，无边框。第 2 页清空了仓库地址，眉题之上就是作者行（见“眉题式提交信息”）。
+        shown = TITLEPAGE_REPOSITORY[len('https://'):]
+        for number in (0, 2):
+            row = pages[number][3]
+            checker.check(compact(row['text']) == '\uf408' + shown, f'第 {number + 1} 页地址行文字', row['text'])
+            checker.require(len(row['spans']) == 2, f'第 {number + 1} 页地址行应由标志与地址两段组成',
+                            [s['text'] for s in row['spans']])
+            icon, text = row['spans']
+            checker.check(all('MapleMono' in s['font'] and abs(s['size'] - pt(8)) < 0.05 and s['color'] == 0x6E6E73
+                              for s in row['spans']), '标志与地址应为 8 pt Maple Mono、次要灰',
+                          [(s['font'], round(s['size'], 2), f"{s['color']:06X}") for s in row['spans']])
+            checker.check(abs(text['bbox'][0] - icon['bbox'][0] - 1.45 * pt(8)) < 0.3, '地址应在标志起点后 1.45 em',
+                          icon['bbox'], text['bbox'])
+            checker.check(abs((row['x0'] + row['x1']) / 2 - cx) < 0.5, '标志与地址应作为整体居中', row['x0'], row['x1'])
+            repo = [link for link in links[number] if link[0] == TITLEPAGE_REPOSITORY]
+            checker.require(len(repo) == 1, f'第 {number + 1} 页应有一个指向仓库的链接', links[number])
+            _, area, border = repo[0]
+            checker.check(abs(area.x0 - row['x0']) < 0.5 and abs(area.x1 - row['x1']) < 0.5 and area.y0 < row['y'] < area.y1,
+                          '仓库链接应覆盖标志与地址整行', area, (row['x0'], row['y'], row['x1']))
+            checker.check(compact(border) == '[000]', '仓库链接不应有边框', border)
 
     with checker.section('titlepage：眉题式提交信息'):
         # 眉题、日期与哈希、提交说明各占一行，不使用“·”等分隔符。
         for number, (date, digest, dirty) in enumerate((('2026-10-15', '0123abc', False),
                                                        ('2026-10-15', 'abcdef0', True))):
-            eyebrow, ident = pages[number][3], pages[number][4]
+            eyebrow, ident = pages[number][eyebrow_at[number]], pages[number][eyebrow_at[number] + 1]
             span = eyebrow['spans'][0]
             checker.check(compact(eyebrow['text']) == 'LASTCOMMIT', f'第 {number + 1} 页眉题文字', eyebrow['text'])
             checker.check('PingFang' in span['font'] and 'Medium' in span['font'], '眉题应为苹方 Medium', span['font'])
@@ -417,37 +450,49 @@ def check_titlepage(checker, path, hint, setup, *, landscape, side, bottom, head
                 checker.check(abs((ident['x0'] + ident['x1']) / 2 - cx) < 0.5, '日期与哈希行应水平居中',
                               ident['x0'], ident['x1'])
 
+    with checker.section('titlepage：底部信息区间距'):
+        # 基线间距（TeX pt）：行高 11 pt；地址行到眉题 16.5 pt（1.5 倍行高），眉题到日期、日期到提交说明各 11 pt。
+        # 第 2 页含未提交修改，日期行上补 1 pt、下补 2 pt：眉题到日期 12 pt，日期到提交说明 13 pt，说明换行后仍为 11 pt。
+        expected = {0: [16.5, 11, 11], 1: [12, 13] + [11] * (len(pages[1]) - 6)}
+        for number, gaps in expected.items():
+            ys = [row['y'] for row in pages[number][3:]]
+            got = [to_pt(b - a) for a, b in zip(ys, ys[1:])]
+            checker.check(len(got) == len(gaps) and all(abs(g - e) < 0.1 for g, e in zip(got, gaps)),
+                          f'第 {number + 1} 页底部信息区的基线间距应为 {gaps} pt', [round(g, 2) for g in got])
+
     with checker.section('titlepage：提交哈希链接'):
-        # 第 1 页设了仓库地址：只有哈希是链接，指向“<仓库地址>/commit/<短哈希>”，无边框，区域与哈希字框一致。
-        # 第 2 页清空了仓库地址，第 3 页没有提交信息：都不应有链接。哈希的字体与颜色不变，见上一小节。
-        checker.require(len(links[0]) == 1, '第 1 页应恰有一个链接', links[0])
-        uri, area, border = links[0][0]
+        # 第 1 页设了仓库地址：除地址行外只有哈希是链接，指向“<仓库地址>/commit/<短哈希>”，无边框，
+        # 区域与哈希字框一致。第 2 页清空了仓库地址，没有链接；第 3 页没有提交信息，只有地址行的链接。
+        # 哈希的字体与颜色不变，见“眉题式提交信息”。
+        commit = [link for link in links[0] if link[0] != TITLEPAGE_REPOSITORY]
+        checker.require(len(links[0]) == 2 and len(commit) == 1, '第 1 页应有仓库与哈希两个链接', links[0])
+        uri, area, border = commit[0]
         checker.check(uri == f'{TITLEPAGE_REPOSITORY}/commit/0123abc', '哈希的链接地址', uri)
         checker.check(compact(border) == '[000]', '链接不应有边框', border)
         checker.require(len(hash_boxes) == 1, '第 1 页应找到一处哈希', hash_boxes)
         checker.check(all(abs(a - b) < 0.5 for a, b in zip(area, hash_boxes[0])), '链接区域应与哈希字框一致',
                       area, hash_boxes[0])
-        for number in (1, 2):
-            checker.check(links[number] == [], f'第 {number + 1} 页不应有链接', links[number])
+        checker.check(links[1] == [], '第 2 页不应有链接', links[1])
+        checker.check([link[0] for link in links[2]] == [TITLEPAGE_REPOSITORY], '第 3 页只应有仓库链接', links[2])
 
     with checker.section('titlepage：提交说明原样输出与换行'):
         # 第 1 页：特殊字符原样输出（`--` 不被替换为连接号），提交说明为苹方。
-        second = pages[0][5]
+        second = pages[0][eyebrow_at[0] + 2]
         checker.check(compact(second['text']) == compact(commit_subject('titlepage-special.commit')),
                       '第 1 页提交说明应原样输出', second['text'])
         checker.check('--' in second['text'] and '–' not in second['text'], '`--` 不应被替换为连接号', second['text'])
         checker.check(all('PingFang' in s['font'] for s in second['spans']), '提交说明应为苹方',
                       [s['font'] for s in second['spans']])
-        checker.check(len(pages[0]) == 6, '第 1 页应共 6 行', [r['text'] for r in pages[0]])
+        checker.check(len(pages[0]) == 7, '第 1 页应共 7 行', [r['text'] for r in pages[0]])
         # 第 2 页：超长说明居中换行，整体向上增长、底边不变。
-        rest = pages[1][5:]
+        rest = pages[1][eyebrow_at[1] + 2:]
         checker.check(len(rest) >= 2, '第 2 页超长说明应换行', [r['text'] for r in rest])
         long_subject = commit_subject('titlepage-long-dirty.commit')
         checker.check(compact(''.join(r['text'] for r in rest)) == compact(long_subject), '第 2 页提交说明应完整')
         checker.check(all(abs((r['x0'] + r['x1']) / 2 - cx) < 1 for r in rest), '换行后每行都应居中',
                       [(r['x0'], r['x1']) for r in rest])
-        checker.check(pages[1][3]['y'] < pages[0][3]['y'], '超长说明应使提交信息整体向上增长',
-                      pages[1][3]['y'], pages[0][3]['y'])
+        checker.check(pages[1][eyebrow_at[1]]['y'] < pages[0][eyebrow_at[0]]['y'], '超长说明应使提交信息整体向上增长',
+                      pages[1][eyebrow_at[1]]['y'], pages[0][eyebrow_at[0]]['y'])
 
     with checker.section('titlepage：字距与底边'):
         # 居中不拉开字距：汉字步进等于字号（短行也不把 xeCJK 字间胶撑开）。
@@ -455,18 +500,18 @@ def check_titlepage(checker, path, hint, setup, *, landscape, side, bottom, head
             checker.check(advances[number], f'第 {number + 1} 页应找到相邻汉字')
             checker.check(all(abs(step - size) < 0.1 for step, size in advances[number]),
                           f'第 {number + 1} 页居中不应拉开字距', advances[number][:5])
-        # 提交信息贴近底边：末行基线位于底边以上 3 bp 内，且不进入下边距。
-        for number in range(2):
+        # 底部信息区贴近底边：末行基线位于底边以上 3 bp 内，且不进入下边距；第 3 页只有地址行，同样贴近底边。
+        for number in range(3):
             last = pages[number][-1]
-            checker.check(stamp_south - 3 < last['y'] <= stamp_south, f'第 {number + 1} 页提交信息末行应贴近底边',
+            checker.check(stamp_south - 3 < last['y'] <= stamp_south, f'第 {number + 1} 页底部信息区末行应贴近底边',
                           last['y'], stamp_south)
             checker.check(last['bottom'] <= height - mm(bottom),
-                          f'第 {number + 1} 页提交信息不应进入 {bottom} mm 下边距', last['bottom'])
+                          f'第 {number + 1} 页底部信息区不应进入 {bottom} mm 下边距', last['bottom'])
 
     with checker.section('titlepage：无提交信息与正文页'):
-        # 第 3 页：提交信息文件不存在、未设版本标记时只显示标题区。
-        checker.check([r['text'] for r in pages[2]] == [row[0] for row in TITLEPAGE_ROWS], '第 3 页只应显示标题区',
-                      [r['text'] for r in pages[2]])
+        # 第 3 页：提交信息文件不存在、未设版本标记，标题区之外只有地址行（见“仓库地址行”）。
+        checker.check([r['text'] for r in pages[2][:3]] == [row[0] for row in TITLEPAGE_ROWS] and len(pages[2]) == 4,
+                      '第 3 页应只有标题区与地址行', [r['text'] for r in pages[2]])
         # 第 4 页：扉页之后照常显示页码；给出 body_header 时，页眉也应恢复。
         if body_header is not None:
             checker.check(body_header in headers[3], '第 4 页页眉应恢复', headers[3])
