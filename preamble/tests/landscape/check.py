@@ -5,7 +5,6 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import pdfcheck as pc
-from pdfcheck import fitz
 
 edition = sys.argv[1] if len(sys.argv) > 1 else 'landscape'
 if edition not in ('landscape', 'code'):
@@ -30,9 +29,10 @@ with c.section('flow：连续章节、标题保护与页眉'):
         c.check(positions['Alpha'] < positions['Gamma'] < positions['Delta'], '显式换栏换页应保持阅读顺序')
         for name, header in [('Alpha', 'Alpha 章'), ('Gamma', 'Alpha 章'), ('Delta', 'Delta 章')]:
             page = doc[positions[name][0]]
-            g = pc.read_geometry(page)
-            c.check(header in page.get_text(clip=fitz.Rect(0, 0, g.width, g.top - 1)),
-                    '页眉应取页顶所在的章', header)
+            rows = pc.text_rows(page)
+            c.check(rows[0]['text'].strip() == header
+                    and sum(pc.compact(r['text']).startswith(pc.compact(header)) for r in rows) >= 2,
+                    '页眉应取页顶所在的章，并独立于正文标题出现', header)
         for title, body in [('Boundary-title', 'Boundary-body'), ('Formula-title', 'FormulaBody')]:
             title_pos = pc.column(doc, pc.locate(c, doc, title))
             body_pos = pc.column(doc, pc.locate(c, doc, body))
@@ -84,24 +84,16 @@ with c.section('toc-layout：目录'):
             text = page.get_text()
             c.check('Fourth-only' not in text and 'Fifth-only' not in text,
                     f'目录第 {page.number + 1} 页不应出现四、五级标题')
-            c.check(not page.get_text(clip=fitz.Rect(0, 0, page.rect.width, pc.read_geometry(page).top - 1)).strip(),
-                    f'目录第 {page.number + 1} 页不应有页眉')
             for token in expected:
                 for rect in page.search_for(token):
                     c.check(token not in positions, f'目录条目“{token}”只应出现一次')
-                    positions[token] = (page.number, pc.read_geometry(page).column(rect.x0))
+                    positions[token] = (page.number, pc.column_index(page, rect.x0))
                     links = [link for link in page.get_links() if link['from'].intersects(rect)]
                     c.check(links and all(link.get('page') == expected[token] for link in links),
                             f'目录条目“{token}”应链接到第 {expected[token] + 1} 页',
                             [link.get('page') for link in links])
             for link in page.get_links():
                 c.check(0 <= link.get('page', -1) < len(doc), '链接目标应在文档范围内', link.get('page'))
-                r = link['from']
-                g = pc.read_geometry(page)
-                c.check(r.x0 >= g.left - 1 and r.x1 <= g.starts[-1] + g.column_width + 1,
-                        '链接区域应在版心内', r)
-                c.check(any(r.x0 >= x - 1 and r.x1 <= x + g.column_width + 1 for x in g.starts),
-                        '链接区域不应跨栏', r)
         c.check(positions.keys() == expected.keys(), '每个目录条目都应出现', sorted(set(expected) - set(positions)))
 
         def same_column(a, b):

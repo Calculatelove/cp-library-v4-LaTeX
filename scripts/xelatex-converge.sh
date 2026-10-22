@@ -48,7 +48,7 @@ console="$output_dir/$job-console.txt"
 for ((pass = 1; pass <= max_passes; pass++)); do
     if [[ "$quiet" == true ]]; then
         if ! xelatex -interaction=nonstopmode -halt-on-error -file-line-error \
-            -output-directory="$output_dir" -jobname="$job" "\input{scripts/pdf-metadata.tex}\input{${source_file}}" > "$console" 2>&1; then
+            -output-directory="$output_dir" "$source_file" > "$console" 2>&1; then
             tail -40 "$console" >&2
             printf '\n%s 编译失败，请检查 %s/%s.log。\n' "$job" "$output_dir" "$job" >&2
             exit 1
@@ -56,7 +56,7 @@ for ((pass = 1; pass <= max_passes; pass++)); do
     else
         printf '\n正在编译 %s（第 %s/%s 轮）……\n' "$source_file" "$pass" "$max_passes"
         if ! xelatex -interaction=nonstopmode -halt-on-error -file-line-error \
-            -output-directory="$output_dir" -jobname="$job" "\input{scripts/pdf-metadata.tex}\input{${source_file}}"; then
+            -output-directory="$output_dir" "$source_file"; then
             printf '\n%s 编译失败，请检查 %s/%s.log。\n' "$job" "$output_dir" "$job" >&2
             exit 1
         fi

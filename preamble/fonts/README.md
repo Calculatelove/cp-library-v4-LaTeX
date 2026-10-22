@@ -25,4 +25,4 @@ font.save("NotoEmoji-Regular.ttf")
 
 静态实例避免依赖 XeLaTeX 对可变字重的选择。常规、粗体、斜体、粗斜体都绑定这个文件，符号随字号缩放，继承文字颜色。目前只映射上述两个单码位，不承诺支持复合 emoji、变体选择符，或 minted 代码中的 emoji。更新字体后，须重新核对字形覆盖、PDF 嵌入与文字提取。
 
-Noto Emoji 的空格字形宽 2600/2048 em，不能直接用作中文与符号之间的间隔。`../shared/fonts.tex` 在符号命令内部把 CJKecglue 设为 0.25em，避免切换字体时出现宽空白。
+Noto Emoji 的空格字形过宽，不能直接用作中文与符号之间的间隔。`../shared/fonts.tex` 在符号命令内部设置 CJKecglue，避免切换字体时出现宽空白。

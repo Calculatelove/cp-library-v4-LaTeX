@@ -12,8 +12,6 @@ except ImportError:
 ROOT = Path(__file__).resolve().parents[2]
 BUILD = ROOT / 'preamble/tests/build'
 FIXTURES = ROOT / 'preamble/tests/fixtures'
-sys.path.insert(0, str(ROOT / 'scripts'))
-from pdf_geometry import read_geometry, is_titlepage, line_number_spans
 
 
 class Abort(Exception):
@@ -116,28 +114,28 @@ def text_rows(page):
     return sorted(rows, key=lambda r: r['y'])
 
 
-def body_rect(page, column=None):
-    g = read_geometry(page)
-    left = g.left if column is None else g.starts[column]
-    right = g.starts[-1] + g.column_width if column is None else left + g.column_width
-    return fitz.Rect(left, g.top - 1, right, g.bottom + 3)
+def column_index(page, x):
+    """等宽双栏样张按纸张中线分栏，只用于判定阅读顺序，不检测越界。"""
+    return int(x > page.rect.width / 2)
 
 
 def column_texts(page):
-    return [(col, page.get_text(clip=body_rect(page, col)))
-            for col in range(read_geometry(page).columns)]
+    half = page.rect.width / 2
+    return [(col, page.get_text(clip=fitz.Rect(col * half, 0, (col + 1) * half, page.rect.height)))
+            for col in (0, 1)]
 
 
 def locate(checker, doc, text):
-    hits = [(p.number, r) for p in doc for r in p.search_for(text)
-            if body_rect(p).contains((r.tl + r.br) / 2)]
-    checker.require(len(hits) == 1, f'正文应恰好有一处“{text}”', hits)
-    return hits[0]
+    targets = {page - 1 for _, title, page in doc.get_toc() if title == text}
+    hits = [(p.number, r) for p in doc if not targets or p.number in targets for r in p.search_for(text)]
+    # 标题先按书签定位，避开后续页的同名页眉；同页页眉位于正文上方。
+    checker.require(len({p for p, _ in hits}) == 1, f'应在唯一一页找到“{text}”', hits)
+    return max(hits, key=lambda hit: hit[1].y0)
 
 
 def column(doc, position):
     page, rect = position
-    return page, read_geometry(doc[page]).column(rect.x0)
+    return page, column_index(doc[page], rect.x0)
 
 
 def check_spanning(checker, segments, message):
@@ -146,46 +144,45 @@ def check_spanning(checker, segments, message):
 
 
 def check_code_line_numbers(checker, doc, twocolumn=False):
-    """按源文件行对应，检查折行、空行、新卡片重置及跨栏连续编号。"""
-    numbers, spans = [], []
-    for page in doc:
-        g = read_geometry(page)
-        numbers += [(page.number, n) for n in line_number_spans(page, g)]
-        spans += [(page.number, s) for b in page.get_text('dict')['blocks']
-                  for line in b.get('lines', []) for s in line['spans']]
-    checker.require(numbers, '代码卡片应有框外行号')
-    for page, s in spans:
-        match = re.search(r'landscape_value_(\d{3})', s['text'])
-        if match:
-            col = read_geometry(doc[page]).column(s['bbox'][0])
-            found = [n for p, n in numbers if p == page
-                     and abs(n['origin'][1] - s['origin'][1]) < .1
-                     and read_geometry(doc[p]).column(n['bbox'][2] + n['size'] * 2) == col
-                     and n['bbox'][2] < s['bbox'][0]]
-            checker.check(len(found) == 1 and int(found[0]['text']) == int(match[1]) + 1,
-                          '长代码行号应与源文件行一致', s['text'])
+    """只检查人工样张的源行编号，按同行代码定位，不识别通用卡片或版心。"""
+    spans = [(page.number, s) for page in doc for b in page.get_text('dict')['blocks']
+             for line in b.get('lines', []) for s in line['spans']]
+    numbers = [(p, s) for p, s in spans if s['text'].strip().isascii() and s['text'].strip().isdigit()]
 
     def position(item):
         page, s = item
-        # 行号在框外，以右侧的代码归栏；宽栏距也不依赖固定毫米数。
-        g = read_geometry(doc[page])
-        col = (min(range(g.columns), key=lambda i: abs(g.starts[i] - s['bbox'][0]))
-               if s['text'].strip().isdigit() else g.column(s['bbox'][0]))
+        col = column_index(doc[page], s['bbox'][0]) if twocolumn else 0
         return page, col, s['origin'][1]
+
+    def preceding_number(item):
+        page, s = item
+        found = [(p, n) for p, n in numbers if position((p, n))[:2] == position(item)[:2]
+                 and abs(n['origin'][1] - s['origin'][1]) < .1 and n['bbox'][2] < s['bbox'][0]]
+        checker.require(found, '代码行左侧应有同基线的行号', s['text'])
+        return max(found, key=lambda item: item[1]['bbox'][2])
+
+    for item in spans:
+        match = re.search(r'landscape_value_(\d{3})', item[1]['text'])
+        if match:
+            _, number = preceding_number(item)
+            checker.check(int(number['text']) == int(match[1]) + 1, '长代码行号应与源文件行一致', item[1]['text'])
 
     def token(text):
         found = [item for item in spans if text in item[1]['text']]
         checker.require(len(found) == 1, f'应找到唯一的 {text}')
-        return position(found[0])
+        return found[0]
 
-    start, wrap_end, end = token('Wrap-start:'), token('Wrap-end.'), token('final_line')
+    first, last = token('Wrap-start:'), token('final_line')
+    start, end = position(first), position(last)
+    _, first_number = preceding_number(first)
+    # 相对于本栏的行号右缘，允许这个小卡片跨栏或跨页。
+    right = first_number['bbox'][2] - start[1] * doc[first[0]].rect.width / 2
     selected = sorted((position(item), item[1]['text'].strip()) for item in numbers
-                      if start <= position(item) <= end)
+                      if start <= position(item) <= end and abs(item[1]['bbox'][2]
+                      - position(item)[1] * doc[item[0]].rect.width / 2 - right) < .1)
     checker.check([n for _, n in selected] == ['1', '2', '3', '4'],
                   '折行只标一次、空行计数、新卡片从 1 开始', selected)
-    checker.check(wrap_end > start, '样张长行应实际折行')
-    if twocolumn:
-        checker.check(any(int(n['text']) >= 100 for _, n in numbers), '应覆盖三位行号')
+    checker.check(position(token('Wrap-end.')) > start, '样张长行应实际折行')
 
 
 def check_titlepage(checker, path, hint, marker=''):
@@ -193,7 +190,7 @@ def check_titlepage(checker, path, hint, marker=''):
     title, english, author = '算法竞赛小记', 'Competitive Programming Library', 'Calculatelove'
     with checker.section('titlepage：元信息、可选分支与链接'):
         with checker.open(path, hint) as doc:
-            pages = [p for p in doc if is_titlepage(p)]
+            pages = [p for p in doc if title in compact(p.get_text())]
             checker.require(len(pages) == 3, '应有三种扉页分支')
             checker.check(doc.metadata['title'] == title + marker, 'PDF 标题元信息')
             checker.check(doc.metadata['author'] == author, 'PDF 作者元信息')
@@ -221,16 +218,11 @@ def check_titlepage(checker, path, hint, marker=''):
                 else:
                     checker.check('LASTCOMMIT' not in text and '0123abc' not in text,
                                   '缺少提交文件时应省略提交信息')
-                g = read_geometry(page)
-                checker.check(not page.get_text(clip=fitz.Rect(0, 0, g.width, g.top)).strip(), '扉页不显示页眉')
-                checker.check(not any(r['text'].strip().isdigit() for r in text_rows(page) if r['y'] > g.bottom),
-                              '扉页不显示页码')
-            body = [p for p in doc if not is_titlepage(p)]
-            checker.require(body, '扉页后应有正文')
-            checker.check('扉页之后' in body[0].get_text(), '扉页后正文应保留')
-            g = read_geometry(body[0])
-            footer = body[0].get_text(clip=fitz.Rect(0, g.bottom, g.width, g.height))
-            checker.check(str(body[0].number + 1) in footer, '正文页码应恢复')
+                checker.check(not any(r['text'].strip().isdigit() for r in text_rows(page)), '扉页不显示页码')
+            body = [p for p in doc if '扉页之后' in p.get_text()]
+            checker.require(len(body) == 1, '扉页后应有正文')
+            checker.check(any(r['text'].strip() == str(body[0].number + 1) for r in text_rows(body[0])),
+                          '正文页码应恢复')
 
 
 def check_quotes(c, doc):

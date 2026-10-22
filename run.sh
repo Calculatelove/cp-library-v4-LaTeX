@@ -51,7 +51,7 @@ done
 build_target() {
     local target="$1"
     local job="main-$target" output_dir="build/$target"
-    local extension commit_info
+    local commit_info
     mkdir -p "$output_dir"
 
     # 扉页提交信息：在代码版入口生成之后读取 Git 状态；不在 Git 仓库中时不生成文件。
@@ -71,11 +71,7 @@ build_target() {
         return 1
     fi
 
-    # 仅清理当前版本的已知辅助文件、提交信息文件及 minted 缓存。
-    for extension in aux log out toc lof lot fls fdb_latexmk xdv synctex.gz commit; do
-        rm -f -- "$output_dir/$job.$extension"
-    done
-    rm -rf -- "$output_dir/_minted" "$output_dir/_minted-$job"
+    # 保留辅助文件、日志与 minted 缓存，供后续构建复用及警告排查。
 }
 
 format_duration() {

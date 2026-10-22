@@ -28,37 +28,47 @@ class CheckDocsTests(unittest.TestCase):
     def test_doc_paths(self):
         """存在的、按文档目录或后缀解析的、生成的、有意不存在的路径都不报；改名或删除的路径报出行号。
         样张等 PDF 是构建产物，不检查；assets/ 下的 PDF 是素材，照常检查。"""
-        for name in ('preamble/layout-portrait.tex', 'preamble/shared/fonts.tex', 'scripts/check-full.py',
+        for name in ('preamble/layout-portrait.tex', 'preamble/shared/fonts.tex', 'scripts/generate-code.py',
                      'contents/0x10 基础/code/a.cpp', 'preamble/tests/fixtures/body.tex', 'run.sh'):
             self.write(name)
         self.write('preamble/tests/portrait/README.md', '共用 `../fixtures/body.tex`；`../fixtures/gone.tex`\n')
         self.write('preamble/README.md', '\n'.join([
-            '`layout-portrait.tex`、`shared/`、`scripts/check-full.py`、`check-full.py`、`./run.sh code`',
+            '`layout-portrait.tex`、`shared/`、`scripts/generate-code.py`、`generate-code.py`、`./run.sh code`',
             '代码在 `code/`；产物 `build/portrait/main-portrait.pdf`、`tests/build/`、`titlepage.pdf`',
             '占位与通配：`layout-<版本>.tex`、`fixtures/*-body.tex`、`\\InputCode{cpp}{contents/0x10 基础/code/a.cpp}`',
             '不创建 `setup.tex`、`docs/`；旧文件 `contents/AGENTS.md`；不带 `./`、`../` 的写法',
             '```sh',
-            'python3 scripts/check-full.py build/code/main-code.pdf',
+            'python3 scripts/generate-code.py build/code/main-code.pdf',
             'bash preamble/tests/old/run.sh',
             '```',
-            '`titlepage-portrait.tex` 与 `tests/landscape/check-full.py`',
+            '`titlepage-portrait.tex` 与 `tests/landscape/generate-code.py`',
             '素材 `assets/cover.pdf`',
         ]) + '\n')
         self.write('README.md', '`missing.tex`\n')    # 根目录 README 由用户维护，不检查
         self.assertEqual(self.run_check(c.doc_paths), [
             'preamble/README.md:7：`preamble/tests/old/run.sh` 不存在',
             'preamble/README.md:9：`titlepage-portrait.tex` 不存在',
-            'preamble/README.md:9：`tests/landscape/check-full.py` 不存在',
+            'preamble/README.md:9：`tests/landscape/generate-code.py` 不存在',
             'preamble/README.md:10：`assets/cover.pdf` 不存在',
             'preamble/tests/portrait/README.md:1：`../fixtures/gone.tex` 不存在',
         ])
 
     def test_readmes(self):
-        """contents/ 以外的目录缺 README 时报出；contents/ 及其子目录不要求。"""
+        """允许上级说明完整目录名；拒绝缺失说明与名称子串误匹配；contents/ 不要求。"""
         for name in ('preamble/README.md', 'preamble/a.tex', 'scripts/tests/test_a.py', 'scripts/README.md',
                      'contents/0x10 基础/code/a.cpp'):
             self.write(name)
-        self.assertEqual(self.run_check(c.readmes), ['scripts/tests/ 缺少 README.md'])
+        missing = ['scripts/tests/ 缺少 README.md，且直接上级 README.md 未说明该目录']
+        self.assertEqual(self.run_check(c.readmes), missing)
+        self.write('scripts/README.md', '说明 `contest-tests/`，不是目标目录。')
+        self.assertEqual(self.run_check(c.readmes), missing)
+        self.write('scripts/README.md', '`tests/` 存放工具测试。')
+        self.assertEqual(self.run_check(c.readmes), [])
+        self.write('scripts/tests/data/example.txt')
+        self.assertEqual(self.run_check(c.readmes), [
+            'scripts/tests/data/ 缺少 README.md，且直接上级 README.md 未说明该目录'])
+        self.write('scripts/tests/README.md', '`data/` 存放测试资源。')
+        self.assertEqual(self.run_check(c.readmes), [])
 
     def test_shell_variables(self):
         """$变量名 后紧跟中文标点时报出；写了花括号或后接 ASCII 字符时不报。"""

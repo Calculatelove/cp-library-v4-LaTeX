@@ -34,7 +34,7 @@
 ## 参数
 
 - 扉页：`\TitlePageSetup{title=…, english=…, author=…, image=…, stamp=…, image-width=…, image-height=…}`。前五项是以纸张中心为原点的纵向位置（书名、英文书名、作者的基线，配图区中心，底部信息区底边），后两项是配图区尺寸。7 项都必须给出，缺少时编译报错；数值按原文交给 TikZ，不预先换算。
-- 代码字号默认 8/10.5 pt；某版要不同时，在载入 `code.tex` 之后用 `\setminted{fontsize=…}` 覆盖。
+- 代码字号默认值见 `code.tex`；某版要不同时，在载入 `code.tex` 之后用 `\setminted{fontsize=…}` 覆盖。
 - 代码卡片与引用块的前后距：各版布局设定 `\BookBoxBeforeSkip`、`\BookBoxAfterSkip`，由 `code.tex` 的 `book-box-spacing` 样式使用。`mystyle.tex` 中两种盒子以 `book-box-spacing/.try` 引用，不载入布局的接口样张沿用 tcolorbox 的默认前后距。
 - 双栏版本须在 `\titleformat{\section}` 的标题文字处调用 `\BookChapterAnchor`，页眉据此判断页顶所在的章。
 - 目录字号与点线、代码配色、页眉字号等目前三版相同，直接共用。某版需要不同时，再增加参数或在该版布局中覆盖。

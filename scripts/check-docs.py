@@ -4,10 +4,10 @@
   路径上的全部 AGENTS.md 不超过 32 KiB（Codex 默认只自动载入合计前 32 KiB）。
 - 文档中的项目路径：根目录与各子目录的 AGENTS.md、WRITING.md、各子目录的 README.md 中，
   行内代码与代码块里的文件路径，以及整段行内代码写成的目录路径，都须存在。先按文档所在目录、
-  再按项目根目录解析；不带 ./ 或 ../ 时，项目中有以它结尾的路径也算存在（如 `code/`、`check-full.py`）。
+  再按项目根目录解析；不带 ./ 或 ../ 时，项目中有以它结尾的路径也算存在（如 `code/`、`generate-code.py`）。
   根目录 README.md 由用户维护，不检查。含中文、空格或 <版本> 等占位符的写法跳过；PDF 都是构建产物，
   除 assets/、contents/ 下的素材外不检查。
-- 目录说明：contents/ 及其子目录以外，每个目录都有 README.md。
+- 目录说明：contents/ 及其子目录以外，目录有 README.md，或由直接上级 README.md 以名称加斜线说明。
 - shell 变量展开：.sh 中 $变量名 后不得紧跟非 ASCII 字符。macOS 自带的 bash 3.2 在 UTF-8
   区域设置下会把多字节字符的前几个字节读进变量名，在 set -u 下报 unbound variable。
 
@@ -140,7 +140,17 @@ def doc_paths(root, files):
 
 def readmes(root, files):
     checked = sorted(d for d in directories(files) if d != 'contents' and not d.startswith('contents/'))
-    problems = [f'{d}/ 缺少 README.md' for d in checked if f'{d}/README.md' not in files]
+    problems = []
+    for d in checked:
+        if f'{d}/README.md' in files:
+            continue
+        parent_readme = root / posixpath.dirname(d) / 'README.md'
+        # 匹配完整目录名，避免 tests/ 被 contest-tests/ 等名称误满足。
+        name = re.escape(posixpath.basename(d))
+        if parent_readme.is_file() and re.search(
+                rf'(?<![\w./+-]){name}/(?![\w./+-])', parent_readme.read_text(encoding='utf-8')):
+            continue
+        problems.append(f'{d}/ 缺少 README.md，且直接上级 README.md 未说明该目录')
     return problems, f'{len(checked)} 个目录'
 
 

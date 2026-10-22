@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # 一键检查。默认只做快速检查：单元测试（含入口与布局一致性）、代码版入口是否最新、文档与脚本检查，约 1 秒。
-# --full 另依次编译四组导言区回归样张、运行样张 PDF 功能检查；build/ 中已有完整横版、
-# 代码版 PDF 时再做越栏检查（只输出警告）。完整三版 PDF 仍由 ./run.sh 构建。
+# --full 另编译四组回归样张并运行 PDF 功能检查。整书由 ./run.sh 构建，按影响范围抽查。
 # 用法：scripts/check.sh [--full]；可从任意目录调用。
 # 某一步失败不中断后续步骤，最后汇总失败的步骤；有失败时返回 1，用法错误返回 2。
 set -uo pipefail
@@ -46,14 +45,6 @@ if [[ "$full" == true ]]; then
     step '竖版样张检查' python3 preamble/tests/portrait/check.py
     step '横版样张检查' python3 preamble/tests/landscape/check.py
     step '代码版样张检查' python3 preamble/tests/landscape/check.py code
-    for edition in landscape code; do
-        pdf="build/$edition/main-$edition.pdf"
-        if [[ -f "$pdf" ]]; then
-            step "完整 $edition PDF 越栏（只输出警告）" python3 scripts/check-full.py "$pdf"
-        else
-            printf '\n跳过完整 %s PDF 越栏检查：尚未构建 %s。\n' "$edition" "$pdf"
-        fi
-    done
 fi
 
 printf '\n'

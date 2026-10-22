@@ -24,7 +24,7 @@
 
 `check.py` 检查扉页的内容、可选分支与链接，代码跨页后的完整性与行号，引号对照写法及作用域，四、五级标题独立成行并与后文同页，以及目录父子条目保护。章节另起页由 `section-breaks` 的编译期断言检查。边界按可用空间构造，不复制设计字号、栏宽或间距。
 
-默认运行不含 `syntax-colors`、`block-spacing` 与两份数学字体对照，需查看时按样张名编译。这些样张与综合预览负责外观验收；自动检查不锁定精确视觉参数。共同流程见 `../README.md`。
+默认运行包含 `math-latin-modern`，通过严格日志检查常用数学命令；不含 `preview`、`syntax-colors`、`block-spacing` 与 `math-stix`，需查看整体效果、配色、间距或对照字体时按样张名编译。综合预览用于按需目视验收，不承担默认回归；自动检查不锁定精确视觉参数。共同流程见 `../README.md`。
 
 ## 运行
 
@@ -46,6 +46,7 @@ python3 preamble/tests/portrait/check.py
 可以用 Poppler 渲染页面、查看嵌入的字体：
 
 ```sh
+bash preamble/tests/portrait/run.sh preview
 mkdir -p preamble/tests/build/portrait/render
 pdftoppm -scale-to 1600 -png preamble/tests/build/portrait/preview.pdf preamble/tests/build/portrait/render/preview
 pdffonts preamble/tests/build/portrait/preview.pdf

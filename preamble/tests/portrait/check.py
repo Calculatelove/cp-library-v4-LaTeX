@@ -31,7 +31,9 @@ with c.section('heading-levels：独立标题、后文同页与书签'):
     with c.open(OUT / 'heading-levels.pdf', HINT) as doc:
         headings = [(level, pc.compact(title)) for level, title, _ in doc.get_toc() if level >= 4]
         c.require({level for level, _ in headings} == {4, 5}, '应有四、五级书签')
-        rows = [[r for r in pc.text_rows(p) if pc.body_rect(p).y0 <= r['y'] <= pc.body_rect(p).y1] for p in doc]
+        headers = {pc.compact(title) for level, title, _ in doc.get_toc() if level == 1}
+        rows = [[r for r in pc.text_rows(p) if not r['text'].strip().isdigit()
+                 and pc.compact(r['text']) not in headers] for p in doc]
         for _, title in headings:
             prefix = title[:18]
             hits = [(i, j) for i, page in enumerate(rows) for j, row in enumerate(page)
