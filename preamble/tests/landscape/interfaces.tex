@@ -2,12 +2,18 @@
 \input{preamble/packages.tex}
 \input{preamble/layout-landscape.tex}
 \input{preamble/mystyle.tex}
+\newskip\QuoteParagraphSkip
 \begin{document}
 \section{引用块与接口}
 \Highlight{高亮 $a+b$} 后面的正文不变色。
 \Separator{}
 \vspace*{.6\textheight}
+% 比较实际段距，避免引用环境重置正文设置；不锁定设计数值。
+\QuoteParagraphSkip=\parskip
 \begin{quoteblock}
+\ifdim\parskip=\QuoteParagraphSkip\else
+  \PackageError{interfaces-test}{Quote paragraph spacing changed}{Preserve the surrounding paragraph spacing.}%
+\fi
 Quote-001：人工引用段落，用于检查左栏、右栏和下一页的顺序，以及段落间距的继承。
 
 Quote-002：人工引用段落，用于检查左栏、右栏和下一页的顺序，以及段落间距的继承。

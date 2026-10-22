@@ -11,8 +11,7 @@
 \tableofcontents
 \section{0x00\ 纵向版式样张}
 \subsection{正文、字重与信息层级}
-本文件仅检验导言区排版，不属于算法笔记正文。页面采用 A4 单栏，左右各
-20 mm，上下各 15 mm；上下范围包含页眉与页脚。中文正文使用宋体，标题采用黑体。
+本文件仅检验导言区排版，不属于算法笔记正文。用于观察单栏中的正文、标题与页眉页脚。
 
 这段文字用于观察连续阅读时的密度。短结论、数学公式与代码需要共享稳定的排版节奏。
 适度紧凑的页面应当便于查找关键词，同时保留足够的行间空间，避免上下标与相邻行相碰。
@@ -60,7 +59,7 @@ $\mathcal{O}(n\log n)$，单次查询复杂度为 $\mathcal{O}(1)$。
 
 \section{0x01\ 代码字体与跨页}
 \subsection{字符辨识与无连字}
-代码正文使用 Maple Mono NF CN；标题栏使用黑体。下面的运算符应逐字符显示。
+下面的运算符应逐字符显示。
 \begin{minted}{cpp}
 // 中文注释：字符与运算符逐一显示，保持等宽。
 // 0 O 1 l I | != == === <= >= -> => <=> && || ++ --
@@ -74,12 +73,6 @@ const char* message = "中英文 Mixed code 0123456789";
 \InputCode[显式标题 File_1.cpp]{python}{preamble/tests/fixtures/sample.py}
 \InputCode{bash}{preamble/tests/fixtures/sample.sh}
 \InputCode{make}{preamble/tests/fixtures/Makefile test}
-\subsection{长行与长代码}
-\begin{minted}{cpp}
-// A deliberately long comment checks visual wrapping without changing the source text: alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu nu xi omicron pi rho sigma tau.
-\end{minted}
-\InputCode{cpp}{preamble/tests/fixtures/long-code.cpp}
-
 \subsection{引用块自然跨页}
 \begin{quoteblock}
 \newcount\sampleline

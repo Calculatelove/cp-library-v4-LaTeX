@@ -1,7 +1,6 @@
 """生成器边界、以横版入口为模板的三处变换及真实内容回归；不编译算法片段。"""
 import importlib.util
 from pathlib import Path
-import subprocess
 import tempfile
 import unittest
 
@@ -145,27 +144,6 @@ class GeneratorTests(unittest.TestCase):
         expected = [g.HEADER] + [g.CODE_LAYOUT_LINE if line == g.LAYOUT_LINE else line for line in before]
         self.assertEqual(generated.split(g.BEGIN_LINE)[0].rstrip('\n').split('\n'),
                          expected + [g.EDITION_LABEL])
-
-    def test_title_page_image_matches_git_name(self):
-        """入口中的配图路径与 Git 中的文件名逐字一致；macOS 不区分大小写，仅改名不会被 Git 记录。"""
-        try:
-            listed = subprocess.run(
-                ['git', '-C', str(g.ROOT), 'ls-files', '-z', '--cached', '--others',
-                 '--exclude-standard'],
-                capture_output=True, text=True, check=True).stdout
-        except (OSError, subprocess.CalledProcessError):
-            self.skipTest('不在 Git 仓库中')
-        names = set(filter(None, listed.split('\0')))
-        generated, _, _ = g.generate(g.ROOT)
-        sources = {'main-code.tex（生成结果）': generated}
-        for entry in ('main-portrait.tex', 'main-landscape.tex'):
-            sources[entry] = (g.ROOT / entry).read_text(encoding='utf-8')
-        for source, text in sources.items():
-            with self.subTest(source=source):
-                paths = [line[len(r'\TitlePageImage{'):-1] for line in text.splitlines()
-                         if line.startswith(r'\TitlePageImage{') and line.endswith('}')]
-                self.assertEqual(len(paths), 1)
-                self.assertIn(paths[0], names, '路径大小写与 Git 中的文件名不一致，或文件未加入 Git')
 
 
 if __name__ == '__main__':

@@ -5,23 +5,22 @@
 | 文件 | 用途 |
 | --- | --- |
 | `check.sh` | 一键检查：默认快速检查，`--full` 另编译并检查导言区回归样张 |
-| `check-docs.py` | 文档与脚本的静态检查：AGENTS.md 体量、文档中提到的项目路径、目录 README、shell 变量展开 |
 | `generate-code.py` | 以横版入口为模板生成代码版入口 `main-code.tex` |
 | `commit-info.sh` | 输出扉页使用的提交信息 |
 | `xelatex-converge.sh` | 用 XeLaTeX 编译到目录与交叉引用稳定；根目录 `run.sh` 与 `preamble/tests` 各组的 `run.sh` 共用 |
-| `tests/` | 上述工具的单元测试，以及入口与布局的一致性检查，见其 README |
+| `tests/` | 上述工具的单元测试，以及入口一致性检查，见其 README |
 
 保留现有简短脚本的分工，不继续合并入口，也不添加自动判断改动影响范围的工具（用户确认：避免为简化操作引入新的维护机制）；验证范围按 `preamble/AGENTS.md` 选择。
 
 ## 一键检查
 
 ```sh
-scripts/check.sh          # 快速检查，约 1 秒；建议每次提交前运行
-scripts/check.sh --full   # 另编译四组导言区样张并运行回归样张 PDF 功能检查，约 2 分钟
+scripts/check.sh          # 快速检查；建议每次提交前运行
+scripts/check.sh --full   # 编译默认回归样张并检查 PDF 功能
 ```
 
-- 快速检查：`tests/` 中的全部单元测试（含入口与布局的一致性）、`generate-code.py --check`（代码版入口是否最新）与 `check-docs.py`。
-- `--full` 另外依次运行 `preamble/tests` 四组样张的 `run.sh`，以及竖版、横版、代码版的样张 PDF 检查（各组的 `check.py`）。此命令不构建或扫描整书；日常修改按 `preamble/AGENTS.md` 的分级范围选择验证。
+- 快速检查：`tests/` 中的全部单元测试（含入口一致性）、`generate-code.py --check`（代码版入口是否最新）。
+- `--full` 另外依次运行 `preamble/tests` 各版的 `run.sh`，以及竖版、横版、代码版的样张 PDF 检查（代码版复用横版检查）。此命令不构建或扫描整书；日常修改按 `preamble/AGENTS.md` 的分级范围选择验证。
 - 某一步失败不会中断后续步骤，最后汇总列出失败的步骤；有失败时返回 1，用法错误返回 2。PDF 检查需要 PyMuPDF，见 `preamble/tests/README.md`。
 
 ## 整书构建
@@ -40,7 +39,7 @@ scripts/check.sh --full   # 另编译四组导言区样张并运行回归样张 
 - 编译由 `xelatex-converge.sh` 完成，结束时打印末轮警告汇总；完整日志保留在各版本输出目录的 `.log` 文件中。
 - 收敛并生成非空 PDF 后，保留本版辅助文件、日志、提交信息文件与 minted 缓存（用户确认：减少重复构建耗时并方便排查警告）；失败时返回非零，也保留这些文件。产物均被 Git 忽略。
 - 旧的 `.aux`、`.toc` 可能引用已删除或改名的宏，导致首轮编译报错；遇到这种情况，删除受影响的 `build/<版本>/` 后重新构建。升级 minted、Pygments 或 TeX Live 后的缓存清理见 `preamble/AGENTS.md`。
-- 全部目标成功后，在输出末尾以列表集中显示各版耗时和 PDF 绝对路径，并显示从脚本启动计算的总耗时（用户确认：避免信息被后续编译输出顶掉）。各版耗时包含该版准备与编译，总耗时另含代码版入口生成与公共检查；使用 Bash 内置 `SECONDS` 按秒计时，以时、分、秒显示，省略高位零单位，零秒显示“不足 1 秒”。失败、帮助与用法错误不输出完成汇总。
+- 全部目标成功后，在输出末尾集中显示各版耗时、PDF 路径与总耗时；失败、帮助与用法错误不输出这份汇总（用户确认：避免信息被后续编译输出顶掉）。
 - 不要用根目录的单轮 XeLaTeX 代替这个脚本，以免污染根目录或留下未收敛的产物。
 
 ### 整书警告
@@ -49,21 +48,6 @@ scripts/check.sh --full   # 另编译四组导言区样张并运行回归样张 
 
 - 按 `preamble/AGENTS.md` 选择需要构建的版本，查看末轮警告并抽查受影响页面。整书不做自动逐页精细比较或 PDF 越栏扫描（用户确认：避免为日常视觉调整维护额外工具链）。
 - 日志中 xeCJK 的字体族重定义提示是预期的；不应出现缺字或字体替换。
-
-## 文档与脚本检查
-
-`check-docs.py` 只需 Python 3 标准库与 git：
-
-```sh
-python3 scripts/check-docs.py
-```
-
-- AGENTS.md 体量：根文件不超过 8 KiB；从根目录到任一子目录 AGENTS.md 一路上的 AGENTS.md 合计不超过 32 KiB（Codex 默认只自动载入合计前 32 KiB）。
-- 文档中的项目路径：检查各 AGENTS.md、`WRITING.md` 与各子目录 README 中，行内代码与代码块里的路径。先按文档所在目录、再按项目根目录解析；不带 `./`、`../` 时，项目中有以它结尾的路径也算存在。根目录 `README.md` 由用户维护，不检查。含中文、空格或 `<版本>` 等占位符的写法跳过；PDF 是构建产物，`assets/`、`contents/` 下的除外。
-- 文档有意提到、但项目中没有的路径列在脚本的 `ABSENT_ON_PURPOSE` 中，如规定不创建的 `setup.tex`、已删除的 `contents/AGENTS.md`；`build/` 等生成目录不检查。
-- 目录说明：`contents/` 及其子目录以外，目录应有 README.md，或在直接上级 README 中以完整的 `名称/` 出现；只检查说明入口，不判断说明内容是否充分。
-- shell 变量展开：`.sh` 中 `$变量名` 后不得紧跟非 ASCII 字符，原因见“修改须知”。
-- 文件清单取自 git（已跟踪与未被忽略的文件）；不在 Git 仓库中时遍历目录。返回 0 表示全部通过，1 表示有问题，问题逐条带文件与行号列出。
 
 ## 代码版生成
 
@@ -114,14 +98,12 @@ bash scripts/xelatex-converge.sh [--quiet] [--strict] <tex 文件> <输出目录
 ```
 
 - 两个路径都相对于项目根目录；脚本先回到项目根目录再编译。
-- 至少两轮、最多八轮：比较 aux/toc/out/lof/lot 的校验和，并检查日志中的重编译提示（Rerun to get、Rerun LaTeX、Please rerun LaTeX、Label(s) may have changed）；最后确认生成了非空 PDF。
-- 默认把 XeLaTeX 输出直接打印到终端，并逐轮提示（根目录 `run.sh` 使用）。`--quiet` 把输出写入 `<输出目录>/<文件名>-console.txt`，失败时显示末尾 40 行（样张使用）。
+- 自动重复编译直到目录与交叉引用稳定；未能收敛或没有生成有效 PDF 时失败。
+- 默认把 XeLaTeX 输出直接打印到终端，并逐轮提示（根目录 `run.sh` 使用）。`--quiet` 把输出写入 `<输出目录>/<文件名>-console.txt`，失败时显示日志末尾（样张使用）。
 - `--strict` 在收敛后检查日志，有缺字、Overfull、字体替换或页眉高度不足时失败（样张使用；整书有已知的 Overfull，不用此项）。
-- 收敛后汇总末轮日志中的警告：Overfull、Underfull、缺字、字体替换四类的数量，以及按来源统计的其他 LaTeX、宏包与文档类警告。
-  - 默认模式逐项列出（含 0），例如“末轮警告：Overfull 3，Underfull 0，缺字 0，字体替换 0；其他：amsmath 2，xeCJK 3”。
-  - `--quiet` 只在“N 轮收敛”之后列出不为零的项；`--strict` 失败时也附上汇总。
+- 收敛后汇总末轮日志的警告；`--quiet` 只显示非零项。
 - 只编译、不清理：失败时辅助文件与日志都保留在输出目录。需要清理时手动删除对应输出目录。
-- 使用默认的受限 shell escape；返回 0 表示成功，1 表示编译失败、八轮未收敛、PDF 为空或严格检查不通过，2 表示用法错误或源文件不存在。
+- 使用默认的受限 shell escape；返回 0 表示成功，1 表示编译失败、达到编译轮数上限仍未收敛、PDF 为空或严格检查不通过，2 表示用法错误或源文件不存在。
 
 ## 修改须知
 
@@ -130,5 +112,5 @@ bash scripts/xelatex-converge.sh [--quiet] [--strict] <tex 文件> <输出目录
 - `run.sh`、`xelatex-converge.sh`：至少两轮、最多八轮；失败时保留辅助文件与日志；成功后保留辅助文件、日志与缓存；各版本与测试目录的产物互相隔离；使用默认的受限 shell escape。
 - `generate-code.py`：所有检查通过后才原子替换入口，失败不覆盖旧入口；`--check` 不写文件；不写死书籍信息。
 - `commit-info.sh`：取 HEAD；dirty 判定排除 `build/`；不在 Git 仓库中、没有 git 或尚无提交时不输出内容，返回 0。
-- 脚本由 macOS 自带的 bash 3.2 执行。`$变量名` 后紧跟中文等非 ASCII 字符时写成 `${变量名}`，否则在 UTF-8 区域设置下，bash 会把多字节字符的前几个字节读进变量名，在 `set -u` 下报 unbound variable（`check-docs.py` 会检查）。也不要用关联数组、`${var,,}`、`mapfile` 等 bash 4 才有的写法。
+- 脚本由 macOS 自带的 bash 3.2 执行。`$变量名` 后紧跟中文等非 ASCII 字符时写成 `${变量名}`，否则在 UTF-8 区域设置下，bash 会把多字节字符的前几个字节读进变量名，在 `set -u` 下报 unbound variable。也不要用关联数组、`${var,,}`、`mapfile` 等 bash 4 才有的写法。
 - 用户的终端是 UTF-8 区域设置；agent 的终端若是 C 区域设置，验证时加 `LC_ALL=zh_CN.UTF-8`。

@@ -1,0 +1,23 @@
+% 竖版、横版、代码版样张 titlepage 共用的正文，由三版目录的 titlepage.tex 引入，不能单独编译。
+% 书名、作者与代码版的版本标记留在各版包装的导言区：PDF 的标题与作者在 \begin{document} 时写入。
+\EnglishTitle{Competitive Programming Library}
+% 仓库地址含 ~ _ %，检验按原样读取；第 1 页有地址行，哈希链接到地址下的该提交。
+\RepositoryURL{https://example.com/~cl/cp_library%20v4}
+% 第 1 页：横向配图；提交说明含全部 TeX 特殊字符，状态 clean。
+\TitlePageImage{preamble/tests/fixtures/titlepage-wide.png}
+\TitlePageReadCommit{preamble/tests/fixtures/titlepage-special.commit}
+\maketitle
+% 第 2 页：纵向配图；超长提交说明换行，状态 dirty；清空仓库地址，哈希不加链接。
+\RepositoryURL{}
+\TitlePageImage{preamble/tests/fixtures/titlepage-tall.png}
+\TitlePageReadCommit{preamble/tests/fixtures/titlepage-long-dirty.commit}
+\maketitle
+% 第 3 页：清除版本标记（只影响代码版），不设配图，提交信息文件不存在；重新设上仓库地址，底部只有地址行。
+\EditionLabel{}
+\TitlePageImage{}
+\TitlePageReadCommit{preamble/tests/fixtures/missing.commit}
+\RepositoryURL{https://example.com/~cl/cp_library%20v4}
+\maketitle
+% 第 4 页：扉页之后的正文页照常排版并显示页码；双栏版本另有页眉。
+\section{扉页之后}
+本页用于确认扉页不影响后续页面的版式与页码。

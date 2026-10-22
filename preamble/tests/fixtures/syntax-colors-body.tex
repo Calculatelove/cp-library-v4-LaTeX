@@ -7,7 +7,7 @@
 #define LIMIT 100000
 #pragma once
 using namespace std;
-// 中文注释：保持 9pt 下的清晰度；upright f i j k l x y
+// 中文注释：观察小字号下的清晰度；upright f i j k l x y
 template<class T> struct Fenwick {
     vector<T> tree;
     explicit Fenwick(int n) : tree(n + 1, 0) {}
