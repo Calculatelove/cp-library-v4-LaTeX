@@ -142,16 +142,13 @@
     const viewer = document.querySelector(".viewer");
     const fileLink = document.querySelector(".file");
     const frames = {};
-    // 阅读器的打开参数：收起侧栏，初始整页适合窗口（适合页面）。navpanes、view 供 Chrome，pagemode、zoom 供
-    // Firefox 的 PDF.js；两者都不理会 PDF 自身记录的初始视图。
-    const openParams = "#navpanes=0&view=Fit&pagemode=none&zoom=page-fit";
 
     function frameFor(tab) {
       const edition = tab.dataset.edition;
       if (!frames[edition]) {
         const frame = document.createElement("iframe");
         frame.title = tab.textContent;
-        frame.src = tab.getAttribute("href") + openParams;
+        frame.src = `${tab.getAttribute("href")}#navpanes=0`; // Chrome 默认收起侧栏，☰ 可展开
         viewer.append(frame);
         frames[edition] = frame;
       }
@@ -165,7 +162,7 @@
       seg.style.setProperty("--i", index);
       const frame = frameFor(tab);
       Object.values(frames).forEach((f) => f.classList.toggle("active", f === frame));
-      fileLink.href = tab.getAttribute("href") + openParams;
+      fileLink.href = tab.getAttribute("href");
       fileLink.textContent = tab.getAttribute("href");
       document.title = `算法竞赛小记-${tab.textContent}`; // 浏览器标签页的标题，与 PDF 自身的标题无关
       history.replaceState(null, "", `#${tab.dataset.edition}`);
