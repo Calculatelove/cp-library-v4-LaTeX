@@ -140,6 +140,6 @@ bash scripts/xelatex-converge.sh [--quiet] [--strict] <tex 文件> <输出目录
 - `run.sh`、`xelatex-converge.sh`：至少两轮、最多八轮；失败时保留辅助文件与日志；成功后保留辅助文件、日志与缓存；各版本与测试目录的产物互相隔离；使用默认的受限 shell escape。
 - `generate-code.py`：所有检查通过后才原子替换入口，失败不覆盖旧入口；`--check` 不写文件；不写死书籍信息。
 - `commit-info.sh`：取 HEAD；dirty 判定排除 `build/`；不在 Git 仓库中、没有 git 或尚无提交时不输出内容，返回 0。
-- `site/index.html` 与 `pages.yml`：PDF 只经 Release 部署到 Pages，不提交进 Git；阅读器用浏览器自带的，不引入 PDF.js；组装写在 workflow 中，不另写脚本（均为用户确认：保持仓库与部署简单）。
+- `site/index.html` 与 `pages.yml`：PDF 只经 Release 部署到 Pages，不提交进 Git；阅读器用浏览器自带的，不引入 PDF.js；组装写在 workflow 中，不另写脚本（均为用户确认：保持仓库与部署简单）。PDF 打开时整页适合窗口（适合页面，用户确认），靠网址的打开参数实现：Chrome 与 Firefox 的 PDF.js 都不理会 PDF 自身记录的初始视图。浏览器标签页的标题由网页设为“算法竞赛小记-版本名”，不改 PDF 自身的标题（用户确认）。
 - 脚本由 macOS 自带的 bash 3.2 执行。`$变量名` 后紧跟中文等非 ASCII 字符时写成 `${变量名}`，否则在 UTF-8 区域设置下，bash 会把多字节字符的前几个字节读进变量名，在 `set -u` 下报 unbound variable。也不要用关联数组、`${var,,}`、`mapfile` 等 bash 4 才有的写法。
 - 用户的终端是 UTF-8 区域设置；agent 的终端若是 C 区域设置，验证时加 `LC_ALL=zh_CN.UTF-8`。
