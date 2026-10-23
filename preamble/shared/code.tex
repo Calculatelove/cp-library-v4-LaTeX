@@ -13,15 +13,53 @@
 \let\BookToken@m\BookToken@k
 \let\BookToken@no\BookToken@k
 \let\BookToken@ow\BookToken@k
+% 内建名称：C++ 的 true、false、NULL，Bash、Python 的内建命令与函数。
+\let\BookToken@nb\BookToken@k
 \def\BookToken@s{\let\PYG@tc\BookCodeGreenText}
 \def\BookToken@c{\let\PYG@tc\BookCodeCommentText}
 \def\BookToken@cp{\let\PYG@tc\BookCodeBlueText\let\PYG@it\relax}
 \def\BookToken@cpf{\let\PYG@tc\BookCodeGreenText\let\PYG@it\relax}
+% Pygments 2.19、2.20 把 1ll、1llu、1lu 分成浮点数 1l 与名称 l、lu、u（pygments/pygments#1847），
+% 把 C++23 的 1z、1uz、1zu 分成整数与名称 z、zu。数字后紧跟只由 l、u、z（含大写）组成的名称时，
+% 名称只会是拆开的后缀，改按数字着色；10_km 等自定义后缀以下划线开头，不受影响。上游修复进入 TeX Live 后可删除。
+% fvextra 给每个 token 加分组，折行时又以 \FancyVerbBreakStart/Stop 包住内容，故用全局状态，匹配时容许这层包装。
+% 每行先测宽再排版，每遍都从 \FancyVerbFormatText 开始，在此清除上一遍留下的状态。
+\ExplSyntaxOn
+\bool_new:N \g__book_code_after_number_bool
+\regex_const:Nn \c__book_code_suffix_regex
+  { \A (?: \c{FancyVerbBreakStart} )? [lLuUzZ]{1,3} (?: \c{FancyVerbBreakStop} )? \Z }
+\cs_new_protected:Npn \BookCode@Suffix #1#2
+  {
+    \bool_if:NT \g__book_code_after_number_bool
+      {
+        \str_if_eq:nnT {#1} {n}
+          { \regex_match:NnT \c__book_code_suffix_regex {#2} { \BookToken@m } }
+      }
+    \str_if_eq:eeTF { \str_range:nnn {#1} { 1 } { 3 } } { l+m }
+      { \bool_gset_true:N \g__book_code_after_number_bool }
+      { \bool_gset_false:N \g__book_code_after_number_bool }
+  }
+\cs_new_eq:NN \__book_code_format_text:n \FancyVerbFormatText
+\cs_set_protected:Npn \FancyVerbFormatText #1
+  {
+    \bool_gset_false:N \g__book_code_after_number_bool
+    \__book_code_format_text:n {#1}
+  }
+\ExplSyntaxOff
+% Pygments 的 Bash 词法把 <0.in、diff 1.out 中文件名开头的数字单独标为数字（Literal.Number），
+% 其后的 .in、.out 是不经 \PYG 的普通文字；数字后紧跟“.”时改按普通文字排。
+% fvextra 在每个 token 之后结束分组，故越过这个 \endgroup 再看下一个字符；不是 \endgroup 时照常着色。
+\def\BookCode@Number#1{\@ifnextchar\endgroup{\BookCode@Number@i{#1}}{\PYG@do{#1}}}
+\def\BookCode@Number@i#1\endgroup{%
+  \@ifnextchar.{\let\PYG@tc\relax\PYG@do{#1}\endgroup}{\PYG@do{#1}\endgroup}}
 \AddToHook{cmd/minted@defstyle/after}{%
   \edef\BookCodeStyle{\mintedtexoptvalueof{style}}%
   \ifdefstring{\BookCodeStyle}{bw}{%
     \def\PYG@tok#1{\ifcsname BookToken@#1\endcsname
       \csname BookToken@#1\endcsname\fi}%
+    % 同 Pygments 的 \PYG，只加入上面两项处理。
+    \def\PYG#1#2{\PYG@reset\PYG@toks#1+\relax+\BookCode@Suffix{#1}{#2}%
+      \ifstrequal{#1}{l+m}{\BookCode@Number{#2}}{\PYG@do{#2}}}%
   }{}%
 }
 \makeatother
@@ -31,10 +69,11 @@
   formatcom=\color{BookCodeText}\mdseries\upshape,
   breaklines=true,breakanywhere=false,tabsize=4
 }
-% 词法高亮并非 C++ 语义分析；仅补充明确要求的三个标准库类型名称。
-\setminted[cpp]{extrakeywordstype={vector,string,pair}}
-\setminted[c++]{extrakeywordstype={vector,string,pair}}
-\setminted[cxx]{extrakeywordstype={vector,string,pair}}
+% 词法高亮并非 C++ 语义分析；仅补充明确要求的三个标准库类型名称、本书的整数类型别名 i64、i128、u64、u32，
+% 以及 GCC 的 __int128_t、__uint128_t（__int128 已是关键字）。这些别名与 GCC 类型名不会用作变量名。
+\setminted[cpp]{extrakeywordstype={vector,string,pair,i64,i128,u64,u32,__int128_t,__uint128_t}}
+\setminted[c++]{extrakeywordstype={vector,string,pair,i64,i128,u64,u32,__int128_t,__uint128_t}}
+\setminted[cxx]{extrakeywordstype={vector,string,pair,i64,i128,u64,u32,__int128_t,__uint128_t}}
 \newfontfamily\BookCodeTitleLatin{PingFang SC Medium}
 \newCJKfontfamily\BookCodeTitleCJK{PingFang SC Medium}
 % coltext 同时保证 tcolorbox 续页恢复深灰，而非默认纯黑。
