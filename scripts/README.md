@@ -1,6 +1,6 @@
 # 脚本
 
-本目录存放构建与检查用的工具脚本，从任意工作目录运行都以项目根目录解析路径。工具的单元测试在 `tests/`；导言区样张及其专用检查在 `preamble/tests/`。根目录 `run.sh` 的说明也写在本文件。
+本目录存放构建与检查用的工具脚本，从任意工作目录运行都以项目根目录解析路径。工具的单元测试在 `tests/`；导言区样张及其专用检查在 `preamble/tests/`。根目录 `run.sh`、网页 `site/` 与 Pages 部署的说明也写在本文件。
 
 | 文件 | 用途 |
 | --- | --- |
@@ -48,6 +48,34 @@ scripts/check.sh --full   # 编译默认回归样张并检查 PDF 功能
 
 - 按 `preamble/AGENTS.md` 选择需要构建的版本，查看末轮警告并抽查受影响页面。整书不做自动逐页精细比较或 PDF 越栏扫描（用户确认：避免为日常视觉调整维护额外工具链）。
 - 日志中 xeCJK 的字体族重定义提示是预期的；不应出现缺字或字体替换。
+
+## 网页与部署
+
+`site/index.html` 是展示三版 PDF 的网页：顶部导航栏切换竖版、横版、代码版，下方内嵌浏览器自带的 PDF 阅读器，外观随浏览器而异；触屏设备、窄窗口或不能内嵌 PDF 的浏览器改为直接打开 PDF 的链接。网页按相对路径引用同目录的 `main-<版本>.pdf`，仓库中不存放 PDF。
+
+本地预览：
+
+```sh
+./run.sh all
+cp site/index.html build/
+```
+
+然后用 Chrome 直接打开 `build/index.html`，不需要本地服务。`build/` 被 Git 忽略，预览文件留着也不会让扉页标注未提交修改。
+
+部署由 `.github/workflows/pages.yml` 完成：
+
+- 发布 Release、向 main 推送 `site/` 或该 workflow 的改动、在 Actions 页手动运行（Run workflow）时部署。
+- 每次都取默认分支上的网页与最新 Release（不含草稿与预发布）的三个 PDF；三版缺一或 SHA-256 与 Release 记录不符时失败，网站保留上一次部署。
+- Release 附件沿用 `build/` 中的原名 `main-portrait.pdf`、`main-landscape.pdf`、`main-code.pdf`；GitHub 会改写含特殊字符的附件名。
+
+以下情况不会自动部署，要在 Actions 页手动运行：
+
+- 在已发布的 Release 中替换附件；
+- Release 的 tag 指向的提交中还没有该 workflow（release 事件只运行 tag 所指提交中的 workflow 文件）。
+
+首次启用时，在仓库 Settings → Pages → Build and deployment 把 Source 设为 GitHub Actions，再手动运行一次。默认网址为 `https://calculatelove.github.io/cp-library-v4-LaTeX/`。Pages 允许浏览器缓存约 10 分钟，部署后若仍是旧版，稍等或强制刷新。
+
+修改网页后，按本地预览检查浅色、深色、版本切换与窄窗口；workflow 的改动只能推送后由实际运行验证。
 
 ## 代码版生成
 
@@ -112,5 +140,6 @@ bash scripts/xelatex-converge.sh [--quiet] [--strict] <tex 文件> <输出目录
 - `run.sh`、`xelatex-converge.sh`：至少两轮、最多八轮；失败时保留辅助文件与日志；成功后保留辅助文件、日志与缓存；各版本与测试目录的产物互相隔离；使用默认的受限 shell escape。
 - `generate-code.py`：所有检查通过后才原子替换入口，失败不覆盖旧入口；`--check` 不写文件；不写死书籍信息。
 - `commit-info.sh`：取 HEAD；dirty 判定排除 `build/`；不在 Git 仓库中、没有 git 或尚无提交时不输出内容，返回 0。
+- `site/index.html` 与 `pages.yml`：PDF 只经 Release 部署到 Pages，不提交进 Git；阅读器用浏览器自带的，不引入 PDF.js；组装写在 workflow 中，不另写脚本（均为用户确认：保持仓库与部署简单）。
 - 脚本由 macOS 自带的 bash 3.2 执行。`$变量名` 后紧跟中文等非 ASCII 字符时写成 `${变量名}`，否则在 UTF-8 区域设置下，bash 会把多字节字符的前几个字节读进变量名，在 `set -u` 下报 unbound variable。也不要用关联数组、`${var,,}`、`mapfile` 等 bash 4 才有的写法。
 - 用户的终端是 UTF-8 区域设置；agent 的终端若是 C 区域设置，验证时加 `LC_ALL=zh_CN.UTF-8`。

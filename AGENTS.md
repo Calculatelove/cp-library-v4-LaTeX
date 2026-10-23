@@ -25,6 +25,7 @@ C.L. 的算法竞赛第四版笔记，已由 Markdown 迁移为 LaTeX，内容�
 - 不创建 `setup.tex`、合并各版参数的 `layout-common.tex`、`contents/chapters.tex`、`contents/code-index.tex` 或顶层的 `tests/` 目录（工具测试在 `scripts/tests/`，样张在 `preamble/tests/`），也不加 `\InputChapter` 之类的封装；`contents/` 下不建 README 等说明文件。
 - 从根目录编译，路径一律相对项目根目录；保留真实文件名，包括中文、空格与大小写。
 - 产物在被 Git 忽略的 `build/`：最终 PDF 在顶层，辅助文件在 `<版本>/`；PDF 由用户提交后自行编译，发布到 GitHub Release。
+- 网页：`site/index.html`，由 `.github/workflows/pages.yml` 连同最新 Release 的三版 PDF 部署到 GitHub Pages；PDF 不提交进 Git。
 
 ## 任务导航
 
@@ -34,6 +35,7 @@ C.L. 的算法竞赛第四版笔记，已由 Markdown 迁移为 LaTeX，内容�
 | `preamble/` 中的排版 | `preamble/AGENTS.md`、`preamble/README.md`；改 `shared/` 另读 `preamble/shared/README.md` |
 | 样张与 PDF 检查 | `preamble/tests/README.md` |
 | 构建、生成与检查脚本 | `scripts/README.md` |
+| `site/` 网页与 Pages 部署 | `scripts/README.md` |
 | 扉页配图、项目内字体 | `assets/README.md`、`preamble/fonts/README.md` |
 
 ## 验证入口

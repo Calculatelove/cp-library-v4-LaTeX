@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>算法竞赛小记</title>
+<script>
+  // 触屏设备、窄窗口或不能内嵌 PDF 的浏览器不内嵌，改为直接打开 PDF 的链接；在首次绘制前判定，避免闪动。
+  if (!(navigator.pdfViewerEnabled && matchMedia("(pointer: fine) and (min-width: 641px)").matches)) {
+    document.documentElement.classList.add("no-embed");
+  }
+</script>
+<style>
+  /* 导航栏跟随系统浅深色；深色时与 Chrome PDF 阅读器的工具栏同色。 */
+  :root {
+    color-scheme: light dark;
+    --bar-bg: #f5f5f7;
+    --bar-line: #d2d2d7;
+    --text: #1d1d1f;
+    --secondary: #6e6e73;
+    --accent: #0066cc;
+    --seg-track: rgba(118, 118, 128, 0.12);
+    --seg-thumb: #ffffff;
+    --seg-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 1px rgba(0, 0, 0, 0.04);
+    --page-bg: #ffffff;
+    --card: #f5f5f7;
+    --viewer-bg: #282828; /* Chrome PDF 阅读器的页面区底色，加载时不闪白 */
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bar-bg: #3c3c3c;
+      --bar-line: #2a2a2a;
+      --text: #f5f5f7;
+      --secondary: #a1a1a6;
+      --accent: #2997ff;
+      --seg-track: rgba(118, 118, 128, 0.24);
+      --seg-thumb: #636366;
+      --seg-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+      --page-bg: #000000;
+      --card: #1c1c1e;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    display: flex; flex-direction: column; height: 100vh; height: 100dvh;
+    background: var(--page-bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB",
+      "Microsoft YaHei", "Helvetica Neue", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  header {
+    flex: none; height: 48px;
+    display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center; gap: 16px;
+    padding: 0 20px; background: var(--bar-bg); border-bottom: 1px solid var(--bar-line);
+  }
+  /* 窗口较窄时两侧文字在本栏内截断，不伸到分段控件下面。 */
+  .repo, .file, .repo span {
+    min-width: 0; max-width: 100%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+  }
+  .repo, .file { color: var(--secondary); font-size: 13px; text-decoration: none; }
+  .repo { display: inline-flex; align-items: center; gap: 7px; justify-self: start; }
+  .repo svg { flex: none; width: 16px; height: 16px; fill: currentColor; }
+  .file {
+    justify-self: end;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 12px;
+  }
+  .repo:hover, .file:hover { color: var(--accent); }
+
+  /* 分段控件：三段等宽，选中块滑到当前版本。 */
+  .seg {
+    position: relative; display: grid; grid-template-columns: repeat(3, 1fr);
+    padding: 2px; border-radius: 9px; background: var(--seg-track);
+  }
+  .seg::before {
+    content: ""; position: absolute; top: 2px; bottom: 2px; left: 2px;
+    width: calc((100% - 4px) / 3); border-radius: 7px;
+    background: var(--seg-thumb); box-shadow: var(--seg-shadow);
+    transform: translateX(calc(var(--i, 0) * 100%));
+    transition: transform 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
+  }
+  .seg a {
+    position: relative; min-width: 72px; padding: 5px 16px; border-radius: 7px;
+    color: var(--secondary); font-size: 13px; font-weight: 500; text-align: center;
+    text-decoration: none;
+  }
+  .seg a:hover, .seg a[aria-current] { color: var(--text); }
+  .seg a:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+  main { position: relative; flex: 1; min-height: 0; }
+  .viewer { position: absolute; inset: 0; background: var(--viewer-bg); }
+  .viewer iframe {
+    position: absolute; inset: 0; width: 100%; height: 100%; border: 0;
+    visibility: hidden;
+  }
+  .viewer iframe.active { visibility: visible; }
+
+  .list { display: none; padding: 24px 16px; }
+  .list a {
+    display: flex; justify-content: space-between; align-items: baseline; gap: 12px;
+    margin-bottom: 12px; padding: 18px 20px; border-radius: 14px;
+    background: var(--card); color: inherit; text-decoration: none;
+  }
+  .list b { font-size: 17px; font-weight: 600; }
+  .list span {
+    overflow-wrap: anywhere; color: var(--secondary);
+    font: 13px ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  .no-embed header { grid-template-columns: minmax(0, 1fr); }
+  .no-embed .seg, .no-embed .file, .no-embed .viewer { display: none; }
+  .no-embed .list { display: block; }
+</style>
+</head>
+<body>
+<header>
+  <a class="repo" href="https://github.com/Calculatelove/cp-library-v4-LaTeX">
+    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.766 11.328c-2.063-.25-3.516-1.734-3.516-3.656 0-.781.281-1.625.75-2.188-.203-.515-.172-1.609.063-2.062.625-.078 1.468.25 1.968.703.594-.187 1.219-.281 1.985-.281.765 0 1.39.094 1.953.265.484-.437 1.344-.765 1.969-.687.218.422.25 1.515.046 2.047.5.593.766 1.39.766 2.203 0 1.922-1.453 3.375-3.547 3.64.531.344.89 1.094.89 1.954v1.625c0 .468.391.734.86.547C13.781 14.359 16 11.53 16 8.03 16 3.61 12.406 0 7.984 0 3.563 0 0 3.61 0 8.031a7.88 7.88 0 0 0 5.172 7.422c.422.156.828-.125.828-.547v-1.25c-.219.094-.5.156-.75.156-1.031 0-1.64-.562-2.078-1.609-.172-.422-.36-.672-.719-.719-.187-.015-.25-.093-.25-.187 0-.188.313-.328.625-.328.453 0 .844.281 1.25.86.313.452.64.655 1.031.655s.641-.14 1-.5c.266-.265.47-.5.657-.656"/></svg>
+    <span>Calculatelove/cp-library-v4-LaTeX</span>
+  </a>
+  <nav class="seg" aria-label="版本">
+    <a href="main-portrait.pdf" data-edition="portrait">竖版</a>
+    <a href="main-landscape.pdf" data-edition="landscape">横版</a>
+    <a href="main-code.pdf" data-edition="code">代码版</a>
+  </nav>
+  <a class="file" href="main-portrait.pdf" target="_blank" rel="noopener" title="在新标签页单独打开">main-portrait.pdf</a>
+</header>
+<main>
+  <div class="viewer"></div>
+  <div class="list">
+    <a href="main-portrait.pdf"><b>竖版</b><span>main-portrait.pdf</span></a>
+    <a href="main-landscape.pdf"><b>横版</b><span>main-landscape.pdf</span></a>
+    <a href="main-code.pdf"><b>代码版</b><span>main-code.pdf</span></a>
+  </div>
+</main>
+<script>
+  // 三版各用一个 iframe 内嵌浏览器自带的阅读器：首次选中时加载，之后只切换显示，
+  // 不重新加载，各版停留的位置随之保留。地址的 hash 记录当前版本，便于分享。
+  if (!document.documentElement.classList.contains("no-embed")) {
+    const seg = document.querySelector(".seg");
+    const tabs = [...seg.querySelectorAll("a")];
+    const viewer = document.querySelector(".viewer");
+    const fileLink = document.querySelector(".file");
+    const frames = {};
+
+    function frameFor(tab) {
+      const edition = tab.dataset.edition;
+      if (!frames[edition]) {
+        const frame = document.createElement("iframe");
+        frame.title = tab.textContent;
+        frame.src = `${tab.getAttribute("href")}#navpanes=0`; // Chrome 默认收起侧栏，☰ 可展开
+        viewer.append(frame);
+        frames[edition] = frame;
+      }
+      return frames[edition];
+    }
+
+    function show(edition) {
+      const index = Math.max(0, tabs.findIndex((t) => t.dataset.edition === edition));
+      const tab = tabs[index];
+      tabs.forEach((t) => t.toggleAttribute("aria-current", t === tab));
+      seg.style.setProperty("--i", index);
+      const frame = frameFor(tab);
+      Object.values(frames).forEach((f) => f.classList.toggle("active", f === frame));
+      fileLink.href = tab.getAttribute("href");
+      fileLink.textContent = tab.getAttribute("href");
+      document.title = `${tab.textContent} · 算法竞赛小记`;
+      history.replaceState(null, "", `#${tab.dataset.edition}`);
+    }
+
+    seg.addEventListener("click", (event) => {
+      const tab = event.target.closest("a");
+      if (!tab) return;
+      event.preventDefault();
+      show(tab.dataset.edition);
+    });
+    addEventListener("hashchange", () => show(location.hash.slice(1)));
+    show(location.hash.slice(1));
+  }
+</script>
+</body>
+</html>

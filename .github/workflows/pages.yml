@@ -1,0 +1,67 @@
+# 把 site/index.html 与最新 Release 的三版 PDF 一起部署到 GitHub Pages。
+# PDF 只来自 Release，不进 Git；操作说明见 scripts/README.md。
+name: Pages
+
+on:
+  release:
+    types: [published]
+  push:
+    branches: [main]
+    paths:
+      - site/**
+      - .github/workflows/pages.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      # release 事件默认检出 tag 所在提交；网页统一取默认分支，三种触发的结果一致。
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+
+      - name: 取最新 Release 的 PDF 并组装站点
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          tag="$(gh release view --repo "$GITHUB_REPOSITORY" --json tagName --jq .tagName)"
+          echo "最新 Release：${tag}"
+          mkdir _site
+          cp site/index.html _site/
+          gh release download "$tag" --repo "$GITHUB_REPOSITORY" --pattern 'main-*.pdf' --dir _site
+          # 三版缺一或与 Release 记录的 SHA-256 不符时失败，网站保留上一次部署。
+          for name in main-portrait.pdf main-landscape.pdf main-code.pdf; do
+            if [[ ! -s "_site/${name}" ]]; then
+              echo "::error::Release ${tag} 缺少附件 ${name}"
+              exit 1
+            fi
+            want="$(gh release view "$tag" --repo "$GITHUB_REPOSITORY" --json assets \
+              --jq ".assets[] | select(.name == \"${name}\") | .digest")"
+            got="sha256:$(sha256sum "_site/${name}" | cut -d ' ' -f 1)"
+            if [[ "$want" != "$got" ]]; then
+              echo "::error::${name} 的 SHA-256 与 Release 记录不一致"
+              exit 1
+            fi
+          done
+          ls -l _site
+
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+      - id: deployment
+        uses: actions/deploy-pages@v5
