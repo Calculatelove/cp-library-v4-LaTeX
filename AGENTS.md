@@ -24,7 +24,7 @@ C.L. 的算法竞赛第四版笔记，已由 Markdown 迁移为 LaTeX，内容�
 - 导言区：各版参数在 `layout-<版本>.tex`，三版共用的实现在 `preamble/shared/`，四个自定义接口在 `mystyle.tex`。
 - 不创建 `setup.tex`、合并各版参数的 `layout-common.tex`、`contents/chapters.tex`、`contents/code-index.tex` 或顶层的 `tests/` 目录（工具测试在 `scripts/tests/`，样张在 `preamble/tests/`），也不加 `\InputChapter` 之类的封装；`contents/` 下不建 README 等说明文件。
 - 从根目录编译，路径一律相对项目根目录；保留真实文件名，包括中文、空格与大小写。
-- 产物在被 Git 忽略的 `build/<版本>/`；PDF 由用户提交后自行编译，发布到 GitHub Release。
+- 产物在被 Git 忽略的 `build/`：最终 PDF 在顶层，辅助文件在 `<版本>/`；PDF 由用户提交后自行编译，发布到 GitHub Release。
 
 ## 任务导航
 

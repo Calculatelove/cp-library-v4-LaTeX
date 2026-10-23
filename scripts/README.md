@@ -33,11 +33,11 @@ scripts/check.sh --full   # 编译默认回归样张并检查 PDF 功能
 ./run.sh --help
 ```
 
-- 产物为 `build/<版本>/main-<版本>.pdf`，辅助文件与 minted 缓存也按版本隔离。根目录 `build/` 被 Git 忽略；PDF 由用户在提交后编译，发布到 GitHub Release。
+- 最终 PDF 为 `build/main-<版本>.pdf`，辅助文件与 minted 缓存保留在 `build/<版本>/`，按版本隔离。根目录 `build/` 被 Git 忽略；PDF 由用户在提交后编译，发布到 GitHub Release。
 - 先检查 `xelatex`、`latexminted` 是否可用；空入口提前报错。`code` 与 `all` 先运行 `generate-code.py` 生成代码版入口，生成失败则不启动编译。`all` 先检查全部入口，再按竖版、横版、代码版依次构建，遇到失败停止。
 - 每个版本编译前调用 `commit-info.sh`，把提交信息写入 `build/<版本>/main-<版本>.commit` 供扉页读取；不在 Git 仓库中时不生成，`build/` 以外有未提交修改时在终端提示。
 - 编译由 `xelatex-converge.sh` 完成，结束时打印末轮警告汇总；完整日志保留在各版本输出目录的 `.log` 文件中。
-- 收敛并生成非空 PDF 后，保留本版辅助文件、日志、提交信息文件与 minted 缓存（用户确认：减少重复构建耗时并方便排查警告）；失败时返回非零，也保留这些文件。产物均被 Git 忽略。
+- 收敛并生成非空 PDF 后，将 PDF 移到 `build/` 顶层并替换同名成品；编译失败时返回非零，保留上一次成功的顶层 PDF。成功或失败均保留本版辅助文件、日志、提交信息文件与 minted 缓存（用户确认：减少重复构建耗时并方便排查警告）。产物均被 Git 忽略。
 - 旧的 `.aux`、`.toc` 可能引用已删除或改名的宏，导致首轮编译报错；遇到这种情况，删除受影响的 `build/<版本>/` 后重新构建。升级 minted、Pygments 或 TeX Live 后的缓存清理见 `preamble/AGENTS.md`。
 - 全部目标成功后，在输出末尾集中显示各版耗时、PDF 路径与总耗时；失败、帮助与用法错误不输出这份汇总（用户确认：避免信息被后续编译输出顶掉）。
 - 不要用根目录的单轮 XeLaTeX 代替这个脚本，以免污染根目录或留下未收敛的产物。

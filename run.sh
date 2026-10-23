@@ -6,7 +6,7 @@ set -euo pipefail
 SECONDS=0
 
 usage() {
-    printf '用法：%s [portrait|landscape|code|all]\n默认编译 portrait；产物写入 build/<版本>/。\n' "${0##*/}"
+    printf '用法：%s [portrait|landscape|code|all]\n默认编译 portrait；PDF 写入 build/，辅助文件保留在 build/<版本>/。\n' "${0##*/}"
 }
 if (( $# > 1 )); then
     usage >&2
@@ -71,7 +71,8 @@ build_target() {
         return 1
     fi
 
-    # 保留辅助文件、日志与 minted 缓存，供后续构建复用及警告排查。
+    # 仅在编译成功后替换成品；保留辅助文件、日志与 minted 缓存供后续复用。
+    mv -f -- "$output_dir/$job.pdf" "build/$job.pdf"
 }
 
 format_duration() {
@@ -95,7 +96,7 @@ for target in "${targets[@]}"; do
         landscape) label=横版 ;;
         code) label=代码版 ;;
     esac
-    printf -v summary '%s\n- %s：%s\n  PDF：%s/build/%s/main-%s.pdf\n' \
-        "$summary" "$label" "$(format_duration "$elapsed")" "$project_dir" "$target" "$target"
+    printf -v summary '%s\n- %s：%s\n  PDF：%s/build/main-%s.pdf\n' \
+        "$summary" "$label" "$(format_duration "$elapsed")" "$project_dir" "$target"
 done
 printf '\n构建完成，总耗时：%s\n%s' "$(format_duration "$SECONDS")" "$summary"
