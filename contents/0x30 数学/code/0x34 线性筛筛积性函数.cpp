@@ -1,7 +1,7 @@
 // 线性筛筛积性函数
 int primeCount, prime[MaxV], low[MaxV];
 int f[MaxV];
-void sieve(const int &n) {
+void sieve(int n) {
     f[1] = 1;
     for (int i = 2; i <= n; i ++) {
         if (!low[i]) {

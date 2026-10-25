@@ -7,7 +7,7 @@ struct BinomCoef {
         init(n);
     }
 
-    void init(const int &n) {
+    void init(int n) {
         fact.resize(n + 1), facv.resize(n + 1);
         fact[0] = 1;
         for (int i = 1; i <= n; i ++) {

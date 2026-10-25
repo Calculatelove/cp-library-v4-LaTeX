@@ -1,6 +1,6 @@
 // 埃氏筛
 std::bitset<MaxV> vis;
-void sieve(const int &n) {
+void sieve(int n) {
     for (int i = 2; i <= n; i ++) {
         if (vis[i]) {
             continue;

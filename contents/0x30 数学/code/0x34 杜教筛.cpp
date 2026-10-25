@@ -8,7 +8,7 @@ namespace du {
     i64 f1[MaxV];
     std::map<int, i64> f2;
 
-    void init(const int &n = V) {
+    void init(int n = V) {
         f[1] = 1;
         for (int i = 2; i <= n; i ++) {
             if (!low[i]) {
