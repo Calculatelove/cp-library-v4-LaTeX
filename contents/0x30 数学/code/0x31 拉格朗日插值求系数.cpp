@@ -1,6 +1,6 @@
 // 拉格朗日插值求系数
 std::vector<int> lagrange(std::vector<std::pair<int, int>> seq) {
-    int n = seq.size(); // seq 下标从 0 开始，至多 n-1 次的多项式需要 n 个点值
+    int n = seq.size(); // seq 下标从 0 开始，至多 n-1 次多项式需要 n 个点值
 
     std::vector<int> a(n); // 系数部分 a[]
     for (int i = 0; i < n; i ++) {

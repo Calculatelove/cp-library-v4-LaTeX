@@ -1,20 +1,25 @@
 const double pi = acos(-1);
 using comp = std::complex<double>;
 
-std::vector<int> rev;
+std::vector<comp> roots{0, 1};
 void dft(std::vector<comp> &a) {
     int n = a.size();
-    for (int i = 0; i < n; i ++) {
-        if (i < rev[i]) {
-            std::swap(a[i], a[rev[i]]);
+    for (int i = 1, j = 0; i < n; i ++) {
+        for (int k = n >> 1; (j ^= k) < k; k >>= 1);
+        if (i < j) std::swap(a[i], a[j]);
+    }
+    for (int k = roots.size(); k < n; k <<= 1) {
+        comp w(cos(pi / k), sin(pi / k));
+        roots.resize(k << 1);
+        for (int i = k >> 1; i < k; i ++) {
+            roots[i * 2] = roots[i];
+            roots[i * 2 + 1] = roots[i] * w;
         }
     }
     for (int k = 1; k < n; k <<= 1) {
-        comp omega(cos(pi / k), sin(pi / k)); // 2k 阶单位根
         for (int i = 0; i < n; i += (k << 1)) {
-            comp x(1, 0);
-            for (int j = 0; j < k; j ++, x *= omega) {
-                comp u = a[i + j], v = x * a[i + j + k];
+            for (int j = 0; j < k; j ++) {
+                comp u = a[i + j], v = a[i + j + k] * roots[k + j];
                 a[i + j] = u + v, a[i + j + k] = u - v;
             }
         }
@@ -30,15 +35,10 @@ void idft(std::vector<comp> &a) {
 }
 
 struct poly : public std::vector<comp> {
-    poly() : std::vector<comp>() {}
-    explicit constexpr poly(int n) : std::vector<comp>(n) {}
-    explicit constexpr poly(const std::vector<comp> &a) : std::vector<comp>(a) {}
-    constexpr poly(const std::initializer_list<comp> &a) : std::vector<comp>(a) {}
+    using std::vector<comp>::vector;
+    explicit poly(const std::vector<comp> &a) : std::vector<comp>(a) {}
 
-    template <class InputIt, class = std::_RequireInputIter<InputIt>>
-    explicit constexpr poly(InputIt st, InputIt ed) : std::vector<comp>(st, ed) {}
-
-    constexpr friend poly operator * (poly a, poly b) {
+    friend poly operator * (poly a, poly b) {
         int tot = a.size() + b.size() - 1;
         if (tot < 128) {
             poly c(tot);
@@ -49,14 +49,8 @@ struct poly : public std::vector<comp> {
             }
             return c;
         }
-
-        int L = 1, P = 0;
-        while (L < tot) L <<= 1, P ++;
-        rev.resize(L);
-        for (int i = 0; i < L; i ++) {
-            rev[i] = (rev[i >> 1] >> 1) | ((i & 1) << (P - 1));
-        }
-
+        int L = 1;
+        while (L < tot) L <<= 1;
         a.resize(L), b.resize(L);
         dft(a), dft(b);
         for (int i = 0; i < L; i ++) {

@@ -1,72 +1,29 @@
-/**
- * 多项式全家桶 使用手册
- * author：Calculatelove
- * version：2026.08.29
- * 
- * 版本兼容：
- * - C++23 以上：请放心使用
- * - C++17~C++20：
- *     请删去所有 poly 中的 constexpr（在 poly 上方 #define constexpr 即可）
- * - C++14：
- *     请将 RootPower 前面的 constexpr 改成 const
- * - C++11：
- *     请删去所有函数体前面的 constexpr，
- *     请将 findRootPower 与 RootPower 前面的 auto 改成 std::array<int, 32>
- * 
- * 模数：
- * - 请务必保证数值在 [0, mod) 范围内！
- * - 涉及到多项式乘法时：
- *     模数必须为 NTT 模数！否则请将 “多项式乘法” 替换为 “MTT 版本的多项式乘法”
- * - 不涉及多项式乘法时：（例如四则运算求导积分，以及暴力多项式 mul_bf, div_bf, inv_bf, pow_bf）
- *     模数只需为质数即可
- * 
- * 原根：
- * - 默认为 3，请根据具体 NTT 模数确认原根
- * 
- * 已有的常数优化：
- * - 使用了一些函数辅助取模（0x11 取模.cpp）
- * - 使用 findRootPower() 预处理原根的幂（即单位根）
- * 
- * 可能的常数优化：
- * - 半在线卷积中，补充界只需 >= r - l + 1
- * - 预处理阶乘以及阶乘逆元
- *     poly_factorial() -> shift(), shift_conti()
- * - 预处理线性逆元
- *     poly_linearInverse() -> integ(), pow_bf()
- */
-
-// 预处理单位根
-constexpr auto findRootPower(int mod, int g) {
-    std::array<int, 32> w{};
-    for (int k = 1, idx = 0; (mod - 1) % (k << 1) == 0; k <<= 1) {
-        w[idx ++] = qpow(g, (mod - 1) / (k << 1), mod); // 2k 阶单位根
-    }
-    return w;
-}
-
-constexpr auto RootPower = findRootPower(mod, 3);
-
-std::vector<int> rev;
+std::vector<int> roots{0, 1};
 void dft(std::vector<int> &a) {
     int n = a.size();
-    for (int i = 0; i < n; i ++) {
-        if (i < rev[i]) {
-            std::swap(a[i], a[rev[i]]);
+    for (int i = 1, j = 0; i < n; i ++) {
+        for (int k = n >> 1; (j ^= k) < k; k >>= 1);
+        if (i < j) std::swap(a[i], a[j]);
+    }
+    for (int k = roots.size(); k < n; k <<= 1) {
+        int w = qpow(3, (mod - 1) / (k << 1), mod);
+        roots.resize(k << 1);
+        for (int i = k >> 1; i < k; i ++) {
+            roots[i * 2] = roots[i];
+            roots[i * 2 + 1] = 1ll * roots[i] * w % mod;
         }
     }
-    for (int k = 1, idx = 0; k < n; k <<= 1) {
-        int omega = RootPower[idx ++];
+    for (int k = 1; k < n; k <<= 1) {
         for (int i = 0; i < n; i += (k << 1)) {
-            int x = 1;
-            for (int j = 0; j < k; j ++, mul(x, omega)) {
-                int u = a[i + j], v = 1ll * x * a[i + j + k] % mod;
+            for (int j = 0; j < k; j ++) {
+                int u = a[i + j], v = 1ll * a[i + j + k] * roots[k + j] % mod;
                 add(a[i + j] = u, v), dec(a[i + j + k] = u, v);
             }
         }
     }
 }
 void idft(std::vector<int> &a) {
-    int n = a.size(), inv = qpow(n, mod - 2, mod);
+    int n = a.size(), inv = (1 - mod) / n + mod;
     std::reverse(a.begin() + 1, a.end());
     dft(a);
     for (int i = 0; i < n; i ++) {
@@ -74,18 +31,13 @@ void idft(std::vector<int> &a) {
     }
 }
 
-// 多项式全家桶
+// 多项式全家桶（2026-10-25）
 struct poly : public std::vector<int> {
-    poly() : std::vector<int>() {}
-    explicit constexpr poly(int n) : std::vector<int>(n) {}
-    explicit constexpr poly(const std::vector<int> &a) : std::vector<int>(a) {}
-    constexpr poly(const std::initializer_list<int> &a) : std::vector<int>(a) {}
-
-    template <class InputIt, class = std::_RequireInputIter<InputIt>>
-    explicit constexpr poly(InputIt st, InputIt ed) : std::vector<int>(st, ed) {}
+    using std::vector<int>::vector;
+    explicit poly(const std::vector<int> &a) : std::vector<int>(a) {}
 
     // 多项式乘法
-    constexpr friend poly operator * (poly a, poly b) {
+    friend poly operator * (poly a, poly b) {
         int tot = a.size() + b.size() - 1;
         if (tot < 128) {
             poly c(tot);
@@ -96,14 +48,8 @@ struct poly : public std::vector<int> {
             }
             return c;
         }
-
-        int L = 1, P = 0;
-        while (L < tot) L <<= 1, P ++;
-        rev.resize(L);
-        for (int i = 0; i < L; i ++) {
-            rev[i] = (rev[i >> 1] >> 1) | ((i & 1) << (P - 1));
-        }
-
+        int L = 1;
+        while (L < tot) L <<= 1;
         a.resize(L), b.resize(L);
         dft(a), dft(b);
         for (int i = 0; i < L; i ++) {
@@ -115,7 +61,7 @@ struct poly : public std::vector<int> {
     }
 
     // 多项式乘法（暴力）
-    constexpr friend poly mul_bf(poly a, poly b) {
+    friend poly mul_bf(poly a, poly b) {
         poly c(a.size() + b.size() - 1);
         for (int i = 0; i < a.size(); i ++) {
             for (int j = 0; j < b.size(); j ++) {
@@ -125,14 +71,10 @@ struct poly : public std::vector<int> {
         return c;
     }
     // 多项式除法（暴力）
-    constexpr friend poly div_bf(poly a, poly b) {
+    friend poly div_bf(poly a, poly b) {
         int t = 0;
-        while (t < b.size() && b[t] == 0) {
-            t ++;
-        }
-        if (t == b.size()) { // 除以全 0 多项式无意义
-            return poly(a.size() - b.size() + 1);
-        }
+        while (t < b.size() && b[t] == 0) t ++;
+        if (t == b.size()) return poly(a.size() - b.size() + 1); // 除以全 0 多项式无意义
         a = poly(a.begin() + t, a.end());
         b = poly(b.begin() + t, b.end());
         int m = b.size() - 1, inv = qpow(b[0], mod - 2, mod);
@@ -146,92 +88,78 @@ struct poly : public std::vector<int> {
         }
         return c;
     }
-
-    constexpr friend poly operator + (poly a, poly b) {
+    
+    friend poly operator + (poly a, poly b) {
         poly c(std::max(a.size(), b.size()));
-        for (int i = 0; i < a.size(); i ++) {
-            add(c[i], a[i]);
-        }
-        for (int i = 0; i < b.size(); i ++) {
-            add(c[i], b[i]);
-        }
+        for (int i = 0; i < a.size(); i ++) add(c[i], a[i]);
+        for (int i = 0; i < b.size(); i ++) add(c[i], b[i]);
         return c;
     }
-    constexpr friend poly operator - (poly a, poly b) {
+    friend poly operator - (poly a, poly b) {
         poly c(std::max(a.size(), b.size()));
-        for (int i = 0; i < a.size(); i ++) {
-            add(c[i], a[i]);
-        }
-        for (int i = 0; i < b.size(); i ++) {
-            dec(c[i], b[i]);
-        }
+        for (int i = 0; i < a.size(); i ++) add(c[i], a[i]);
+        for (int i = 0; i < b.size(); i ++) dec(c[i], b[i]);
         return c;
     }
-    constexpr friend poly operator - (poly a) {
-        for (int &x : a) {
-            neg(x);
-        }
+    friend poly operator - (poly a) {
+        for (int &x : a) neg(x);
         return a;
     }
 
-    constexpr friend poly operator * (poly a, int b) {
-        for (int &x : a) {
-            mul(x, b);
-        }
+    friend poly operator * (poly a, int b) {
+        for (int &x : a) mul(x, b);
         return a;
     }
-    constexpr friend poly operator / (poly a, int b) {
+    friend poly operator / (poly a, int b) {
         int inv = qpow(b, mod - 2, mod);
-        for (int &x : a) {
-            mul(x, inv);
-        }
+        for (int &x : a) mul(x, inv);
         return a;
     }
 
-    constexpr poly &operator += (poly b) {
+    poly &operator += (poly b) {
         return (*this) = (*this) + b;
     }
-    constexpr poly &operator -= (poly b) {
+    poly &operator -= (poly b) {
         return (*this) = (*this) - b;
     }
-    constexpr poly &operator *= (poly b) {
+    poly &operator *= (poly b) {
         return (*this) = (*this) * b;
     }
-    constexpr poly &operator *= (int b) {
+    poly &operator *= (int b) {
         return (*this) = (*this) * b;
     }
-    constexpr poly &operator /= (int b) {
+    poly &operator /= (int b) {
         return (*this) = (*this) / b;
     }
 
-    constexpr poly mulxk(int k) const {
+    poly mulxk(int k) const {
         auto res = *this;
         res.insert(res.begin(), k, 0);
         return res;
     }
-    constexpr poly divxk(int k) const {
+    poly divxk(int k) const {
         if (k >= size()) return poly();
         return poly((*this).begin() + k, (*this).end());
     }
-    constexpr poly modxk(int k) const {
+    poly modxk(int k) const {
         if (k >= size()) return *this;
         return poly((*this).begin(), (*this).begin() + k);
     }
-    constexpr poly cirxk(int k) const {
+    poly cirxk(int k) const {
         auto res = *this;
         for (int i = k; i < size(); i ++) {
-            add(res[i % k], res[i]); // 若多项式次数 <2k，也可以改成 res[i - k]
+            add(res[i % k], res[i]); // 若多项式次数 <2k，可改成 res[i - k]
         }
         return res.modxk(k);
     }
 
-    constexpr poly flip() const {
+    poly flip() const {
         auto res = *this;
         std::reverse(res.begin(), res.end());
         return res;
     }
 
-    constexpr poly mulT(poly b) const {
+    poly mulT(poly b) const {
         if (b.size() == 0) return poly();
         std::reverse(b.begin(), b.end());
         return ((*this) * b).divxk(b.size() - 1);
@@ -239,7 +167,7 @@ struct poly : public std::vector<int> {
     }
 
     // 多项式导数
-    constexpr poly deriv() const {
+    poly deriv() const {
         if (empty()) return poly();
         poly res(size() - 1);
         for (int i = 1; i < size(); i ++) {
@@ -249,7 +177,7 @@ struct poly : public std::vector<int> {
     }
 
     // 多项式积分
-    constexpr poly integ() const {
+    poly integ() const {
         poly res(size() + 1);
         for (int i = 0; i < size(); i ++) {
             res[i + 1] = 1ll * (*this)[i] * qpow(i + 1, mod - 2, mod) % mod;
@@ -258,7 +186,7 @@ struct poly : public std::vector<int> {
     }
 
     // 多项式求逆
-    constexpr poly inv(int m) const { // 需要保证常数项不为 0
+    poly inv(int m) const { // 需要保证常数项不为 0
         poly x{qpow((*this)[0], mod - 2, mod)};
         int k = 1;
         while (k < m) {
@@ -268,7 +196,7 @@ struct poly : public std::vector<int> {
         return x.modxk(m);
     }
     // 少项式求逆
-    constexpr poly inv_bf(int m) const { // 需要保证常数项不为 0
+    poly inv_bf(int m) const { // 需要保证常数项不为 0
         auto &&a = *this;
         int n = a.size() - 1, inv = qpow(a[0], mod - 2, mod);
 
@@ -284,7 +212,7 @@ struct poly : public std::vector<int> {
     }
 
     // 多项式开方
-    constexpr poly sqrt(int m) const {
+    poly sqrt(int m) const {
         poly x{1}; // 默认常数项为 1
         int k = 1;
         while (k < m) {
@@ -295,7 +223,7 @@ struct poly : public std::vector<int> {
     }
 
     // 多项式带余除法
-    constexpr friend std::pair<poly, poly> divmod(poly a, poly b) {
+    friend std::pair<poly, poly> divmod(poly a, poly b) {
         int n = a.size(), m = b.size(), L = n - m + 1;
         if (n < m) return {poly{0}, a};
         poly q = (a.flip().modxk(L) * b.flip().inv(L)).modxk(L).flip();
@@ -307,12 +235,12 @@ struct poly : public std::vector<int> {
     }
 
     // 多项式 ln
-    constexpr poly ln(int m) const { // 需要保证常数项为 1
+    poly ln(int m) const { // 需要保证常数项为 1
         return (deriv() * inv(m)).integ().modxk(m);
     }
 
     // 多项式 exp
-    constexpr poly exp(int m) const { // 需要保证常数项为 0
+    poly exp(int m) const { // 需要保证常数项为 0
         poly x{1};
         int k = 1;
         while (k < m) {
@@ -323,14 +251,10 @@ struct poly : public std::vector<int> {
     }
 
     // 多项式快速幂
-    constexpr poly pow(int k, int m) const {
+    poly pow(int k, int m) const {
         int i = 0;
-        while (i < size() && (*this)[i] == 0) {
-            i ++;
-        }
-        if (i == size() || 1ll * i * k >= m) {
-            return poly(m);
-        }
+        while (i < size() && (*this)[i] == 0) i ++;
+        if (i == size() || 1ll * i * k >= m) return poly(m);
         int v = (*this)[i];
         poly f = divxk(i) * qpow(v, mod - 2, mod);
         return (f.ln(m - i * k) * k).exp(m - i * k).mulxk(i * k) * qpow(v, k, mod);
@@ -344,7 +268,7 @@ struct poly : public std::vector<int> {
         */
     }
     // 少项式快速幂
-    constexpr poly pow_bf(int k, int m) const { // 需要保证常数项不为 0
+    poly pow_bf(int k, int m) const { // 需要保证常数项不为 0
         std::vector<int> v(m); // 需要保证 m > 1
         v[1] = 1;
         for (int i = 2; i < m; i ++) {
@@ -371,10 +295,8 @@ struct poly : public std::vector<int> {
     }
 
     // 多项式多点求值
-    constexpr std::vector<int> eval(std::vector<int> x) const {
-        if (empty()) {
-            return std::vector<int>(x.size(), 0);
-        }
+    std::vector<int> eval(std::vector<int> x) const {
+        if (empty()) return std::vector<int>(x.size(), 0);
 
         int n = std::max(x.size(), size());
         std::vector<poly> t(n * 4);
@@ -408,7 +330,7 @@ struct poly : public std::vector<int> {
     }
 
     // 多项式平移
-    constexpr poly shift(int c) const {
+    poly shift(int c) const {
         int n = size() - 1;
 
         std::vector<int> fact(n + 1), facv(n + 1);
@@ -439,8 +361,8 @@ struct poly : public std::vector<int> {
 };
 
 // 多项式快速插值
-constexpr poly lagrange(std::vector<std::pair<int, int>> seq) {
-    int n = seq.size(); // seq 下标从 0 开始，至多 n-1 次的多项式需要 n 个点值
+poly lagrange(std::vector<std::pair<int, int>> seq) {
+    int n = seq.size(); // seq 下标从 0 开始，至多 n-1 次多项式需要 n 个点值
     std::vector<poly> t(n * 4);
     std::vector<int> x(n);
     for (int i = 0; i < n; i ++) {
@@ -470,7 +392,7 @@ constexpr poly lagrange(std::vector<std::pair<int, int>> seq) {
 }
 
 // 连续点值平移
-constexpr std::vector<int> shift_conti(std::vector<int> y, int c) {
+std::vector<int> shift_conti(std::vector<int> y, int c) {
     int n = y.size() - 1; // y 下标从 0 开始，连续点值为 f(0), ..., f(n)
 
     std::vector<int> fact(n + 1), facv(n + 1);

@@ -1,5 +1,5 @@
 // 多项式多点求值（多项式取模做法），作为 poly 的成员函数
-constexpr std::vector<int> eval(std::vector<int> x) const {
+std::vector<int> eval(std::vector<int> x) const {
     if (empty()) return std::vector<int>(x.size(), 0);
     if (x.empty()) return {};
 
