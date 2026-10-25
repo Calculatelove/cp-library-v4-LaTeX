@@ -1,11 +1,7 @@
 // 更相减损术
 int gcd(int a, int b) {
-    if (a == b) {
-        return a;
-    }
-    if (a == 0 || b == 0) {
-        return a ^ b;
-    }
+    if (a == b) return a;
+    if (a == 0 || b == 0) return a ^ b;
     int az = __builtin_ctz(a), bz = __builtin_ctz(b), z = az < bz ? az : bz, v = 0;
     a >>= az, b >>= bz;
     while (b) {
