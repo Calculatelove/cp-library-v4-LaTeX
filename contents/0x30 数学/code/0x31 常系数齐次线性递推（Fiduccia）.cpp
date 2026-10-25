@@ -1,9 +1,7 @@
 // 常系数齐次线性递推（Fiduccia）
 int linearRecurrence(std::vector<int> c, std::vector<int> y, int n) {
     int k = y.size(); // k 阶齐次线性递推数列
-    if (n < k) {
-        return norm(y[n]);
-    }
+    if (n < k) return norm(y[n]);
 
     poly g(k + 1);
     g[k] = 1;
