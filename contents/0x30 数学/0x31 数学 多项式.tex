@@ -24,12 +24,12 @@ f(x) = \sum\limits_{i = 1}^{n + 1} y_i \prod\limits_{j \neq i} \frac{x - x_j}{x_
 
 \InputCode{cpp}{contents/0x30 数学/code/0x31 拉格朗日插值.cpp}
 
-\Highlight{拉格朗日插值求系数}：相当于是直接将整个多项式求出来。运用了\textbf{暴力除以单项式}的技巧。
+\Highlight{拉格朗日插值求系数}：相当于是直接将整个多项式求出来。运用了\textbf{暴力除以一次式}的技巧。
 
 \begin{itemize}
 \item 记系数部分 $a_i = \frac{y_i}{\prod_{j \neq i} (x_i - x_j)}$。
 \item 记多项式 $g(x) = \prod_{j} (x - x_j)$，记多项式 $h_i(x) = \prod_{j \neq i} (x - x_j)$。
-\item 先 $\mathcal{O}(n^2)$ 暴力多项式乘法求出 $g(x)$。\textbf{考虑由 $g(x)$ 得到 $h_i(x)$，相当于是多项式 $g(x)$ 除以一个单项式 $(x - x_i)$}，仍然可以 $\mathcal{O}(n)$ 暴力除以单项式。具体地，由于 $(x - x_i)h_i(x) = g(x)$，则对于 $g(x)$ 的 $j$ ($j \geq 1$) 次项系数，有 $[x^{j - 1}]h_i - x_i[x^j]h_i = [x^j]g$。于是
+\item 先 $\mathcal{O}(n^2)$ 暴力多项式乘法求出 $g(x)$。\textbf{考虑由 $g(x)$ 得到 $h_i(x)$，相当于是多项式 $g(x)$ 除以一个一次式 $(x - x_i)$}，仍然可以 $\mathcal{O}(n)$ 暴力除以一次式。具体地，由于 $(x - x_i)h_i(x) = g(x)$，则对于 $g(x)$ 的 $j$ ($j \geq 1$) 次项系数，有 $[x^{j - 1}]h_i - x_i[x^j]h_i = [x^j]g$。于是
 \[
 \begin{gathered}
 [x^n]h_i = [x^{n + 1}]g \\
@@ -172,16 +172,13 @@ g_k = \sum\limits_{i = 0}^{n - 1}a_i \left( \omega_n^k \right)^i \iff a_k = \fra
 
 故 $a_k = \frac{1}{n} \sum_{i = 0}^{n - 1}g_i \left( \omega_n^{-k} \right)^i$ 成立。
 
-\Separator{}
-
 进一步，观察 IDFT 的式子，相当于将 DFT 中的 $\omega_n^1$ 换成 $\omega_n^{-1}$，做完以后再除以 $n$。
 
 再进一步，发现 $F(\omega_n^{-i}) = F(\omega_n^{n - i})$，于是 IDFT 可以看作将 DFT 后得到的点值进行翻转（注意 $F(\omega_n^0)$ 这一项不参与翻转），然后再除以 $n$。
 
 套用 DFT 的板子即可。
 
-\subsubsection{*DFT 与 IDFT 的矩阵角度}
-
+\begin{quoteblock}
 对于 DFT 前的系数表示法 $a_0, a_1, \dots, a_{n - 1}$ 以及 DFT 后的点值表示法 $g_0, g_1, \dots, g_{n - 1}$。可以写成一个\textbf{系数向量}左乘一个转移矩阵得到\textbf{点值向量}的式子：
 \[
 \begin{bmatrix}
@@ -236,6 +233,7 @@ g_{n - 1}
 \end{bmatrix}
 \]
 这也解释了 IDFT 的结论：将 DFT 中的 $\omega_n^1$ 换成 $\omega_n^{-1}$，做完以后除以 $n$。
+\end{quoteblock}
 
 \subsubsection{FFT 倍增实现}
 
@@ -313,9 +311,7 @@ g_{n - 1}
 
 对于一个质数 $m$，考虑 $m$ 的一个原根 $g$。此时 $g$ 的阶为 $m - 1$，显然原根 $g$ 不能直接代替 $n$ 阶单位根。
 
-考虑 $g$ 的若干次幂。$g^k$ 的阶为 $\frac{m - 1}{\gcd(m - 1, k)}$，必为 $m - 1$ 的约数。\textbf{且当 $n \mid (m - 1)$ 时，可以构造 $g^{\frac{m - 1}{n}}$ 的阶恰好等于 $n$}。
-
-尝试使用 $g^{\frac{m - 1}{n}}$ 代替 $n$ 阶单位根：
+考虑 $g$ 的若干次幂。$g^k$ 的阶为 $\frac{m - 1}{\gcd(m - 1, k)}$，必为 $m - 1$ 的约数。\textbf{且当 $n \mid (m - 1)$ 时，可以构造 $g^{\frac{m - 1}{n}}$ 的阶恰好等于 $n$}。尝试使用 $g^{\frac{m - 1}{n}}$ 代替 $n$ 阶单位根：
 \begin{itemize}
   \item 性质 1, 2 的证明显然。
   \item 性质 3 相当于是要证明 $g^{\frac{m - 1}{2}} \equiv -1 \pmod m$，可以使用二次剩余中的欧拉判别法来证明（原根必定不是二次剩余）。
@@ -389,9 +385,9 @@ e.g. 给出多项式序列 $p_1, \dots, p_n$，欲求 $\left(\prod_{i = l}^r p_i
 
 \subsection{Model：分治卷积}
 
-\Highlight{分治 NTT 模型 1}：给出 $n$ 个数 $a_1, \dots, a_n$，求出 $n$ 个单项式的积 $\prod_{i = 1}^n(a_ix + 1)$。
+\Highlight{分治 NTT 模型 1}：给出 $n$ 个数 $a_1, \dots, a_n$，求出 $n$ 个一次式的积 $\prod_{i = 1}^n(a_ix + 1)$。
 
-设 $f(l, r)$ 表示区间 $[l, r]$ 中所有单项式的积，\textbf{$f(l, r)$ 是一个次数为 $r - l + 1$ 的多项式（与区间长度有关）}。
+设 $f(l, r)$ 表示区间 $[l, r]$ 中所有一次式的积，\textbf{$f(l, r)$ 是一个次数为 $r - l + 1$ 的多项式（与区间长度有关）}。
 
 取 $\mathrm{mid} = \lfloor \frac{l + r}{2} \rfloor$，则有
 \[
@@ -480,7 +476,7 @@ g(l, r) = g(l, \mathrm{mid}) \times g(\mathrm{mid} + 1, r)
 \item 先递归 $\mathrm{solve}(l, \mathrm{mid})$，求出 $f_l, \dots, f_{\mathrm{mid}}$。
 \item \textbf{计算 $f_{[l, \mathrm{mid}]}$ 与 $g_{[0, r - l]}$ 的卷积结果，求出左半区间对右半区间的贡献}。
 \item 后递归 $\mathrm{solve}(\mathrm{mid} + 1, r)$，求出 $f_{\mathrm{mid} + 1}, \dots, f_r$。
-\item 最后递归到 $l = r$ 时，请注意根据具体递推式调整 $f_i$（e.g. 递推式 $f_i = g_i - \sum_{j = 1}^{i - 1} \binom{i - 1}{j - 1} f_{i - j}g_j$）。
+\item 最后递归到 $l = r$ 时，请注意根据具体递推式调整 $f_i$（e.g. 递推式 $f_i = g_i - \sum_{j = 1}^{i - 1} \binom{i - 1}{j} f_{i - j}g_j$）。
 \end{itemize}
 
 时间复杂度 $T(n) = 2T\left( \frac{n}{2} \right) + \mathcal{O}(n \log n) = \mathcal{O}(n \log^2 n)$。
@@ -493,7 +489,7 @@ g(l, r) = g(l, \mathrm{mid}) \times g(\mathrm{mid} + 1, r)
 由于 NTT 是循环卷积（$a_ib_j \to c_{(i + j) \bmod L}$，其中 $L$ 表示补充界），普通卷积的 $\mathrm{len} \sim \frac{3 \cdot \mathrm{len}}{2}$ 次项会污染掉循环卷积的 $0 \sim \frac{\mathrm{len}}{2}$ 次项，但我们只需要循环卷积的 $\frac{\mathrm{len}}{2} \sim \mathrm{len}$ 次项，所以将补充界调小不会对贡献产生影响。
 \end{quoteblock}
 
-\Highlight{全在线卷积}：求出 $f_0, \dots, f_n$，其中初值 $f_0 = 1$，递推式 $f_i = \sum_{j = 1}^i f_{i - j}g_j$，其中 $g_i$ 与 $f_0, \dots, f_i$ 强相关。
+\Highlight{全在线卷积}：求出 $f_0, \dots, f_n$，其中初值 $f_0 = 1$，递推式 $f_i = \sum_{j = 1}^i f_{i - j}g_j$，其中 $g_i$ 与 $f_0, \dots, f_{i - 1}$ 强相关。
 
 仍然使用强制中序遍历转移的 CDQ 分治。但 $g_{[0, r - l]}$ 我们不一定提前知道，进一步分析分治树的结构，\textbf{发现仅有 $l = 0$ 时不知道 $g_{[0, r - l]}$}。所以我们需要修改计算贡献的方式。
 
@@ -770,7 +766,7 @@ A^k(x) = \left(\frac{A(x)}{x^iv}\right)^k x^{ik}v^k
 f^P(x) \equiv f(x^P) \pmod P
 \]
 
-证明：不断地应用引理 1 即可。
+证明：不断地应用引理 1，最后应用费马小定理即可。
 
 由于一般情况下 $P > m$，所以 $f^P(x) \equiv f(x^P) \equiv ([x^0]f(x))^P \pmod{x^m}$。由于我们进行了一系列操作使得 $[x^0]f(x) = 1$，所以 $f^P(x) \equiv 1 \pmod{x^m}$。
 
@@ -953,9 +949,11 @@ reference：\textcolor{black}{j}\textcolor{red}{iangly} 算法模板。
 \[
 \frac{P(x)}{Q(x)} = \frac{P(x)Q(-x)}{Q(x)Q(-x)}
 \]
-记 $V(x) = Q(x)Q(-x)$，注意到 $V(x) = V(-x)$，则 $V(x)$ 仅有偶次项有值。于是我们有
+记 $V(x) = Q(x)Q(-x)$，注意到 $V(x) = V(-x)$，则 $V(x)$ 仅有偶次项有值。
+
+记 $P(x)Q(-x) = C_{\mathrm{even}}(x^2) + xC_{\mathrm{odd}}(x^2)$，$Q(x)Q(-x) = U(x^2)$。于是我们有
 \[
-\frac{P(x)}{Q(x)} = \frac{C_{\mathrm{even}}(x^2)}{U(x^2)} + \frac{xC_{\mathrm{odd}}(x^2)}{U(x^2)}, \quad U(x^2) = Q(x)Q(-x)
+\frac{P(x)}{Q(x)} = \frac{C_{\mathrm{even}}(x^2)}{U(x^2)} + \frac{xC_{\mathrm{odd}}(x^2)}{U(x^2)}
 \]
 由于左边只影响偶次项，右边只影响奇次项（因为 $\frac{1}{U(x^2)} = \frac{1}{Q(x)Q(-x)}$ 也是偶函数，仅有偶次项有值），于是我们只需要根据 $n$ 的奇偶递归到其中一边即可。
 

@@ -3,7 +3,7 @@
 
 \subsection{质数}
 
-\Highlight{质数}：若一个正整数 $n$ 无法被除了 $1$ 和它自身以外的任何正整数整除，则称该数为质数（或素数）。否则称该数为合数。
+\Highlight{质数}：若一个正整数 $n$ ($n > 1$) 无法被除了 $1$ 和它自身以外的任何正整数整除，则称该数为质数（或素数）。否则称该数为合数。特别地，$1$ 既不是质数也不是合数。
 
 \Highlight{质数分布函数}：$\pi(n)$ 表示 $1 \sim n$ 中的质数个数。当 $n$ 足够大时，$\pi(n) \sim \frac{n}{\ln n}$。
 
@@ -365,8 +365,6 @@ int gcd(int a, int b) {
 
 \subsubsection{求法 2：更相减损术}
 
-（也称之为 Stein 算法）
-
 对于 $\forall a, b \in \mathbb{N}$，不妨设 $a\geq b$，有
 \[
 \begin{gathered}
@@ -386,7 +384,7 @@ int gcd(int a, int b) {
 
 时间复杂度 $\mathcal{O}(\log \max(a, b))$。
 
-更相减损术常用于计算高精度 gcd（因为 “高精度取模” 复杂度较高，“高精度减法” 以及 “高精除低精” 复杂度较低）。
+更相减损术常用于计算高精度 gcd（因为“高精度取模”复杂度较高，“高精度减法”以及“高精除低精”复杂度较低）。
 
 \InputCode{cpp}{contents/0x30 数学/code/0x34 gcd（更相减损术）.cpp}
 
@@ -845,7 +843,7 @@ T(n) & = \sum\limits_{k \in D_n} T(k) \\
 进一步优化，\textbf{我们预处理出数论函数 $f(x)$ 的前 $m$ 项（其中 $m \geq \sqrt{n}$），并预处理出其前缀和}。设预处理的时间复杂度为 $T_0(m)$，则有
 \[
 \begin{aligned}
-T(n) & = T_0(m) + \sum_{k \in D_n, k > m} T(k) \\
+T(n) & = T_0(m) + \sum_{k \in D_n, k > m} \mathcal{O}(\sqrt{k}) \\
 & = T_0(m) + \sum_{i = 1}^{\left\lfloor \frac{n}{m} \right\rfloor} \mathcal{O}\left(\sqrt{\frac{n}{i}}\right) \\
 & = \mathcal{O}\left(T_0(m) + \int_0^{\frac{n}{m}} \sqrt{\frac{n}{x}} \mathrm{dx}\right) \\
 & = \mathcal{O}\left(T_0(m) + \frac{n}{\sqrt{m}} \right)
@@ -1329,7 +1327,7 @@ a^{x - 1} \frac{a}{\gcd(a, p)} + k\frac{p}{\gcd(a, p)} = \frac{b}{\gcd(a, p)}
 
 注意特判 $b = 0$ 的情况。
 
-\subsection{Misc🚩}
+\subsection{Misc}
 
 \subsubsection{平方差}
 

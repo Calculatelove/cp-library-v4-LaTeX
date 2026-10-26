@@ -32,8 +32,10 @@ A_n^m = \frac{n!}{(n - m)!} = n^{\underline{m}}
 \Highlight{吸收恒等式}：$m \in \mathbb{Z}$
 \[
 \begin{aligned}
-\binom{n}{m} & = \frac{n}{m}\binom{n - 1}{m - 1} \\
-\binom{n}{m} & = \frac{n}{n - m}\binom{n - 1}{m} \\
+\binom{n}{m} & = \frac{n}{m}\binom{n - 1}{m - 1}
+  \rlap{$\qquad (m \neq 0)$} \\
+\binom{n}{m} & = \frac{n}{n - m}\binom{n - 1}{m}
+  \rlap{$\qquad (n \neq m)$}
 \end{aligned}
 \]
 \Highlight{上指标反转}：$m \in \mathbb{Z}$
@@ -65,7 +67,7 @@ A_n^m = \frac{n!}{(n - m)!} = n^{\underline{m}}
 \end{itemize}
 \end{quoteblock}
 
-\Highlight{广义二项式定理}：$r \in \mathbb{R}$
+\Highlight{广义二项式定理}：$r \in \mathbb{R}$，$y > 0$，$|x| < y$
 \[
 (x + y)^r = \sum_{k = 0}^{\infty} \frac{r^{\underline{k}}}{k!} x^{k}y^{r - k}
 \]
@@ -73,7 +75,7 @@ A_n^m = \frac{n!}{(n - m)!} = n^{\underline{m}}
 \[
 \sum_{0 \leq k \leq m} \binom{n + k}{k} = \binom{n + m + 1}{m}
 \]
-\Highlight{上指标求和法}：$m \in \mathbb{Z}$，$n \geq 0$
+\Highlight{上指标求和法}：$n, m \in \mathbb{Z}$，$n, m \geq 0$
 \[
 \sum_{0 \leq k \leq n}\binom{k}{m} = \binom{n + 1}{m + 1}
 \]
@@ -81,11 +83,11 @@ A_n^m = \frac{n!}{(n - m)!} = n^{\underline{m}}
 \[
 \sum_k \binom{s}{k}\binom{t}{m - k} = \binom{s + t}{m}
 \]
-\Highlight{范德蒙德卷积变式}：$m \in \mathbb{Z}$
+\Highlight{范德蒙德卷积变式}：$m, s, t \in \mathbb{N}$
 \[
-\sum_k \binom{k}{s}\binom{m - k}{t} = \binom{m + 1}{s + t + 1}
+\sum_{0 \leq k \leq m} \binom{k}{s}\binom{m - k}{t} = \binom{m + 1}{s + t + 1}
 \]
-\Highlight{斜对角线求和法}：$n \in \mathbb{Z}$
+\Highlight{斜对角线求和法}：$n \in \mathbb{N}$
 \[
 \sum_{i = 0}^n \binom{n - i}{i} = \mathrm{Fib}_{n + 1}
 \]
@@ -94,11 +96,11 @@ A_n^m = \frac{n!}{(n - m)!} = n^{\underline{m}}
 等价于长度为 $n - 1$ 的没有相邻 $1$ 的二进制串个数。
 \end{quoteblock}
 
-\Highlight{组合数带权和}：$n \in \mathbb{Z}$
+\Highlight{组合数带权和}：$n \in \mathbb{N}$
 \[
 \sum_{i = 0}^n i\binom{n}{i} = n2^{n - 1}
 \]
-\Highlight{组合数带权平方和}：$n \in \mathbb{Z}$
+\Highlight{组合数带权平方和}：$n \in \mathbb{N}$
 \[
 \sum_{i = 0}^n i^2\binom{n}{i} = n(n + 1)2^{n - 2}
 \]
@@ -332,7 +334,7 @@ for (int i = 0; i <= n; i ++) {
 \begin{gathered}
 1, 1, 2, 5, 15, \\
 52, 203, 877, 4140, \\
-21147, 115975, 678578, 4213597, \\
+21147, 115975, 678570, 4213597, \\
 27644437, 190899322, 1382958545, \dots
 \end{gathered}
 \]
