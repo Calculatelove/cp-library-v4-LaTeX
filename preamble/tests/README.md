@@ -22,7 +22,7 @@
 
 ## 编译与检查
 
-依赖 XeLaTeX、`latexminted`、导言区宏包，以及 Songti SC、PingFang SC、Maple Mono NF CN（常规、粗体、斜体、粗斜体）。Latin Modern 与 mwe 示例图片由 TeX Live 提供；符号字体来自项目 `../fonts/`。PDF 功能检查另需 Python 的 PyMuPDF。
+依赖 XeLaTeX、`latexminted`、导言区宏包，以及 Songti SC、PingFang SC、Maple Mono NF CN（常规、粗体、斜体、粗斜体）。Latin Modern、空集符号所用的 New Computer Modern Math 与 mwe 示例图片由 TeX Live 提供；符号字体来自项目 `../fonts/`。PDF 功能检查另需 Python 的 PyMuPDF。
 
 从项目根目录运行以下命令，也可从其他目录使用脚本的完整路径。不带样张名时编译该组默认回归，带名字时只编译指定样张：
 

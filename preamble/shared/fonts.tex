@@ -63,6 +63,17 @@
 % 保留 \boldsymbol 对完整表达式（含算子和定界符）的语义。
 % 数学字体没有独立粗体文件，bold 版本采用轻度合成加粗。
 \setmathfont{Latin Modern Math}[version=bold,FakeBold=1.2]
+% 空集改用同风格的圆形替代字形（用户确认）；其余数学字形保留 Latin Modern。
+% unicode-math 中 \emptyset 与 \varnothing 共用 U+2205。
+% 独立符号族避免 unicode-math 的 range 与数学版本组合影响其他字形。
+\newfontfamily\BookEmptysetFont{NewCMMath-Regular.otf}[
+  NFSSFamily=BookEmptyset,Script=Math,
+  BoldFont=NewCMMath-Regular.otf,BoldFeatures={FakeBold=1.2}
+]
+\DeclareSymbolFont{BookEmptyset}{TU}{BookEmptyset}{m}{n}
+\SetSymbolFont{BookEmptyset}{bold}{TU}{BookEmptyset}{b}{n}
+\AddToHook{begindocument/end}{%
+  \Umathchardef\varnothing=0 \symBookEmptyset "2205\relax}
 % 保留文本类数学字母（如 \mathbf、\mathit）的 bold 版本字体映射。
 % \mathrm 已由上方定义改用数学字形，不走此文本映射。
 \setboldmathrm{lmroman10}[
