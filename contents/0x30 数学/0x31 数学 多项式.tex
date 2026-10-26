@@ -89,7 +89,7 @@ f(x) = \sum\limits_{i = 1}^{n + 1}y_i \frac{\mathrm{pre}_{i - 1} \times \mathrm{
 
 \subsubsection{DFT}
 
-DFT 的思想：“系数表示法” 转 “点值表示法”。
+DFT 的思想：“系数表示法”转“点值表示法”。
 
 已知系数 $a_0, \dots, a_{n - 1}$，取自变量 $\omega_n^0, \omega_n^1, \dots, \omega_n^{n - 1}$，计算点值 $F(\omega_n^0), F(\omega_n^1), \dots, F(\omega_n^{n - 1})$。
 
@@ -145,7 +145,7 @@ F(\omega_n^{k + n / 2}) & = F_L\left((\omega_n^{k + n / 2})^2\right) + \omega_n^
 
 \textbf{结论：将 DFT 中的 $\omega_n^1$ 换成 $\omega_n^{-1}$，做完以后除以 $n$ 即可}。
 
-IDFT 的思想：“点值表示法” 转 “系数表示法”。
+IDFT 的思想：“点值表示法”转“系数表示法”。
 
 已知点值 $F(\omega_n^0), F(\omega_n^1), \dots, F(\omega_n^{n - 1})$，求出系数 $a_0, \dots, a_{n - 1}$。
 
@@ -353,7 +353,7 @@ g_{n - 1}
 \end{aligned}
 \]
 
-可以在程序运行的过程中，修改全局变量 \texttt{mod} 的值。
+可以将 \texttt{mod} 设为全局变量，然后在程序运行的过程中修改 \texttt{mod} 的值。
 
 \InputCode{cpp}{contents/0x30 数学/code/0x31 MTT（三模 NTT）.cpp}
 
@@ -367,7 +367,7 @@ g_{n - 1}
 
 给出序列 $a_1, \dots, a_{p - 1}$ 与序列 $b_1, \dots, b_{p - 1}$，对于每一个 $k \in [1, p)$ 需要求出 $c_k = \sum_{i\cdot j \bmod p = k} a_ib_j$。
 
-当模数为较小的质数 $p$ 时，可以使用 “离散对数”，\textbf{将模 $p$ 意义下的乘法转换为模 $p - 1$ 意义下的加法}。
+当模数为较小的质数 $p$ 时，可以使用“离散对数”，\textbf{将模 $p$ 意义下的乘法转换为模 $p - 1$ 意义下的加法}。
 
 \subsection{Trick：多项式点乘向量}
 
@@ -400,7 +400,9 @@ f(l, r) = f(l, \mathrm{mid}) \times f(\mathrm{mid} + 1, r)
 \begin{quoteblock}
 By the way：求出 $n$ 个多项式的积，次数之和为 $m$。
 
-可以每次取出两个次数最小的多项式相乘后放回，时间复杂度 $\mathcal{O}(m \log^2 m)$。其实使用分治求解的时间复杂度也是相同的。
+可以每次取出两个次数最小的多项式相乘后放回，时间复杂度 $\mathcal{O}(m \log^2 m)$。
+
+其实使用分治求解的时间复杂度也是相同的。
 \end{quoteblock}
 
 \Highlight{分治 NTT 模型 2}：给出 $n$ 个数 $a_1, \dots, a_n$，求出 $n$ 个一次分式的和 $\sum_{i = 1}^n \frac{1}{1 - a_ix}$。
@@ -496,6 +498,7 @@ g(l, r) = g(l, \mathrm{mid}) \times g(\mathrm{mid} + 1, r)
 \begin{itemize}
 \item 当 $l = 0$ 时，\textbf{计算 $f_{[0, \mathrm{mid}]} \times g_{[0, \mathrm{mid}]}$ 的贡献}（此时还有 $f_{[0, \mathrm{mid}]} \times g_{[\mathrm{mid} + 1, r]}$ 的贡献没被计算）。
 \item 当 $l > 0$ 时，\textbf{计算 $f_{[l, \mathrm{mid}]} \times g_{[0, r - l]} + g_{[l, \mathrm{mid}]} \times f_{[0, r - l]}$ 的贡献}（后半部分即为 $l = 0$ 中漏掉的贡献）。
+\item 特别地，递归到 $l = r$ 时，要补齐 $f_0\times g_l$ 的贡献。
 \end{itemize}
 
 可以证明，点对的贡献不重不漏。
@@ -587,6 +590,8 @@ h_1(x) \equiv h_0(x) - \frac{g(h_0(x))}{g'(h_0(x))} \pmod{x^n}
 
 \Highlight{少项式求逆（暴力）}：
 
+需要满足 $a_0 \neq 0$。
+
 设 $A(x) = \sum_{i = 0}^n a_ix^i, B(x) = \sum b_ix^i$。直接根据多项式逆的定义 $\sum_{j = 0}^{i} b_ja_{i - j} = [i = 0]$ 暴力展开。
 
 初值
@@ -602,7 +607,7 @@ b_i = -\frac{1}{a_0} \sum\limits_{j = 0}^{i - 1}b_ja_{i - j}
 时间复杂度 $\mathcal{O}(nm)$。\textbf{当次数 $n$ 较小时有奇效}。
 
 \begin{quoteblock}
-这也验证了 “多项式逆存在条件” 的充分性。
+这也验证了“多项式逆存在条件”的充分性。
 \end{quoteblock}
 
 \Highlight{多项式求逆（牛顿迭代）}：
@@ -781,6 +786,8 @@ f^P(x) \equiv f(x^P) \pmod P
 
 \Highlight{少项式快速幂}：给出一个次数不高的多项式 $A(x)$，你需要求出 $A^k(x) \bmod x^m$。
 
+需要满足 $a_0 \neq 0$。
+
 设 $A(x) = \sum_{i = 0}^n a_ix^i, A^k(x) = \sum_{i = 0}^{m - 1}b_ix^i$。考虑对 $A^k(x)$ 求导
 \[
 \begin{gathered}
@@ -883,7 +890,7 @@ A(x + c) & = \sum_{i = 0}^n a_i(x + c)^i \\
 & = \sum_{j = 0}^n \frac{x^j}{j!} \cdot \left( \sum_{i = j}^n {\color{red} a_i \cdot i!} \cdot {\color{blue} \frac{c^{i - j}}{(i - j)!}} \right) \\
 \end{aligned}
 \]
-注意到括号里的求和式，下标之差恒为 $j$，于是可以使用 “翻转卷积” 的技巧求出每个关于 $j$ 的求和式。
+注意到括号里的求和式，下标之差恒为 $j$，于是可以使用“翻转卷积”的技巧求出每个关于 $j$ 的求和式。
 
 时间复杂度 $\mathcal{O}(n \log n)$。
 
@@ -934,7 +941,7 @@ reference：\textcolor{black}{j}\textcolor{red}{iangly} 算法模板。
 
 \begin{itemize}
 \item \textbf{构建结构体 \texttt{poly} 继承自 \texttt{std::vector<int>}}，自由度高且易于访问。
-\item 涉及 “当前多项式的变换或求值” 的功能均作为 \texttt{poly} 的内置函数；其余功能作为 \texttt{poly} 的外置函数。
+\item 涉及“当前多项式的变换或求值”的功能均作为 \texttt{poly} 的内置函数；其余功能作为 \texttt{poly} 的外置函数。
 \end{itemize}
 
 \InputCode{cpp}{contents/0x30 数学/code/0x31 多项式全家桶.cpp}

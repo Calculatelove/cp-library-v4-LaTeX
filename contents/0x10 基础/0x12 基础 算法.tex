@@ -5,7 +5,7 @@
 
 \Highlight{主定理}：用于求解分治递归类型的渐进时间复杂度问题。
 
-具体地，对于一个规模为 $n$ 的问题，将其划分成 $a$ 个规模为 $\frac{n}{b}$ 的子问题，附带 “合并/分割” 的开销 $f(n)$。
+具体地，对于一个规模为 $n$ 的问题，将其划分成 $a$ 个规模为 $\frac{n}{b}$ 的子问题，附带“合并/分割”的开销 $f(n)$。
 \[
 T(n) = aT\left( \frac{n}{b} \right) + f(n)
 \]
@@ -14,7 +14,7 @@ T(n) = aT\left( \frac{n}{b} \right) + f(n)
 
 \begin{itemize}
 \item 若 $f(n) = O(n^{\log_b a - \epsilon})$\newline{}
-\textbf{直觉：总工作量由 “叶子层” 主导。}
+\textbf{直觉：总工作量由“叶子层”主导。}
 \[
 T(n) = \Theta(n^{\log_b a})
 \]

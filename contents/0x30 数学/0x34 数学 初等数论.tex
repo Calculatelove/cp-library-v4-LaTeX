@@ -290,7 +290,7 @@ for (int j = 1; j <= primeCount; j ++) {
 \[
 \gcd(a_1, a_2, \dots, a_n) = \gcd(a_1, a_2 - a_1, \dots, a_n - a_{n - 1})
 \]
-通过差分律，我们可以维护差分数组的 gcd，以实现 “区间加” 与 “区间 gcd”。
+通过差分律，我们可以维护差分数组的 gcd，以实现“区间加”与“区间 gcd”。
 
 \Highlight{斐波那契数列 gcd 恒等式}：
 \[
@@ -326,10 +326,10 @@ a^{\gcd(n, m)} - b^{\gcd(n, m)} \mid \gcd(a^n - b^n, a^m - b^m)
 
 因为 $(a^r - b^r) - a^{r - s}(a^s - b^s) = b^s(a^{r - s} - b^{r - s})$，可以证得 $d \mid b^s(a^{r - s} - b^{r - s})$；同理可得 $d \mid a^s(a^{r - s} - b^{r - s})$。
 
-又由于 $\gcd(a, b) = 1$，于是 $d \mid a^{r - s} - b^{r - s}$，“降幂引理” 得证。
+又由于 $\gcd(a, b) = 1$，于是 $d \mid a^{r - s} - b^{r - s}$，“降幂引理”得证。
 \end{quoteblock}
 
-对 $\gcd(a^n - b^n, a^m - b^m)$ 反复应用 “降幂引理”，过程等价于辗转相除法。所以
+对 $\gcd(a^n - b^n, a^m - b^m)$ 反复应用“降幂引理”，过程等价于辗转相除法。所以
 \[
 \gcd(a^n - b^n, a^m - b^m) \mid a^{\gcd(n, m)} - b^{\gcd(n, m)}
 \]
@@ -375,9 +375,9 @@ int gcd(int a, int b) {
 
 \begin{itemize}
 \item 当 $a = b$ 时，$\gcd(a, b) = a$。
-\item “两个偶数”：$\gcd(a, b) = 2\gcd(\frac{a}{2}, \frac{b}{2})$。
-\item “一奇一偶”：不妨设 $a$ 为偶数，$\gcd(a, b) = \gcd(\frac{a}{2}, b)$。
-\item “两个奇数”：不妨设 $a \geq b$，$\gcd(a, b) = \gcd(a - b, b)$。
+\item“两个偶数”：$\gcd(a, b) = 2\gcd(\frac{a}{2}, \frac{b}{2})$。
+\item“一奇一偶”：不妨设 $a$ 为偶数，$\gcd(a, b) = \gcd(\frac{a}{2}, b)$。
+\item“两个奇数”：不妨设 $a \geq b$，$\gcd(a, b) = \gcd(a - b, b)$。
 \end{itemize}
 
 当至少有一个偶数的时候，每次迭代至少会将 $a, b$ 之一减半。而两个奇数相减会得到偶数。
@@ -1136,7 +1136,7 @@ x \equiv a_2 \pmod{m_2}
 \[
 x = pm_1 + a_1 = qm_2 + a_2 \Longrightarrow m_1p - m_2q = a_2 - a_1
 \]
-使用 exgcd 找出方程 $m_1p - m_2q = a_2 - a_1$ 的一组特解 $p_0, q_0$。
+使用 exgcd 找出方程 $m_1p - m_2q = a_2 - a_1$ 的一组特解 $p_0, q_0$，或判断无解。
 
 此时取 $a' = p_0m_1 + a_1$ 与 $m' = \operatorname{lcm}(m_1, m_2)$，两个方程合并为
 \[
@@ -1255,7 +1255,7 @@ g^{\frac{\varphi(m)}{p}} \not\equiv 1 \pmod m
 
 \Highlight{最小原根的上界}：若 $m$ 存在原根，则 $m$ 的最小原根的上界为 $m^{0.25}$ 级别。
 
-\Highlight{原根求解}：若 $m$ 存在原根，先求出 $\varphi(m)$，再求出 $\varphi(m)$ 的唯一分解形式。此时就可以根据 “原根判定定理” 配合快速幂判断一个数是否为 $m$ 的原根。
+\Highlight{原根求解}：若 $m$ 存在原根，先求出 $\varphi(m)$，再求出 $\varphi(m)$ 的唯一分解形式。此时就可以根据“原根判定定理”配合快速幂判断一个数是否为 $m$ 的原根。
 
 \textbf{从小到大暴力寻找原根，即可找到最小原根 $g$}。
 
@@ -1275,7 +1275,7 @@ g^{\frac{\varphi(m)}{p}} \not\equiv 1 \pmod m
 
 \begin{itemize}
 \item $\mathrm{ind}_g(ab) \equiv \mathrm{ind}_g(a) + \mathrm{ind}_g(b) \pmod{\varphi(m)}$。\newline{}
-说明离散对数可以将 “模 $m$ 意义下乘法” 转换成 “模 $\varphi(m)$ 意义下加法”。
+说明离散对数可以将“模 $m$ 意义下乘法”转换成“模 $\varphi(m)$ 意义下加法”。
 \item $\mathrm{ind}_g(a^k) \equiv k\operatorname{ind}_g(a) \pmod{\varphi(m)}$。
 \item $\mathrm{ind}_{g_1}(a) \equiv \operatorname{ind}_{g_2}(a) \operatorname{ind}_{g_1}(g_2) \pmod{\varphi(m)}$。其中 $g_1, g_2$ 均为 $m$ 的原根。
 \end{itemize}
@@ -1335,7 +1335,7 @@ a^{x - 1} \frac{a}{\gcd(a, p)} + k\frac{p}{\gcd(a, p)} = \frac{b}{\gcd(a, p)}
 
 \Highlight{平方差表示证明}：对于正整数 $n$，相当于判断是否存在两个不同的正整数 $a, b$ ($a > b$) 使得 $n = a^2 - b^2 = (a + b)(a - b)$。
 
-设 $x = a + b, y = a - b$，由于 $x, y$ 之间的差为 $2b$，所以 $x, y$ 奇偶性相同。对于同奇偶的两个 $x, y$ ($x > y$)，也都可以解出 $a, b$ 的值。
+设 $x = a + b, y = a - b$，则 $n = xy$。由于 $x, y$ 之间的差为 $2b$，所以 $x, y$ 奇偶性相同。对于同奇偶的两个 $x, y$ ($x > y$)，也都可以解出 $a, b$ 的值。
 
 故对于正整数 $n$，相当于是要找出 $n$ 的两个不同的约数 $x, y$，且 $x, y$ 奇偶性相同。
 

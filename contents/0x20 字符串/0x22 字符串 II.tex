@@ -131,7 +131,7 @@
 
 \begin{itemize}
 \item 当 $\mathrm{height}_{\mathrm{rk}_{i - 1}} = 0$ 时，命题成立。
-\item 当 $\mathrm{height}_{\mathrm{rk}_{i - 1}} \geq 1$ 时，考虑到后缀排序将 “前缀相近的后缀” 放到一起，所以 $\mathrm{height}_i$ 可以视为字典序小于 $\mathrm{sa}_i$ 的后缀与 $\mathrm{sa}_i$ 的 LCP 最大值。记 $u = \mathrm{sa}_{\mathrm{rk}_{i - 1} - 1}$，则有 $s_u = s_{i - 1}$，于是 $s[u + 1 : n]$ 的字典序比 $s[i : n]$ 更小，则必然存在一个字典序小于 $s[i : n]$ 的后缀使得与其的 LCP 大于等于 $\mathrm{height}_{\mathrm{rk}_{i - 1}} - 1$，故命题成立。
+\item 当 $\mathrm{height}_{\mathrm{rk}_{i - 1}} \geq 1$ 时，考虑到后缀排序将“前缀相近的后缀”放到一起，所以 $\mathrm{height}_i$ 可以视为字典序小于 $\mathrm{sa}_i$ 的后缀与 $\mathrm{sa}_i$ 的 LCP 最大值。记 $u = \mathrm{sa}_{\mathrm{rk}_{i - 1} - 1}$，则有 $s_u = s_{i - 1}$，于是 $s[u + 1 : n]$ 的字典序比 $s[i : n]$ 更小，则必然存在一个字典序小于 $s[i : n]$ 的后缀使得与其的 LCP 大于等于 $\mathrm{height}_{\mathrm{rk}_{i - 1}} - 1$，故命题成立。
 \end{itemize}
 
 \InputCode{cpp}{contents/0x20 字符串/code/0x22 SA.cpp}

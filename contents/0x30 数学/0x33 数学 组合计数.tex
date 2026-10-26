@@ -455,7 +455,7 @@ G_n = \mathrm{Fib}_{n - 1} \times a + \mathrm{Fib}_n \times b
 \[
 \mathrm{Fib}_{n + m} = \mathrm{Fib}_{n + 1}\mathrm{Fib}_m + \mathrm{Fib}_n\mathrm{Fib}_{m - 1}
 \]
-简单推导：可以使用 “类斐波那契数列” 的知识解释。
+简单推导：可以使用“类斐波那契数列”的知识解释。
 
 记 $G_0 = \mathrm{Fib}_n, G_1 = \mathrm{Fib}_{n + 1}$，$G_n = G_{n - 1} + G_{n - 2}$，则有 $\mathrm{Fib}_{n + m} = G_m$。
 
@@ -574,7 +574,7 @@ A^{iS} \equiv A^j \pmod p
 生日悖论：在 $[1, n]$ 中随机选择正整数，选出两个相同数的期望轮数为 $\mathcal{O}(\sqrt{n})$ 级别（近似 $\sqrt{\frac{\pi n}{2}}$）。
 \end{quoteblock}
 
-实际取数过程可能需要在 $[0, 12p]$ 中随机以保证期望次数。求 $\mathrm{Fib}_{i}$ 需要用到 “光速幂” 的技巧。
+实际取数过程可能需要在 $[0, 12p]$ 中随机以保证期望次数。求 $\mathrm{Fib}_{i}$ 需要用到“光速幂”的技巧。
 
 \subsection{普通生成函数}
 
@@ -678,7 +678,7 @@ F(x) = \ln G(x)
 
 考虑求 $g_i$，先让前 $i - 1$ 个点任意连边，最后所有奇点的度数都通过与 $i$ 连边调节成偶数。于是 $g_i = 2^{\binom{i - 1}{2}}$。
 
-剩余部分同 “有标号无向连通图计数”，时间复杂度 $\mathcal{O}(n \log n)$。
+剩余部分同“有标号无向连通图计数”，时间复杂度 $\mathcal{O}(n \log n)$。
 
 \InputCode{cpp}{contents/0x30 数学/code/0x33 有标号无向欧拉图计数.cpp}
 
@@ -743,7 +743,7 @@ F = \frac{1}{1 - G}
 
 \subsubsection{有标号弱连通 DAG 计数}
 
-设 $f_i$ 表示点数为 $i$ 的\textbf{有标号 DAG（不保证弱连通）}个数，设 $h_i$ 表示点数为 $i$ 的\textbf{有标号弱连通 DAG} 个数。$f_i$ 的求解详见 “有标号 DAG 计数”。
+设 $f_i$ 表示点数为 $i$ 的\textbf{有标号 DAG（不保证弱连通）}个数，设 $h_i$ 表示点数为 $i$ 的\textbf{有标号弱连通 DAG} 个数。$f_i$ 的求解详见“有标号 DAG 计数”。
 
 设 $F(x)$ 是 $f_i$ 的 EGF，$H(x)$ 是 $h_i$ 的 EGF。由 EGF 中多项式 exp 的组合意义，有 $F(x) = e^{H(x)}$。所以
 \[
@@ -804,6 +804,6 @@ F = \frac{A}{1 - B}
 
 \Highlight{Raney 引理}：若整数序列 $x_1, \dots, x_m$ 满足 $\sum_{i = 1}^m x_i = 1$，则它的 $m$ 个循环移位中恰好有 $1$ 个满足前缀和均为正数。
 
-唯一合法的循环移位起点，即为最靠后的 “前缀和最小点”。
+唯一合法的循环移位起点，即为最靠后的“前缀和最小点”。
 
 \Highlight{广义 Raney 引理}：若整数序列 $x_1, \dots, x_m$ 满足 $x_i \leq 1$ 且 $\sum_{i = 1}^m x_i = n$，则它的 $m$ 个循环移位中恰好有 $n$ 个满足前缀和均为正数。
