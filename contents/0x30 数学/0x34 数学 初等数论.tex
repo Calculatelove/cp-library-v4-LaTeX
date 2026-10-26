@@ -349,7 +349,7 @@ a^{\gcd(n, m)} - b^{\gcd(n, m)} \mid \gcd(a^n - b^n, a^m - b^m)
 
 \begin{itemize}
 \item 当 $a < b$ 时，一次迭代后就会转化为 $a \geq b$。
-\item 当 $a \geq b$ 时，由于 $a \bmod b \leq \frac{a}{2}$，这样的迭代不超过 $\log_2 a$ 次。
+\item 当 $a \geq b$ 时，由于 $a \bmod b \leq \frac{a}{2}$，这样的迭代不超过 $2\log_2 a$ 次。
 \end{itemize}
 
 时间复杂度 $\mathcal{O}(\log \max(a, b))$。
@@ -834,7 +834,7 @@ g(1)S(n) = \sum_{i = 1}^n (f \ast g)(i) - \sum_{i = 2}^n g(i)S\left( \left\lfloo
 假设函数 $f \ast g$ 与 $g$ 的前缀和均可 $\mathcal{O}(1)$ 求出，设计算 $S(n)$ 的时间复杂度为 $T(n)$，则有
 \[
 \begin{aligned}
-T(n) & = \sum\limits_{k \in D_n} T(k) \\
+T(n) & = \sum\limits_{k \in D_n} \mathcal{O}(\sqrt{k}) \\
 & = \mathcal{O}(\sqrt{n}) + \sum_{i = 1}^{\sqrt{n}}\mathcal{O}(\sqrt{i}) + \sum_{i = 2}^{\sqrt{n}} \mathcal{O}\left( \sqrt{\frac{n}{i}} \right) \\
 & = \mathcal{O}\left( \int_0^{\sqrt{n}} \left( \sqrt{x} + \sqrt{\frac{n}{x}} \right) \mathrm{dx} \right) \\
 & = \mathcal{O}(n^{\frac{3}{4}})
