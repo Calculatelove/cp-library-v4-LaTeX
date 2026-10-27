@@ -8,7 +8,9 @@
   ItalicFont=*-italic,BoldItalicFont=*-bolditalic
 ]
 \setsansfont{PingFang SC}[BoldFont={PingFang SC Semibold}]
-\setCJKmainfont{Songti SC}[BoldFont={Songti SC Bold},ItalicFont={Songti SC}]
+\setCJKmainfont{Songti SC}[
+  BoldFont={Songti SC Bold},BoldFeatures={FakeBold=0.5},ItalicFont={Songti SC}
+]
 \setCJKsansfont{PingFang SC}[BoldFont={PingFang SC Semibold}]
 % 宋体正文的双引号改用当前西文正文字形（用户确认），输入仍为 Unicode “”。
 % 跟随 NFSS 字体族选择：粗体/斜体保留规则，苹方与 Maple（含自定义代码字体）恢复原分类。

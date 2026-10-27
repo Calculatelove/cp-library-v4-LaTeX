@@ -53,7 +53,7 @@
 
 以下由用户确认或批准。实现与具体取值见括号中的文件。
 
-- 字体：中文正文用宋体 Songti SC，标题与导航用苹方 PingFang SC，粗体为 Semibold；西文正文用 Latin Modern Roman 的静态字形；数学用 Latin Modern Math，空集单独使用 New Computer Modern Math 的圆形字形（用户确认，`shared/fonts.tex`）。
+- 字体：中文正文用宋体 Songti SC，正文粗体在宋体 Bold 上轻度合成加粗；标题与导航用苹方 PingFang SC，粗体为 Semibold；西文正文用 Latin Modern Roman 的静态字形；数学用 Latin Modern Math，空集单独使用 New Computer Modern Math 的圆形字形（用户确认，`shared/fonts.tex`）。
 - 中文双引号（用户确认）：保留正文输入的 `“”`，在正文罗马字体族中按西文半角左右标点处理，使用 Latin Modern Roman 的对应字重与字形；宋体引号偏小，用户更喜欢双反引号写法的效果。规则同时适用于列表、引用块、高亮及宋体目录条目；苹方标题、导航、代码卡片标题与 Maple 行内代码、代码块保留原分类。按字体选择局部切换，不逐个环境打补丁，也不全局改变其他标点（`shared/fonts.tex`）。
 - 代码字体：代码块与行内代码都用 Maple Mono NF CN，关闭连字，启用 cv01 与 cv32–cv37；代码正文字号三版统一。普通 minted 片段默认不显示行号，长行折行；标题栏用苹方 Medium（`shared/fonts.tex`、`shared/code.tex`）。
 - 行号（用户确认）：仅 `\InputCode` 在卡片左边框外悬挂行号，沿用代码字体，正体、灰色、右对齐；不压缩代码宽度，便于双栏查阅。每个文件从 1 开始，空行也显示编号，折行只在首个视觉行显示编号，跨页与跨栏连续（`mystyle.tex`）。
