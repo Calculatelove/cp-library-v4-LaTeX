@@ -14,14 +14,6 @@ f(x) = \sum\limits_{i = 1}^{n + 1} y_i \prod\limits_{j \neq i} \frac{x - x_j}{x_
 
 朴素实现的时间复杂度为 $\mathcal{O}(n^2)$，可以使用多项式优化到 $\mathcal{O}(n \log^2 n)$（详见多项式快速插值）。
 
-\begin{quoteblock}
-构造方法：考虑构造 $n + 1$ 个函数，\textbf{其中第 $i$ 个函数 $f_i(x)$ 的图像经过 $(x_i, y_i)$，对于其他的 $j \neq i$ 经过 $(x_j, 0)$}。则我们要求的 $f(x)$ 即为这 $n + 1$ 个函数的和 $\sum_{i = 1}^{n + 1} f_i(x)$。
-
-尝试构造 $f_i(x) = a_i\prod_{j \neq i}(x - x_j)$，其中 $a_i$ 是待定的系数。此时对于 $j \neq i$ 均有 $f_i(x_j) = 0$。代入 $f_i(x_i) = y_i$ 即可解得 $a_i = \frac{y_i}{\prod_{j \neq i}(x_i - x_j)}$。
-
-于是原式得证。
-\end{quoteblock}
-
 \InputCode{cpp}{contents/0x30 数学/code/0x31 拉格朗日插值.cpp}
 
 \Highlight{拉格朗日插值求系数}：相当于是直接将整个多项式求出来。运用了\textbf{暴力除以一次式}的技巧。
@@ -37,7 +29,7 @@ f(x) = \sum\limits_{i = 1}^{n + 1} y_i \prod\limits_{j \neq i} \frac{x - x_j}{x_
 [x^j]h_i = [x^{j + 1}]g + x_i[x^{j + 1}]h_i \\
 \end{gathered}
 \]
-
+从后往前递推即可求出 $h_i(x)$。
 \item 求出了 $a_i$ 与 $h_i(x)$ 之后，计算 $f(x) = \sum_{i = 1}^{n + 1}a_ih_i(x)$。时间复杂度 $\mathcal{O}(n^2)$。
 \end{itemize}
 
@@ -137,7 +129,7 @@ g_k = \sum\limits_{i = 0}^{n - 1}a_i \left( \omega_n^k \right)^i \iff a_k = \fra
 
 因此可以直接在数组下标为 $k$ 和 $k + n / 2$ 的位置进行覆写，而不用开额外的辅助数组。
 
-\Highlight{FFT 多项式乘法}
+\Highlight{FFT 多项式乘法}：
 
 对于两个多项式 $A, B$，现在要求出多项式 $C = A \times B$。
 
@@ -190,9 +182,7 @@ g_k = \sum\limits_{i = 0}^{n - 1}a_i \left( \omega_n^k \right)^i \iff a_k = \fra
 
 当模数不为常用的 NTT 模数时，我们就需要使用一些技巧使得多项式乘法可以继续进行。
 
-首先不可以简单地使用 FFT，因为 double 的有效精度只有 $15\sim 16$ 位十进制有效数字，而对于常见的数据范围 $n, m \leq 10^5$ 以及 $a_i, b_i \leq 10^9$，卷积结果的最大值接近 $10^5 \times 10^9 \times 10^9 = 10^{23}$，一定会掉精度。
-
-如果想要对多个“任意模数”进行多项式乘法，可以将 \texttt{mod} 设为全局变量，在每次多项式乘法前修改 \texttt{mod} 的值。
+首先不可以简单地使用 FFT，因为 \texttt{double} 的有效精度只有 $15\sim 16$ 位十进制有效数字，而对于常见的数据范围 $n, m \leq 10^5$ 以及 $a_i, b_i \leq 10^9$，卷积结果的最大值接近 $10^5 \times 10^9 \times 10^9 = 10^{23}$，一定会掉精度。
 
 \subsubsection{三模 NTT}
 
@@ -213,7 +203,9 @@ g_k = \sum\limits_{i = 0}^{n - 1}a_i \left( \omega_n^k \right)^i \iff a_k = \fra
 
 \subsubsection{拆系数 FFT}
 
-该做法的优点是，只需要进行 $4$ 次 DFT，效率较高，代码也相对好写。
+当 $\mathrm{mod} < 2^{30}$ 时，将每个系数拆成两个 $15$ 位的数（$x = x_0 + x_1 \times 2^{15}$），然后将低位 $x_0$ 和高位 $x_1$ 分别作为复数的实部和虚部进行 DFT。此时卷积结果就可以被 \texttt{double} 精确表示。
+
+该做法的优点是，只需要进行 $4$ 次 DFT，效率较高，代码也相对好写。缺点是 $n$ 较大时，可能会掉精度。
 
 \InputCode{cpp}{contents/0x30 数学/code/0x31 MTT（拆系数 FFT）.cpp}
 
@@ -318,14 +310,22 @@ g(l, r) = g(l, \mathrm{mid}) \times g(\mathrm{mid} + 1, r)
 
 在线段树上递归，假设当前递归到了表示区间 $[l, r]$ 的节点 $u$，维护当前的 $\prod_{i = 0}^{l - 1} F_i(x)$ 与 $\sum_{i = 0}^{l - 1} \prod_{j = 0}^i F_j(x)$。在递归的过程中，两个多项式的次数太大，无法承受。
 
-考虑运用多项式多点求值的经典套路 $f(x) \equiv f(n) \pmod{x - n}$。递归到节点 $u$ 的时候，将两个多项式均对 $\prod_{m + 1\in [l, r]} (x - n)$ 取模（也就是对区间内所有询问的 $x - n$ 之积取模，同样在线段树上预处理出，注意叶子可能有多个询问，乘积需要单独计算），此时两个多项式的次数均不超过区间内询问个数。
+考虑运用多项式多点求值的经典套路 $f(x) \equiv f(n) \pmod{x - n}$。
+
+递归到节点 $u$ 的时候，将两个多项式均对 $\prod_{m + 1\in [l, r]} (x - n)$ 取模（也就是对区间内所有询问的 $x - n$ 之积取模，同样在线段树上预处理出，注意叶子可能有多个询问，乘积需要单独计算），此时两个多项式的次数均不超过区间内询问个数。
 
 最后递归到叶子时，由于叶子可能有多个询问，对当前多项式进行多点求值即可。
 
 时间复杂度 $\mathcal{O}(M \log^2 M + Q \log^2 Q)$，该做法的优点是时间复杂度与 $n$ 无关。
 
 \begin{quoteblock}
-还有一种基于莫队的做法。
+还有一种基于莫队的做法。记 $S_{n, m} = \sum_{i = 0}^m \binom{n}{i}$，则有
+\[
+\begin{gathered}
+S_{n + 1, m} = 2S_{n, m} - \binom{n}{m} \\
+S_{n, m + 1} = S_{n, m} + \binom{n}{m + 1}
+\end{gathered}
+\]
 \end{quoteblock}
 
 \subsection{Model：半在线卷积}
@@ -346,9 +346,7 @@ g(l, r) = g(l, \mathrm{mid}) \times g(\mathrm{mid} + 1, r)
 \begin{quoteblock}
 卡常技巧：计算 $f_{[l, \mathrm{mid}]}$ 与 $g_{[0, r - l]}$ 的卷积结果时，\textbf{只需将补充界设定成 $\geq \mathrm{len}$ 即可（而非 $\geq \frac{3 \cdot \mathrm{len}}{2}$）}。
 
-实际上我们要求的是 $\frac{\mathrm{len}}{2}$ 次多项式与 $\mathrm{len}$ 次多项式相乘的 $\frac{\mathrm{len}}{2} \sim \mathrm{len}$ 次项。
-
-由于 NTT 是循环卷积（$a_ib_j \to c_{(i + j) \bmod L}$，其中 $L$ 表示补充界），普通卷积的 $\mathrm{len} \sim \frac{3 \cdot \mathrm{len}}{2}$ 次项会污染掉循环卷积的 $0 \sim \frac{\mathrm{len}}{2}$ 次项，但我们只需要循环卷积的 $\frac{\mathrm{len}}{2} \sim \mathrm{len}$ 次项，所以将补充界调小不会对贡献产生影响。
+因为循环卷积只会污染 $0 \sim \frac{\mathrm{len}}{2}$ 次项，但我们只需 $\frac{\mathrm{len}}{2} \sim \mathrm{len}$ 次项。
 \end{quoteblock}
 
 \Highlight{全在线卷积}：求出 $f_0, \dots, f_n$，其中 $f_0 = 1$，$f_i = \sum_{j = 1}^i f_{i - j}g_j$，但是 $g_i$ 与 $f_0, \dots, f_{i - 1}$ 强相关。
@@ -416,21 +414,17 @@ f'(x) = \left( \sum\limits_{i = 0}^na_ix^i \right)' = \sum\limits_{i = 1}^n ia_i
 
 \subsubsection{多项式牛顿迭代}
 
-\Highlight{多项式牛顿迭代}：已知多项式函数 $g$，假设满足 $g(f(x)) = 0$ 的函数 $f(x) = h(x)$，求出 $h \bmod x^n$。
+\Highlight{多项式牛顿迭代}：已知多项式函数 $g$，求出满足 $g(h(x)) = 0$ 的多项式 $h$，一般我们只需要求出 $h \bmod x^n$。
 
 （在这里，我们将 $f(x)$ 看成函数 $g(f(x))$ 的自变量，则我们要求的就是 $g(f(x)) = 0$ 模 $x^n$ 意义下的零点）。
 
 当 $n = 1$ 时，$[x^0]h(x)$ 需要单独求出。
 
-当 $n > 1$ 时，\textbf{记 $h_0 = h \bmod x^{\left\lceil \frac{n}{2} \right\rceil}, h_1 = h \bmod x^n$，假设现在已经求出了 $h_0$，希望通过 $h_0$ 推出 $h_1$}。考虑将函数 $g(f(x))$ 在 $f(x) = h_0(x)$ 处泰勒展开。
+当 $n > 1$ 时，记 $h_0 = h \bmod x^{\left\lceil \frac{n}{2} \right\rceil}, h_1 = h \bmod x^n$，假设现在已经求出了 $h_0$，希望通过 $h_0$ 推出 $h_1$。考虑将函数 $g(f(x))$ 在 $f(x) = h_0(x)$ 处泰勒展开。
 \[
 g(f(x)) = \sum\limits_{i = 0}^{\infty} \frac{g^{(i)}(h_0(x))}{i!}(f(x) - h_0(x))^i
 \]
-将 $h_1(x)$ 代入自变量 $f(x)$，观察到 $h_1(x) - h_0(x)$ 的前 $\left\lceil \frac{n}{2} \right\rceil$ 项均为 $0$（模 $x^{\left\lceil \frac{n}{2} \right\rceil}$ 意义下两者显然相等）。
-
-也就是说 $h_1(x) - h_0(x)$ 的\textbf{最低次数}为 $\left\lceil \frac{n}{2} \right\rceil$，进一步有 $\left( h_1(x) - h_0(x) \right)^i$ 的最低次数为 $i\left\lceil \frac{n}{2} \right\rceil$。当 $i \geq 2$ 时，$\left(h_1(x) - h_0(x)\right)^i \bmod x^n$ 均为 $0$，\textbf{于是可以忽略 $i \geq 2$ 的项}。
-
-进一步可以得到
+将 $h_1(x)$ 代入自变量 $f(x)$，观察到 $h_1(x) - h_0(x)$ 的前 $\left\lceil \frac{n}{2} \right\rceil$ 项均为 $0$，所以二次及以上的项均可忽略。进一步可得
 \[
 g(h_0(x)) + g'(h_0(x))\left( h_1(x) - h_0(x) \right) \equiv 0 \pmod{x^n}
 \]
@@ -442,31 +436,11 @@ h_1(x) \equiv h_0(x) - \frac{g(h_0(x))}{g'(h_0(x))} \pmod{x^n}
 
 \subsubsection{多项式求逆}
 
-\Highlight{多项式逆}：给出一个多项式 $A(x)$，求出多项式 $B(x)$，满足 $A(x)B(x) = 1$。一般我们只需要求出 $B \bmod{x^m}$ 的结果。
+\Highlight{多项式逆}：给出一个多项式 $A(x)$，求出多项式 $B(x)$，满足 $A(x)B(x) = 1$。一般只需要求出 $B \bmod{x^m}$。
 
 \Highlight{多项式逆存在条件}：多项式 $A(x)$ 存在逆，当且仅当 $[x^0]A(x) \neq 0$。
 
 （注意：\textbf{一个多项式的逆可能是有无穷项的}，例如 $\frac{1}{1 - x} = 1 + x + x^2 + \dots$）
-
-\Highlight{少项式求逆（暴力）}：
-
-设 $A(x) = \sum_{i = 0}^n a_ix^i, B(x) = \sum b_ix^i$。直接根据多项式逆的定义 $\sum_{j = 0}^{i} b_ja_{i - j} = [i = 0]$ 暴力展开。
-
-初值
-\[
-b_0 = \frac{1}{a_0}
-\]
-递推式
-\[
-b_i = -\frac{1}{a_0} \sum\limits_{j = 0}^{i - 1}b_ja_{i - j}
-\]
-但递推式里的 $j$ 只需要枚举到 $i - j \leq n$ 即 $j \geq i - n$ 就可以了。
-
-时间复杂度 $\mathcal{O}(nm)$。\textbf{当次数 $n$ 较小时有奇效}。
-
-\begin{quoteblock}
-这也验证了“多项式逆存在条件”的充分性。
-\end{quoteblock}
 
 \Highlight{多项式求逆（牛顿迭代）}：
 
@@ -484,7 +458,7 @@ h_1(x) \equiv 2h_0(x) - A(x)h_0^2(x) \pmod{x^m}
 
 \subsubsection{多项式开方}
 
-\Highlight{多项式开方}：给出一个多项式 $A(x)$，求出多项式 $B(x)$，满足 $B^2(x) = A(x)$。一般我们只需要求出 $B \bmod x^m$ 的结果。
+\Highlight{多项式开方}：给出一个多项式 $A(x)$，求出多项式 $B(x)$，满足 $B^2(x) = A(x)$。一般只需要求出 $B \bmod x^m$。
 
 \Highlight{多项式开方存在条件}：当 $[x^0]A(x) \neq 0$ 时，多项式 $A(x)$ 存在开方，当且仅当 $[x^0]A(x)$ 存在模意义下的二次剩余。
 
@@ -546,7 +520,7 @@ $e$ 在模 $998244353$ 下没有意义。同理，$\ln 2$ 在模 $998244353$ 下
 \]
 \Highlight{多项式 ln 存在条件}：\textbf{多项式 $f(x)$ 存在 ln，当且仅当 $[x^0]f(x) = 1$，并且由此可得 $[x^0] \ln f(x) = 0$}。
 
-\Highlight{多项式 ln}：给出一个多项式 $A(x)$，求出多项式 $B(x) = \ln A(x)$。一般我们只需要求出 $B \bmod{x^m}$ 的结果。
+\Highlight{多项式 ln}：给出一个多项式 $A(x)$，求出多项式 $B(x) = \ln A(x)$。一般只需要求出 $B \bmod{x^m}$。
 
 将 $B(x) = \ln A(x)$ 等式两边对 $x$ 求导可得
 \[
@@ -562,7 +536,7 @@ B(x) = \int \frac{A'(x)}{A(x)} \mathrm{dx}
 
 \Highlight{多项式 exp 存在条件}：\textbf{多项式 $f(x)$ 存在 exp，当且仅当 $[x^0]f(x) = 0$，并且可以推出 $[x^0]\exp f(x) = 1$}。
 
-\Highlight{多项式 exp}：给出一个多项式 $A(x)$，求出多项式 $B(x) = \exp A(x)$。一般我们只需要求出 $B \bmod{x^m}$ 的结果。
+\Highlight{多项式 exp}：给出一个多项式 $A(x)$，求出多项式 $B(x) = \exp A(x)$。一般只需要求出 $B \bmod{x^m}$。
 
 构造函数 $g(f(x)) = \ln f(x) - A(x)$，代入牛顿迭代得
 \[
@@ -620,8 +594,6 @@ A^k(x) = \left(\frac{A(x)}{x^iv}\right)^k x^{ik}v^k
 \item \textbf{$v^k$ 部分}：$k$ 需要对 $\varphi(P) = P - 1$ 取模（因为是数值计算）。
 \item \textbf{$x^{ik}$ 部分}：用原始的 $k$ 判断，当 $i > 0$ 且 $k \geq m$ 时答案必定为 $0$。
 \end{itemize}
-
-By the way：因为 $(a + b)^P = \sum_{i = 0}^P \binom{P}{i}a^ib^{P - i}$，当 $0 < i < P$ 时，有 $\binom{P}{i} = \frac{P}{i}\binom{P - 1}{i - 1}$，由于 $P$ 是质数，所以该式子是 $P$ 的倍数。故 $(a + b)^P \equiv a^P + b^P \pmod P$ 得证。
 \end{quoteblock}
 
 \subsubsection{少项式快速幂}
@@ -665,7 +637,7 @@ By the way：从这个递推式进行归纳可知，当 $a_0 = 1$ 时，$[x^n]A^
 
 \Highlight{多项式多点求值（多项式取模）}：
 
-考虑使用分治将问题规模减半。设 $\mathrm{mid} = \left\lfloor \frac{1 + n}{2} \right\rfloor$，将给定的点集分成两部分
+设 $\mathrm{mid} = \left\lfloor \frac{1 + n}{2} \right\rfloor$，将给定的点集分成两部分
 \[
 X_1 = \{ x_1,  \dots, x_{\mathrm{mid}} \}, \quad X_2 = \{ x_{\mathrm{mid} + 1}, \dots, x_{n} \}
 \]
@@ -673,7 +645,7 @@ X_1 = \{ x_1,  \dots, x_{\mathrm{mid}} \}, \quad X_2 = \{ x_{\mathrm{mid} + 1}, 
 \[
 g_1(x) = \prod\limits_{x_i \in X_1}(x - x_i), \quad g_2(x) = \prod\limits_{x_i \in X_2}(x - x_i)
 \]
-由多项式取模，记 $f(x) = Q_1(x) \times g_1(x) + R_1(x)$。\textbf{对于 $X_1$ 中的元素 $x_i$，由于 $g_1(x_i) = 0$，则有 $f(x_i) = R_1(x_i)$}。又由于 $R_1(x)$ 的次数小于区间长度的一半，于是问题规模成功减半。对于 $X_2$ 中的元素也是同理。
+将 $f(x)$ 对 $g_1(x)$ 取模，记 $f(x) = Q_1(x) \times g_1(x) + R_1(x)$。\textbf{对于 $X_1$ 中的元素 $x_i$，由于 $g_1(x_i) = 0$，则有 $f(x_i) = R_1(x_i)$}。又由于 $R_1(x)$ 的次数小于区间长度的一半，于是问题规模成功减半，分治求解问题即可。对于 $X_2$ 中的元素也是同理。
 
 多项式 $g$ 可以通过分治 NTT 预处理。
 
@@ -728,7 +700,6 @@ f_2(x) = \sum\limits_{i = \mathrm{mid} + 1}^n v_i \left( \prod\limits_{j \neq i,
 A(x + c) & = \sum_{i = 0}^n a_i(x + c)^i \\
 & = \sum_{i = 0}^n a_i \sum_{j = 0}^i \binom{i}{j}x^jc^{i - j} \\
 & = \sum_{i = 0}^n a_i \sum_{j = 0}^i \frac{i!}{j!(i - j)!}x^jc^{i - j} \\
-& = \sum_{i = 0}^n a_i \cdot i! \cdot \sum_{j = 0}^i \frac{x^j}{j!} \cdot \frac{c^{i - j}}{(i - j)!} \\
 & = \sum_{j = 0}^n \frac{x^j}{j!} \cdot \left( \sum_{i = j}^n {\color{red} a_i \cdot i!} \cdot {\color{blue} \frac{c^{i - j}}{(i - j)!}} \right) \\
 \end{aligned}
 \]
@@ -777,7 +748,19 @@ f(c + x) = \left( \prod_{v = c + x - n}^{c + x} v \right) \mathrm{res}_{x + n}
 
 \subsection{Chirp Z-Transform}
 
+\Highlight{Chirp Z-Transform}：给出一个 $n$ 次多项式 $f(x)$ 以及整数 $c, m$，求出 $f(c^0), f(c^1), \dots, f(c^{m - 1})$。
 
+利用 $ij = \binom{i + j}{2} - \binom{i}{2} - \binom{j}{2}$，有
+
+\[
+\begin{aligned}
+f(c^i) & = \sum\limits_{j = 0}^n a_jc^{ij} \\
+& = \sum\limits_{j = 0}^n a_jc^{\binom{i + j}{2} - \binom{i}{2} - \binom{j}{2}} \\
+& = c^{-\binom{i}{2}}\sum\limits_{j = 0}^n a_jc^{-\binom{j}{2}} c^{\binom{i + j}{2}}
+\end{aligned}
+\]
+
+注意到求和式的下标之差恒为 $i$，于是可以使用“翻转卷积”的技巧求出每个关于 $i$ 的求和式。
 
 \subsection{多项式全家桶}
 
@@ -796,7 +779,7 @@ reference：\texttt{\textcolor{black}{j}\textcolor{red}{iangly}} 算法模板。
 
 \subsubsection{分式远处系数}
 
-用于求解分式 $\frac{P(x)}{Q(x)}$ 的第 $n$ 项 $[x^n]\frac{P(x)}{Q(x)}$。
+\Highlight{分式远处系数}：用于求解分式 $\frac{P(x)}{Q(x)}$ 的第 $n$ 项 $[x^n]\frac{P(x)}{Q(x)}$。
 
 考虑
 \[
@@ -873,7 +856,7 @@ P(x) = \left(\left(\sum_{i = 0}^{k - 1} a_ix^i \right) \times Q(x)\right) \bmod{
 
 时间复杂度 $\mathcal{O}(k \log k \log n)$，但单次询问常数相较于 Fiduccia 算法更小。
 
-\InputCode{cpp}{contents/0x30 数学/code/0x31 常系数齐次线性递推（Bostan-Mori）.cpp}
+\InputCode{cpp}{contents/0x30 数学/code/0x31 常系数齐次线性递推（递推式转分式）.cpp}
 
 \subsection{整式递推}
 
@@ -881,7 +864,7 @@ P(x) = \left(\left(\sum_{i = 0}^{k - 1} a_ix^i \right) \times Q(x)\right) \bmod{
 
 \Highlight{快速阶乘算法}：求 $n! \bmod p$，其中 $p$ 是一个大质数。
 
-（由于模数固定时，可以考虑分段打表。所以大概率不保证 $p$ 是一个 NTT 模数，此时需要使用 MTT）。
+（由于模数固定时可以分段打表，所以大概率不保证 $p$ 是一个 NTT 模数，此时需要使用 MTT）。
 
 设 $v = \left\lfloor \sqrt{n} \right\rfloor$，设多项式 $g(x) = \prod_{i = 1}^v (x + i)$，则
 \[
@@ -889,21 +872,15 @@ n! = \left( \prod_{i = 0}^{v - 1}g(iv) \right) \cdot \left( \prod_{i = v^2 + 1}^
 \]
 首先后半部分的 $\prod_{i = v^2 + 1}^n i$ 可以 $\mathcal{O}(\sqrt{n})$ 求出。我们现在只关心前半部分。
 
-设多项式 $g_d(x) = \prod_{i = 1}^d (x + i)$，则 $d + 1$ 个点值 $g_d(0), g_d(v), \dots, g_d(dv)$ 可以唯一确定 $d$ 次多项式 $g_d(x)$。
+设多项式 $g_d(x) = \prod_{i = 1}^d (x + i)$，则 $d + 1$ 个点值 $g_d(0), g_d(v), \dots, g_d(dv)$ 可以唯一确定 $d$ 次多项式 $g_d(x)$。\textbf{所以对于当前的 $d$，我们都需要维护出这 $d + 1$ 个点值}。
 
-\textbf{所以对于当前的 $d$，我们都需要维护出这 $d + 1$ 个点值}。初始时 $d = 1$，只有点值 $g_1(0) = 1, g_1(v) = v + 1$。考虑两种操作：
+初始时 $d = 1$，只有点值 $g_1(0) = 1, g_1(v) = v + 1$。考虑两种操作：
 
 操作 1：$d \gets 2d$。
 
 \begin{itemize}
-\item 补齐点值：补齐 $g_d((d + 1)v), \dots, g_d(2dv)$，可以通过 $g_d(0), g_d(v), \dots, g_d(dv)$ 向右平移 $dv$ 得到。
-  \begin{itemize}
-  \item 可以视作\textbf{连续点值 $h(x) = g_d(xv)$ 向右平移 $d$}。
-  \end{itemize}
-\item 修正点值：有公式 $g_{2d}(x) = g_d(x)g_d(x + d)$，将所有点值 $g_d(x)$ 向右平移 $d$ 得到 $g_d(x + d)$，然后对应位相乘即可。
-  \begin{itemize}
-  \item 可以视作\textbf{连续点值 $h(x) = g_d(xv)$ 向右平移 $\frac{d}{v}$}。
-  \end{itemize}
+\item 补齐点值：补齐 $g_d((d + 1)v), \dots, g_d(2dv)$，可以通过 $g_d(0), g_d(v), \dots, g_d(dv)$ 向右平移 $dv$ 得到（即连续点值 $h(x) = g_d(xv)$ 向右平移 $d$）。
+\item 修正点值：有公式 $g_{2d}(x) = g_d(x)g_d(x + d)$，将所有点值 $g_d(x)$ 向右平移 $d$ 得到 $g_d(x + d)$（即连续点值 $h(x) = g_d(xv)$ 向右平移 $\frac{d}{v}$），然后对应位相乘即可。
 \end{itemize}
 
 操作 2：$d \gets d + 1$。
@@ -921,8 +898,16 @@ n! = \left( \prod_{i = 0}^{v - 1}g(iv) \right) \cdot \left( \prod_{i = v^2 + 1}^
 
 \subsection{多项式复合}
 
+\sout{待填坑。}
+
 \subsection{拉格朗日反演}
+
+\sout{待填坑。}
 
 \subsection{Power Projection}
 
+\sout{待填坑。}
+
 \subsection{多项式复合逆}
+
+\sout{待填坑。}

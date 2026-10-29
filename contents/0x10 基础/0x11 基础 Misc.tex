@@ -98,6 +98,8 @@ Random Primes (\texttt{1e9}, \texttt{1e18})\\
 
 \subsubsection{xorshift}
 
+不适合直接作为哈希值进行结合。
+
 \InputCode{cpp}{contents/0x10 基础/code/0x11 xorshift.cpp}
 
 \subsubsection{xorsum}
@@ -143,7 +145,7 @@ CXXFLAGS = -std=c++23 -O2 -Wall -fsanitize=undefined
 \subsubsection{ulimit}
 
 \begin{minted}{bash}
-ulimit -s 1048576
+ulimit -s 1048576 # 单位 KB
 \end{minted}
 
 \subsubsection{Linux 对拍脚本}

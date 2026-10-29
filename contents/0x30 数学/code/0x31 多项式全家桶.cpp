@@ -31,7 +31,7 @@ void idft(std::vector<int> &a) {
     }
 }
 
-// 多项式全家桶（2026-10-25）
+// 多项式全家桶（2026-10-29）
 struct poly : public std::vector<int> {
     using std::vector<int>::vector;
     explicit poly(const std::vector<int> &a) : std::vector<int>(a) {}
@@ -195,21 +195,6 @@ struct poly : public std::vector<int> {
         }
         return x.modxk(m);
     }
-    // 少项式求逆
-    poly inv_bf(int m) const { // 需要保证常数项不为 0
-        auto &&a = *this;
-        int n = a.size() - 1, inv = qpow(a[0], mod - 2, mod);
-
-        poly b(m);
-        for (int i = 0; i < m; i ++) {
-            b[i] = i == 0;
-            for (int j = std::max(0, i - n); j < i; j ++) {
-                dec(b[i], 1ll * b[j] * a[i - j] % mod);
-            }
-            mul(b[i], inv);
-        }
-        return b;
-    }
 
     // 多项式开方
     poly sqrt(int m) const {
@@ -355,6 +340,38 @@ struct poly : public std::vector<int> {
         poly res = a.mulT(b);
         for (int i = 0; i <= n; i ++) {
             mul(res[i], facv[i]);
+        }
+        return res;
+    }
+
+    // Chirp Z-Transform
+    std::vector<int> czt(int c, int m) const {
+        c = norm(c);
+        if (c == 0) {
+            std::vector<int> res(m, (*this)[0]);
+            res[0] = 0;
+            for (int x : *this) add(res[0], x);
+            return res;
+        }
+
+        poly a = *this;
+        int n = a.size(), ic = qpow(c, mod - 2, mod);
+        poly b(n + m - 1), v(std::max(n, m));
+        b[0] = 1;
+        for (int i = 1, w = 1; i < b.size(); i ++, mul(w, c)) {
+            b[i] = 1ll * b[i - 1] * w % mod;
+        }
+        v[0] = 1;
+        for (int i = 1, w = 1; i < v.size(); i ++, mul(w, ic)) {
+            v[i] = 1ll * v[i - 1] * w % mod;
+        }
+
+        for (int i = 0; i < n; i ++) {
+            mul(a[i], v[i]);
+        }
+        poly res = b.mulT(a).modxk(m);
+        for (int i = 0; i < m; i ++) {
+            mul(res[i], v[i]);
         }
         return res;
     }

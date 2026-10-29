@@ -1,4 +1,4 @@
-int xorsum(int n) {
+i64 xorsum(i64 n) {
     int r = n % 4;
     if (r == 0) {
         return n;
