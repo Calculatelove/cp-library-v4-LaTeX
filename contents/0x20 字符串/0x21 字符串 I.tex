@@ -5,7 +5,7 @@
 
 \subsubsection{字符串哈希}
 
-\Highlight{字符串哈希}：字符串哈希要求\textbf{数据有序}。将字符串的元素通过某种\textbf{不具有交换律的运算}结合（例如矩阵乘法）。
+\Highlight{字符串哈希}：字符串哈希要求\textbf{数据有序}。将字符串的元素通过某种\textbf{不具有交换律的运算}结合（例如字符串拼接，矩阵乘法 ...）。
 
 通常将字符串 $s$ 视为一个 \textbf{$\mathrm{base}$ 进制数}，即
 \[
@@ -51,7 +51,7 @@ f(\overline{t_i}) = \mathrm{base}^{2^{i - 1}} f(\overline{t_{i - 1}}) + f(t_{i -
 其中每一项都是偶数，所以 $2^i \mid \mathrm{base}^{2^{i - 1}} - 1$。于是 $2^{\frac{i(i + 1)}{2}} \mid h_i$，因此 $t_{11}$ 与 $\overline{t_{11}}$ 就会哈希冲突。
 
 \begin{quoteblock}
-Thue Morse 序列的规律：第 $x$ 位上的值等于 $\mathrm{popcount}(x) \bmod 2$。
+Thue Morse 序列的规律：第 $x$ ($x \geq 0$) 位上的值等于 $\mathrm{popcount}(x) \bmod 2$。
 \end{quoteblock}
 
 \Highlight{卡大质数哈希（Hash Killer II）}：使用生日悖论攻击。
@@ -83,13 +83,11 @@ f(S) = \bigoplus_{x \in S} \mathrm{shift}(x)
 
 此时出现偶数次元素无贡献，出现奇数次元素只贡献一次。
 
-
-
 \Highlight{异或哈希判完全平方数}：定义\textbf{完全异或性}函数 $f$，对于任意正整数 $x, y$ 都有 $f(xy) = f(x) \oplus f(y)$。先对 $1 \sim n$ 进行一次线性筛。给其中的所有质数 $p$ 对应的 $f(p)$ 赋一个范围较大的随机数，其余合数的 $f$ 值通过线性筛得出。
 
 \textbf{此时 $x$ 为完全平方数，当且仅当 $f(x) = 0$}。
 
-当待判断的数的所有质因子都在 $1 \sim n$ 时，就可以根据所有质因子的 $f$ 函数的异或和，求出该数的 $f$ 函数。
+当待判断的数可以表示为若干个 $[1, n]$ 范围内整数的乘积时，就可以根据这些数的 $f$ 函数异或和求出该数的 $f$ 函数，从而快速判断其是否为完全平方数。
 
 \subsection{kmp}
 

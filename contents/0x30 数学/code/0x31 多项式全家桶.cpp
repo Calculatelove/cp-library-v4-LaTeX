@@ -6,7 +6,7 @@ void dft(std::vector<int> &a) {
         if (i < j) std::swap(a[i], a[j]);
     }
     for (int k = roots.size(); k < n; k <<= 1) {
-        int w = qpow(3, (mod - 1) / (k << 1), mod);
+        int w = qpow(3, (mod - 1) / (k << 1), mod); // 原根根据实际模数调整
         roots.resize(k << 1);
         for (int i = k >> 1; i < k; i ++) {
             roots[i * 2] = roots[i];

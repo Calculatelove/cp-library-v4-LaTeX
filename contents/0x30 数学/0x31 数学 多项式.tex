@@ -29,7 +29,8 @@ f(x) = \sum\limits_{i = 1}^{n + 1} y_i \prod\limits_{j \neq i} \frac{x - x_j}{x_
 \begin{itemize}
 \item 记系数部分 $a_i = \frac{y_i}{\prod_{j \neq i} (x_i - x_j)}$。
 \item 记多项式 $g(x) = \prod_{j} (x - x_j)$，记多项式 $h_i(x) = \prod_{j \neq i} (x - x_j)$。
-\item 先 $\mathcal{O}(n^2)$ 暴力多项式乘法求出 $g(x)$。\textbf{考虑由 $g(x)$ 得到 $h_i(x)$，相当于是多项式 $g(x)$ 除以一个一次式 $(x - x_i)$}，仍然可以 $\mathcal{O}(n)$ 暴力除以一次式。具体地，由于 $(x - x_i)h_i(x) = g(x)$，则对于 $g(x)$ 的 $j$ ($j \geq 1$) 次项系数，有 $[x^{j - 1}]h_i - x_i[x^j]h_i = [x^j]g$。于是
+\item 先 $\mathcal{O}(n^2)$ 暴力多项式乘法求出 $g(x)$。\textbf{考虑由 $g(x)$ 得到 $h_i(x)$，相当于是多项式 $g(x)$ 除以一次式 $(x - x_i)$}，可以 $\mathcal{O}(n)$ 暴力除以一次式。
+\item 具体地，由于 $(x - x_i)h_i(x) = g(x)$，则对于 $g(x)$ 的 $j$ ($j \geq 1$) 次项系数，有 $[x^{j - 1}]h_i - x_i[x^j]h_i = [x^j]g$。于是
 \[
 \begin{gathered}
 [x^n]h_i = [x^{n + 1}]g \\
@@ -71,192 +72,64 @@ f(x) = \sum\limits_{i = 1}^{n + 1}y_i \frac{\mathrm{pre}_{i - 1} \times \mathrm{
 
 \subsection{FFT}
 
-\Highlight{单位根}：$n$ 次单位根，即为 $x^n = 1$ 的所有复数解。单位圆上辐角为 $0, \frac{2\pi}{n}, \frac{4\pi}{n}, \dots, \frac{2(n - 1)\pi}{n}$ 的复数都是单位根，共 $n$ 个。这些单位根依次表示为
-\[
-\omega_n^0, \omega_n^1, \omega_n^2, \dots, \omega_n^{n - 1}
-\]
-\Highlight{单位根的简单性质}：欧拉公式：$e^{ix} = \cos(x) + i \sin(x)$。这说明 $x \in \mathbb{R}$ 时，$e^{ix}$ 可以描述一个单位圆上辐角为 $x$ 的复数。
+\Highlight{单位根}：$n$ 次单位根，即为 $x^n = 1$ 的所有复数解。共 $n$ 个，依次表示为 $\omega_n^0, \omega_n^1, \omega_n^2, \dots, \omega_n^{n - 1}$，在单位圆上的辐角分别为 $0, \frac{2\pi}{n}, \frac{4\pi}{n}, \dots, \frac{2(n - 1)\pi}{n}$。由欧拉公式 $\omega_n^1 = e^{\frac{2\pi i}{n}} = \cos(\frac{2\pi}{n}) + i \sin(\frac{2\pi}{n})$。
 
+\Highlight{单位根的简单性质}：
 \begin{itemize}
-\item $\omega_n^1 = e^{\frac{2\pi i}{n}} = \cos(\frac{2\pi}{n}) + i \sin(\frac{2\pi}{n})$。
-\item $\omega_n^i \times \omega_n^j = \omega_n^{i + j}$。
-\item $\left(\omega_n^i\right)^j = \omega_n^{ij}$。
-\item $\omega_{2n}^{2k} = \omega_n^k$。
-\item $\omega_{2n}^k = -\omega_{2n}^{k + n}$。
+\item $\omega_n^i \times \omega_n^j = \omega_n^{i + j}$，$\left(\omega_n^i\right)^j = \omega_n^{ij}$。
+\item $\omega_{2n}^{2k} = \omega_n^k$
+\item $\omega_{2n}^k = -\omega_{2n}^{k + n}$
 \end{itemize}
 
 \Highlight{补充界}：在进行 FFT 之前，需要对其最高位补 $0$，将其补成一个最高次数为 $2^P - 1$ 的多项式。方便后续的奇偶性分组。
 
-\subsubsection{DFT}
+\Highlight{DFT}：DFT 的思想：“系数表示法”转“点值表示法”。
 
-DFT 的思想：“系数表示法”转“点值表示法”。
+已知系数 $a_0, \dots, a_{n - 1}$，计算点值 $F(\omega_n^0), F(\omega_n^1), \dots, F(\omega_n^{n - 1})$。
 
-已知系数 $a_0, \dots, a_{n - 1}$，取自变量 $\omega_n^0, \omega_n^1, \dots, \omega_n^{n - 1}$，计算点值 $F(\omega_n^0), F(\omega_n^1), \dots, F(\omega_n^{n - 1})$。
-
-记 $n = 2^P$，考虑一个 $2^P - 1$ 次的多项式 $F(x)$
+记 $n = 2^P$，考虑一个 $2^P - 1$ 次的多项式 $F(x)$。将每一项按照次数的奇偶性，划分成两部分。记 $F_L(x) = a_0 + a_2x + \dots + a_{n - 2}x^{n / 2 - 1}$，$F_R(x) = a_1 + a_3x + \dots + a_{n - 1}x^{n / 2 - 1}$，则
 \[
-F(x) = a_0 + a_1x + \dots + a_{n - 1}x^{n - 1}
-\]
-将每一项按照次数的奇偶性，划分成两部分（由于 $n$ 是 $2$ 的若干次幂，每次分出来的奇偶部分的次数一定相等）。
-\[
-F(x) = \left( a_0 + a_2x^2 + \dots + a_{n - 2}x^{n - 2} \right) + \left( a_1x + a_3x^3 + \dots + a_{n - 1}x^{n - 1} \right)
-\]
-记
-\[
-\begin{gathered}
-F_L(x) = a_0 + a_2x + \dots + a_{n - 2}x^{n / 2 - 1} \\
-F_R(x) = a_1 + a_3x + \dots + a_{n - 1}x^{n / 2 - 1}
-\end{gathered}
-\]
-则
-\[
-F(x) = F_L(x^2)+ xF_R(x^2)
-\]
-考虑计算因变量 $F(\omega_n^0), F(\omega_n^1), \dots, F(\omega_n^{n - 1})$。
-
-\begin{itemize}
-\item 对于 $k < n / 2$，代入 $\omega_n^k$ 得
-\[
-\begin{aligned}
-F(\omega_n^k) & = F_L\left((\omega_n^k)^2\right) + \omega_n^k F_R\left((\omega_n^k)^2\right) \\
-& = F_L(\omega_{n / 2}^k) + \omega_n^k F_R(\omega_{n / 2}^k)
-\end{aligned}
+F(x) = F_L(x^2) + xF_R(x^2)
 \]
 
-\item 对于 $k < n / 2$，代入 $\omega_n^{k + n/2}$ 得
-\[
-\begin{aligned}
-F(\omega_n^{k + n / 2}) & = F_L\left((\omega_n^{k + n / 2})^2\right) + \omega_n^{k + n / 2}F_R\left((\omega_n^{k + n / 2})^2\right) \\
-& = F_L(\omega_n^{2k + n}) + \omega_n^{k + n / 2} F_R(\omega_n^{2k + n}) \\
-& = F_L(\omega_{n / 2}^k) - \omega_{n}^{k} F_R(\omega_{n / 2}^k)
-\end{aligned}
-\]
-\end{itemize}
+对于 $k < n / 2$，将 $\omega_n^k$ 与 $\omega_n^{k + n / 2}$ 代入上式，由单位根的性质可得 $F(\omega_n^k), F(\omega_n^{k + n / 2})$ 等于 $F_L(\omega_{n / 2}^k)\pm\omega_n^kF_R(\omega_{n / 2}^k)$。
 
-注意到 $F(\omega_n^k), F(\omega_n^{k + n / 2})$ 等于 $F_L(\omega_{n / 2}^k) \pm \omega_n^kF_R(\omega_{n / 2}^k)$。
+因此由 $F_L(x), F_R(x)$ 在 $\omega_{n / 2}^0, \dots, \omega_{n / 2}^{n / 2 - 1}$ 处的点值，可以 $\mathcal{O}(n)$ 推出 $F(x)$ 在 $\omega_n^0, \dots, \omega_n^{n - 1}$ 处的点值。
 
-如果我们知道 $F_L(x), F_R(x)$ 分别在 $\omega_{n / 2}^0, \omega_{n / 2}^1, \dots, \omega_{n / 2}^{n / 2 - 1}$ 处的点值表示，就可以 $\mathcal{O}(n)$ 求出 $F(x)$ 在 $\omega_n^0, \omega_n^1, \dots, \omega_n^{n - 1}$ 处的点值表示。
+这是一个分治的过程，不断分治直到剩下一个项即可。时间复杂度 $\mathcal{O}(n \log n)$。
 
-这是一个分治的过程，不断分治直到仅剩一个项即可。
-
-时间复杂度 $\mathcal{O}(n \log n)$。
-
-\subsubsection{IDFT}
-
-\textbf{结论：将 DFT 中的 $\omega_n^1$ 换成 $\omega_n^{-1}$，做完以后除以 $n$ 即可}。
-
-IDFT 的思想：“点值表示法”转“系数表示法”。
+\Highlight{IDFT}：IDFT 的思想：“点值表示法”转“系数表示法”。
 
 已知点值 $F(\omega_n^0), F(\omega_n^1), \dots, F(\omega_n^{n - 1})$，求出系数 $a_0, \dots, a_{n - 1}$。
 
-记 $n = 2^P$，对于一个 $2^{P} - 1$ 的多项式 $F(x)$，设其经过 DFT 之后，得到的点值序列 $g_0, g_1, \dots, g_{n - 1}$，可以证明：
+\textbf{结论：将 DFT 中的 $\omega_n^1$ 换成 $\omega_n^{-1}$，做完以后除以 $n$ 即可}。
+
+由单位根反演的经典结论 $[n \mid k] = \frac{1}{n}\sum_{i = 0}^{n - 1}\omega_{n}^{ik}$，可以证明：
 \[
 g_k = \sum\limits_{i = 0}^{n - 1}a_i \left( \omega_n^k \right)^i \iff a_k = \frac{1}{n} \sum\limits_{i = 0}^{n - 1}g_i \left( \omega_n^{-k} \right)^i
 \]
-证明：将 $g_i$ 代入该式子，得
-\[
-\begin{aligned}
-  & \frac{1}{n} \sum\limits_{i = 0}^{n - 1}\sum\limits_{j = 0}^{n - 1}(\omega_n^{-k})^i(\omega_n^i)^j a_j \\
-= & \sum\limits_{j = 0}^{n - 1} a_j \left(\frac{1}{n}\sum\limits_{i = 0}^{n - 1}\omega_{n}^{i(j - k)}\right)
-\end{aligned}
-\]
-后面括号里的和式，即为单位根反演的经典结论 $[n \mid k] = \frac{1}{n}\sum_{i = 0}^{n - 1}\omega_{n}^{ik}$。具体地，分类讨论：
 
-\begin{itemize}
-\item 当 $j = k$ 时，和式为 $\frac{1}{n}\sum_{i = 0}^{n - 1}\omega_n^0 = 1$。
-\item 当 $j \neq k$ 时，和式为
-\[
-\frac{1}{n} \sum_{i = 0}^{n - 1} \omega_{n}^{i(j - k)} = \frac{1}{n}\sum_{i = 0}^{n - 1} \left(\omega_n^{j - k} \right)^i = \frac{1}{n} \frac{1 - (\omega_n^{j - k})^n}{1 - \omega_n^{j - k}} = 0
-\]
-\end{itemize}
+再进一步，发现 $F(\omega_n^{-i}) = F(\omega_n^{n - i})$，于是 IDFT 可以看作将 DFT 后得到的点值进行翻转（注意 $F(\omega_n^0)$ 这一项不参与翻转），然后再除以 $n$。套用 DFT 的板子即可。
 
-故 $a_k = \frac{1}{n} \sum_{i = 0}^{n - 1}g_i \left( \omega_n^{-k} \right)^i$ 成立。
-
-进一步，观察 IDFT 的式子，相当于将 DFT 中的 $\omega_n^1$ 换成 $\omega_n^{-1}$，做完以后再除以 $n$。
-
-再进一步，发现 $F(\omega_n^{-i}) = F(\omega_n^{n - i})$，于是 IDFT 可以看作将 DFT 后得到的点值进行翻转（注意 $F(\omega_n^0)$ 这一项不参与翻转），然后再除以 $n$。
-
-套用 DFT 的板子即可。
-
-\begin{quoteblock}
-对于 DFT 前的系数表示法 $a_0, a_1, \dots, a_{n - 1}$ 以及 DFT 后的点值表示法 $g_0, g_1, \dots, g_{n - 1}$。可以写成一个\textbf{系数向量}左乘一个转移矩阵得到\textbf{点值向量}的式子：
-\[
-\begin{bmatrix}
-g_0 \\
-g_1 \\
-\vdots \\
-g_{n - 1}
-\end{bmatrix}
-=
-\begin{bmatrix}
-1 & 1 & 1 & 1 & \dots & 1 \\
-1 & \omega_n^1 & \omega_n^2 & \omega_n^3 & \dots & \omega_n^{n - 1} \\
-1 & \omega_n^2 & \omega_n^4 & \omega_n^6 & \dots & \omega_n^{2(n - 1)} \\
-1 & \omega_n^3 & \omega_n^6 & \omega_n^9 & \dots & \omega_n^{3(n - 1)} \\
-\vdots & \vdots & \vdots & \vdots & \ddots & \vdots \\
-1 & \omega_n^{n - 1} & \omega_n^{2(n - 1)} & \omega_n^{3(n - 1)} & \dots & \omega_n^{(n - 1)(n - 1)}
-\end{bmatrix}
-\begin{bmatrix}
-a_0 \\
-a_1 \\
-\vdots \\
-a_{n - 1}
-\end{bmatrix}
-\]
-其中转移矩阵（下标从 $0$ 开始）第 $i$ 行第 $j$ 列的系数即为自变量 $\omega_n^i$ 的 $j$ 次方 $\left(\omega_{n}^i\right)^j$。
-
-反过来，让上式等号两边都左乘一个转移矩阵的逆，即可从点值向量得到系数向量。
-
-\textbf{结论：DFT 矩阵的逆，为各个系数取倒数，再除以矩阵大小 $n$}。故有
-\[
-\begin{bmatrix}
-a_0 \\
-a_1 \\
-\vdots \\
-a_{n - 1}
-\end{bmatrix}
-=
-\frac{1}{n}
-\begin{bmatrix}
-1 & 1 & 1 & 1 & \dots & 1 \\
-1 & \omega_n^{-1} & \omega_n^{-2} & \omega_n^{-3} & \dots & \omega_n^{-(n - 1)} \\
-1 & \omega_n^{-2} & \omega_n^{-4} & \omega_n^{-6} & \dots & \omega_n^{-2(n - 1)} \\
-1 & \omega_n^{-3} & \omega_n^{-6} & \omega_n^{-9} & \dots & \omega_n^{-3(n - 1)} \\
-\vdots & \vdots & \vdots & \vdots & \ddots & \vdots \\
-1 & \omega_n^{-(n - 1)} & \omega_n^{-2(n - 1)} & \omega_n^{-3(n - 1)} & \dots & \omega_n^{-(n - 1)(n - 1)}
-\end{bmatrix}
-\begin{bmatrix}
-g_0 \\
-g_1 \\
-\vdots \\
-g_{n - 1}
-\end{bmatrix}
-\]
-这也解释了 IDFT 的结论：将 DFT 中的 $\omega_n^1$ 换成 $\omega_n^{-1}$，做完以后除以 $n$。
-\end{quoteblock}
-
-\subsubsection{FFT 倍增实现}
-
-\Highlight{位逆序置换}：
+\Highlight{位逆序置换（FFT 倍增实现）}：
 
 以 $n = 8$ 为例，模拟分治的过程：
 \[
 \begin{gathered}
-\{ x_0, x_1, x_2, x_3, x_4, x_5, x_6, x_7 \} \\
-\{ x_0, x_2, x_4, x_6 \}\{ x_1, x_3, x_5, x_7 \} \\
-\{ x_0, x_4 \} \{ x_2, x_6 \} \{ x_1, x_5 \} \{ x_3, x_7 \} \\
-\{ x_0 \} \{ x_4 \} \{ x_2 \} \{ x_6 \} \{ x_1 \} \{ x_5 \} \{ x_3 \} \{ x_7 \}
+\{ a_0, a_1, a_2, a_3, a_4, a_5, a_6, a_7 \} \\
+\{ a_0, a_2, a_4, a_6 \}\{ a_1, a_3, a_5, a_7 \} \\
+\{ a_0, a_4 \} \{ a_2, a_6 \} \{ a_1, a_5 \} \{ a_3, a_7 \} \\
+\{ a_0 \} \{ a_4 \} \{ a_2 \} \{ a_6 \} \{ a_1 \} \{ a_5 \} \{ a_3 \} \{ a_7 \}
 \end{gathered}
 \]
 
-分治的角度是从上往下的，每次将 $x_i$ 按照奇偶性分类，偶则分到左边，奇则分到右边。直到只剩下一个项为止。
+分治自顶向下，每层按照下标奇偶性划分；倍增则自底向上，因此需要预先确定每个 $a_i$ 在最底层的位置。
 
-倍增的角度是从下往上的，所以我们希望对于每个项 $x_i$，求出其经过分治后，最底层在哪个位置。然后不断地倍增合并点值。
+将 $i$ 用二进制数表示，则 $a_i$ 在最底层的位置即为\textbf{该二进制数的翻转}（例如 \texttt{011000} 变成 \texttt{000110}）。证明：每次根据奇偶性将 $a_i$ 进行分类，相当于是由最低位决定最高位。以此类推，次低位决定次高位，第三低位决定第三高位 ...
 
-将 $x$ 用二进制数表示，则变换后最底层的位置即为\textbf{该二进制数的翻转}（例如 \texttt{011000} 变成 \texttt{000110}）。证明：每次根据奇偶性将 $x_i$ 进行分类，相当于是由最低位决定最高位。以此类推，次低位决定次高位，第三低位决定第三高位 ...
+\Highlight{蝶形运算（FFT 倍增实现）}：
 
-\Highlight{蝶形运算}：已知 $F_L(\omega_{n / 2}^k), F_R(\omega_{n / 2}^k)$。每次更新，需要用 $F_L(\omega_{n / 2}^k) \pm \omega_n^kF_R(\omega_{n / 2}^k)$ 求出 $F(\omega_n^k), F(\omega_n^{k + n / 2})$。使用位逆序置换后
-
+自底向上合并，对于当前长度为 $n$ 的块，已知左右两块分别存放 $F_L, F_R$ 的 $n / 2$ 个点值。
 \begin{itemize}
 \item 更新前：$F_L(\omega_{n / 2}^k)$ 储存在数组下标为 $k$ 的位置，$F_R(\omega_{n / 2}^k)$ 储存在数组下标为 $k + n / 2$ 的位置。
 \item 更新后：$F(\omega_n^k)$ 储存在数组下标为 $k$ 的位置，$F(\omega_n^{k + n / 2})$ 储存在数组下标为 $k + n / 2$ 的位置。
@@ -264,42 +137,19 @@ g_{n - 1}
 
 因此可以直接在数组下标为 $k$ 和 $k + n / 2$ 的位置进行覆写，而不用开额外的辅助数组。
 
-\subsubsection{FFT 多项式乘法}
+\Highlight{FFT 多项式乘法}
 
 对于两个多项式 $A, B$，现在要求出多项式 $C = A \times B$。
 
 考虑对 $A, B$ 进行 DFT，经过 DFT 之后得到一系列关于 $A, B$ 的点值，将关于 $A, B$ 的点值对应位置相乘即可得到 $C$ 的点值，再对 $C$ 的点值进行 IDFT 即可得到 $C$ 的系数。
 
-\begin{quoteblock}
-核心思想：$A, B$ 的系数转 $A, B$ 的点值，$A, B$ 的点值点积转 $C$ 的点值，$C$ 的点值转 $C$ 的系数。
-\end{quoteblock}
-
 时间复杂度 $\mathcal{O}((n + m) \log (n + m))$。
+
+\Highlight{循环卷积}：对长度为 $L$ 的两个序列进行 DFT，将点值对应位置相乘，再 IDFT 回去。实际上是做长度为 $L$ 的循环卷积，即 $a_ib_j$ 贡献给了 $c_{(i + j) \bmod L}$。当补充界 $L \geq n + m + 1$ 即为正常卷积。只需要部分项时，可以据此缩小补充界（见半在线卷积的卡常技巧）。
 
 \InputCode{cpp}{contents/0x30 数学/code/0x31 FFT.cpp}
 
 \subsection{NTT}
-
-回顾一些内容：
-
-\Highlight{阶}：设整数 $m > 0$，满足 $a^x \equiv 1 \pmod m$ 的最小正整数 $x$，称作 $a$ 模 $m$ 的阶。记作 $\mathrm{ord}_m(a)$。
-
-\Highlight{阶的存在条件}：\textbf{当且仅当 $\gcd(a, m) = 1$ 时}，$a$ 模 $m$ 的阶存在。
-
-\Highlight{阶的简单性质}：
-
-\begin{itemize}
-\item 若 $a\perp m$，则 $a, a^2, \dots, a^{\mathrm{ord}_m(a)}$ 模 $m$ 两两不同。
-\item 若 $a\perp m$，则 $\mathrm{ord}_m(a) \mid \varphi(m)$。
-\item 若 $a \perp m$，则
-\[
-\mathrm{ord}_m(a^k) = \frac{\mathrm{ord}_m(a)}{\gcd(\mathrm{ord}_m(a), k)}
-\]
-\end{itemize}
-
-\Highlight{原根}：设整数 $m > 0$，若 $\mathrm{ord}_m(g) = \varphi(m)$，则称 $g$ 为模 $m$ 的原根。
-
-\Separator{}
 
 在模意义下，我们希望找到一个东西来代替单位根。主要是要满足 FFT 过程中，用到的单位根满足的三个性质：
 
@@ -311,7 +161,7 @@ g_{n - 1}
 
 对于一个质数 $m$，考虑 $m$ 的一个原根 $g$。此时 $g$ 的阶为 $m - 1$，显然原根 $g$ 不能直接代替 $n$ 阶单位根。
 
-考虑 $g$ 的若干次幂。$g^k$ 的阶为 $\frac{m - 1}{\gcd(m - 1, k)}$，必为 $m - 1$ 的约数。\textbf{且当 $n \mid (m - 1)$ 时，可以构造 $g^{\frac{m - 1}{n}}$ 的阶恰好等于 $n$}。尝试使用 $g^{\frac{m - 1}{n}}$ 代替 $n$ 阶单位根：
+考虑 $g$ 的若干次幂。$g^k$ 的阶为 $\frac{m - 1}{\gcd(m - 1, k)}$。\textbf{于是当 $n \mid (m - 1)$ 时，可以构造 $g^{\frac{m - 1}{n}}$ 的阶恰好等于 $n$}。尝试使用 $g^{\frac{m - 1}{n}}$ 代替 $n$ 阶单位根：
 \begin{itemize}
   \item 性质 1, 2 的证明显然。
   \item 性质 3 相当于是要证明 $g^{\frac{m - 1}{2}} \equiv -1 \pmod m$，可以使用二次剩余中的欧拉判别法来证明（原根必定不是二次剩余）。
@@ -319,7 +169,9 @@ g_{n - 1}
 
 \textbf{于是当 $n \mid (m - 1)$ 时，我们完全可以使用 $g^{\frac{m - 1}{n}}$ 来代替 $n$ 阶单位根 $\omega_n$。}
 
-现在还要满足 $n \mid (m - 1)$ 才可以代替，对模数 $m$ 的取值有特殊的要求。注意到 FFT 过程中的 $n$ 都是 $2$ 的若干次幂，所以 $m - 1$ 只需要包含大量的因子 $2$ 即可。例如 $998244353 = 2^{23} \times 7 \times 17 + 1$，就是一个经典的 NTT 模数。
+现在还要满足 $n \mid (m - 1)$ 才可以代替，对模数 $m$ 的取值有特殊的要求。注意到 FFT 过程中的 $n$ 都是 $2$ 的若干次幂，\textbf{所以 $m - 1$ 只需要包含大量的因子 $2$ 即可}。
+
+例如 $998244353 = 2^{23} \times 7 \times 17 + 1$，就是一个经典的 NTT 模数。
 
 \Highlight{常用的 NTT 模数}：
 
@@ -338,11 +190,13 @@ g_{n - 1}
 
 当模数不为常用的 NTT 模数时，我们就需要使用一些技巧使得多项式乘法可以继续进行。
 
-首先不可以简单地使用 FFT，因为 double 的有效精度只有 15\textasciitilde{}16 位，而对于常见的数据范围 $n, m \leq 10^5$ 以及 $a_i, b_i \leq 10^9$，卷积结果的最大值接近 $10^5 \times 10^9 \times 10^9 = 10^{23}$，一定会掉精度。
+首先不可以简单地使用 FFT，因为 double 的有效精度只有 $15\sim 16$ 位十进制有效数字，而对于常见的数据范围 $n, m \leq 10^5$ 以及 $a_i, b_i \leq 10^9$，卷积结果的最大值接近 $10^5 \times 10^9 \times 10^9 = 10^{23}$，一定会掉精度。
+
+如果想要对多个“任意模数”进行多项式乘法，可以将 \texttt{mod} 设为全局变量，在每次多项式乘法前修改 \texttt{mod} 的值。
 
 \subsubsection{三模 NTT}
 
-由于常见的数据范围下，卷积结果的最大值接近 $10^{23}$。于是我们考虑选择三个 $10^9$ 级别的常用 NTT 模数，\textbf{用三个模数分别做一次多项式乘法，将得到的三个结果使用 CRT 合并}。
+选择三个 $10^9$ 级别的常用 NTT 模数，\textbf{用三个模数分别做一次 NTT，将得到的三个结果使用 CRT 合并}。
 
 常用的 NTT 模数选法如下，因为这三个 NTT 模数均有一个原根为 $3$。
 \[
@@ -353,9 +207,15 @@ g_{n - 1}
 \end{aligned}
 \]
 
-可以将 \texttt{mod} 设为全局变量，然后在程序运行的过程中修改 \texttt{mod} 的值。
+该做法的优点是，可以通过 CRT 精确得到未经取模的卷积结果，对值域的范围要求比较友好。
 
 \InputCode{cpp}{contents/0x30 数学/code/0x31 MTT（三模 NTT）.cpp}
+
+\subsubsection{拆系数 FFT}
+
+该做法的优点是，只需要进行 $4$ 次 DFT，效率较高，代码也相对好写。
+
+\InputCode{cpp}{contents/0x30 数学/code/0x31 MTT（拆系数 FFT）.cpp}
 
 \subsection{Trick：翻转卷积}
 
@@ -377,10 +237,10 @@ A \cdot \mathbf{B} = \sum_{i = 0}^n a_ib_i
 \]
 记翻转多项式 $B^R(x) = \sum_{i = 0}^n b_{n - i}x^i$，则点乘的值即为 $[x^n](A \times B^R)$，\textbf{即 $A \times B^R$ 的其中一项}。
 
-当 $A$ 可以分解成两个多项式乘积 $A = A_1 \times A_2$ 时，若已知 $A_1 \times B^R$ 以及 $A_2$，可以 $\mathcal{O}(n)$ 求出 $[x^n](A \times B^R)$。
-
 \begin{quoteblock}
-e.g. 给出多项式序列 $p_1, \dots, p_n$，欲求 $\left(\prod_{i = l}^r p_i\right) \cdot \mathbf{B}$，即求 $\mathrm{pre}_r \times \mathrm{ipre}_{l - 1} \times B^R$。预处理出所有的 $\mathrm{pre}_i \times B^R$ 以及 $\mathrm{ipre}_i$ 即可。
+e.g. 给出多项式序列 $p_1, \dots, p_n$，欲求 $\left(\prod_{i = l}^r p_i\right) \cdot \mathbf{B}$，即求 $\mathrm{pre}_r \times \mathrm{ipre}_{l - 1} \times B^R$ 的第 $n$ 项。
+
+预处理出所有的 $\mathrm{pre}_i \times B^R$ 以及 $\mathrm{ipre}_i$ 即可。
 \end{quoteblock}
 
 \subsection{Model：分治卷积}
@@ -424,7 +284,7 @@ B(l, r) = B(l, \mathrm{mid}) \times B(\mathrm{mid} + 1, r)
 
 \Highlight{分治 NTT 模型 3}：给出 $n$ 个数 $a_1, \dots, a_n$，求出 $\sum_{i = 1}^n \prod_{j \neq i} (a_jx + 1)$。
 
-设 $f(l, r) = \sum_{i = l}^r \prod_{j \in [l, r], j \neq i} (a_jx + 1)$ 与 $g(l, r) = \prod_{i = l}^r (a_ix + 1)$，$f(l, r), g(l, r)$ 的次数同样与区间长度有关。
+设 $f(l, r) = \sum_{i = l}^r \prod_{j \in [l, r], j \neq i} (a_jx + 1)$，$g(l, r) = \prod_{i = l}^r (a_ix + 1)$，$f(l, r), g(l, r)$ 的次数同样与区间长度有关。
 
 取 $\mathrm{mid} = \lfloor \frac{l + r}{2} \rfloor$，则有
 \[
@@ -447,7 +307,7 @@ g(l, r) = g(l, \mathrm{mid}) \times g(\mathrm{mid} + 1, r)
 \[
 \sum_{i = 0}^m\prod_{j = 0}^i F_j(n)
 \]
-记 $M = \max\{m\}$，对下标区间 $[0, M + 1]$ 建立线段树。对于一次询问 $n, m$，将其挂在叶子节点 $[m + 1, m + 1]$ 上。
+记 $M = \max\{m\}$，对区间 $[0, M + 1]$ 建立线段树。将询问 $n, m$ 挂在叶子节点 $[m + 1, m + 1]$ 上。
 
 对于线段树上表示区间 $[l, r]$ 的节点 $u$，预处理出：
 
@@ -456,9 +316,9 @@ g(l, r) = g(l, \mathrm{mid}) \times g(\mathrm{mid} + 1, r)
 \item $\sum_{i = l}^r \prod_{j = l}^i F_j(x)$。
 \end{itemize}
 
-接下来在线段树上递归，假设当前递归到了表示区间 $[l, r]$ 的节点 $u$，维护当前的 $\prod_{i = 0}^{l - 1} F_i(x)$ 与 $\sum_{i = 0}^{l - 1} \prod_{j = 0}^i F_j(x)$。在递归的过程中，两个多项式的次数太大，无法承受。
+在线段树上递归，假设当前递归到了表示区间 $[l, r]$ 的节点 $u$，维护当前的 $\prod_{i = 0}^{l - 1} F_i(x)$ 与 $\sum_{i = 0}^{l - 1} \prod_{j = 0}^i F_j(x)$。在递归的过程中，两个多项式的次数太大，无法承受。
 
-考虑运用多项式多点求值的经典套路：$f(x) \equiv f(n) \pmod{x - n}$。所以递归到节点 $u$ 的时候，将两个多项式均对 $\prod_{m + 1\in [l, r]} (x - n)$ 取模（也就是对区间内所有询问的 $x - n$ 之积取模，同样在线段树上预处理出，注意叶子可能有多个询问，乘积需要单独计算），此时两个多项式的次数均不超过区间内询问个数。
+考虑运用多项式多点求值的经典套路 $f(x) \equiv f(n) \pmod{x - n}$。递归到节点 $u$ 的时候，将两个多项式均对 $\prod_{m + 1\in [l, r]} (x - n)$ 取模（也就是对区间内所有询问的 $x - n$ 之积取模，同样在线段树上预处理出，注意叶子可能有多个询问，乘积需要单独计算），此时两个多项式的次数均不超过区间内询问个数。
 
 最后递归到叶子时，由于叶子可能有多个询问，对当前多项式进行多点求值即可。
 
@@ -470,15 +330,15 @@ g(l, r) = g(l, \mathrm{mid}) \times g(\mathrm{mid} + 1, r)
 
 \subsection{Model：半在线卷积}
 
-\Highlight{半在线卷积}：给出 $g_1, \dots, g_n$，求出 $f_0, \dots, f_n$，其中初值 $f_0 = 1$，递推式 $f_i = \sum_{j = 1}^i f_{i - j}g_j$。
+\Highlight{半在线卷积}：给出 $g_1, \dots, g_n$，求出 $f_0, \dots, f_n$，其中 $f_0 = 1$，$f_i = \sum_{j = 1}^i f_{i - j}g_j$。
 
-使用\textbf{强制中序遍历转移的 CDQ 分治}：设 $\mathrm{solve}(l, r)$ 表示求出区间 $[l, r]$ 中所有的 $f$ 值，取 $\mathrm{mid} = \lfloor \frac{l + r}{2} \rfloor$。
+使用\textbf{按中序遍历转移的 CDQ 分治}：设 $\mathrm{solve}(l, r)$ 表示求出区间 $[l, r]$ 中所有的 $f$ 值，取 $\mathrm{mid} = \lfloor \frac{l + r}{2} \rfloor$。
 
 \begin{itemize}
 \item 先递归 $\mathrm{solve}(l, \mathrm{mid})$，求出 $f_l, \dots, f_{\mathrm{mid}}$。
 \item \textbf{计算 $f_{[l, \mathrm{mid}]}$ 与 $g_{[0, r - l]}$ 的卷积结果，求出左半区间对右半区间的贡献}。
 \item 后递归 $\mathrm{solve}(\mathrm{mid} + 1, r)$，求出 $f_{\mathrm{mid} + 1}, \dots, f_r$。
-\item 最后递归到 $l = r$ 时，请注意根据具体递推式调整 $f_i$（e.g. 递推式 $f_i = g_i - \sum_{j = 1}^{i - 1} \binom{i - 1}{j} f_{i - j}g_j$）。
+\item 递归到叶子 $l = r$ 时，请注意根据具体递推式调整 $f_i$（e.g. $f_i = g_i - \sum_{j = 1}^{i - 1} \binom{i - 1}{j} f_{i - j}g_j$）。
 \end{itemize}
 
 时间复杂度 $T(n) = 2T\left( \frac{n}{2} \right) + \mathcal{O}(n \log n) = \mathcal{O}(n \log^2 n)$。
@@ -491,14 +351,14 @@ g(l, r) = g(l, \mathrm{mid}) \times g(\mathrm{mid} + 1, r)
 由于 NTT 是循环卷积（$a_ib_j \to c_{(i + j) \bmod L}$，其中 $L$ 表示补充界），普通卷积的 $\mathrm{len} \sim \frac{3 \cdot \mathrm{len}}{2}$ 次项会污染掉循环卷积的 $0 \sim \frac{\mathrm{len}}{2}$ 次项，但我们只需要循环卷积的 $\frac{\mathrm{len}}{2} \sim \mathrm{len}$ 次项，所以将补充界调小不会对贡献产生影响。
 \end{quoteblock}
 
-\Highlight{全在线卷积}：求出 $f_0, \dots, f_n$，其中初值 $f_0 = 1$，递推式 $f_i = \sum_{j = 1}^i f_{i - j}g_j$，其中 $g_i$ 与 $f_0, \dots, f_{i - 1}$ 强相关。
+\Highlight{全在线卷积}：求出 $f_0, \dots, f_n$，其中 $f_0 = 1$，$f_i = \sum_{j = 1}^i f_{i - j}g_j$，但是 $g_i$ 与 $f_0, \dots, f_{i - 1}$ 强相关。
 
-仍然使用强制中序遍历转移的 CDQ 分治。但 $g_{[0, r - l]}$ 我们不一定提前知道，进一步分析分治树的结构，\textbf{发现仅有 $l = 0$ 时不知道 $g_{[0, r - l]}$}。所以我们需要修改计算贡献的方式。
+仍然使用按中序遍历转移的 CDQ 分治，但 $g_{[0, r - l]}$ 我们不一定提前知道。进一步分析分治树的结构，\textbf{发现仅有 $l = 0$ 时不知道 $g_{[0, r - l]}$}。所以我们需要修改计算贡献的方式。
 
 \begin{itemize}
 \item 当 $l = 0$ 时，\textbf{计算 $f_{[0, \mathrm{mid}]} \times g_{[0, \mathrm{mid}]}$ 的贡献}（此时还有 $f_{[0, \mathrm{mid}]} \times g_{[\mathrm{mid} + 1, r]}$ 的贡献没被计算）。
 \item 当 $l > 0$ 时，\textbf{计算 $f_{[l, \mathrm{mid}]} \times g_{[0, r - l]} + g_{[l, \mathrm{mid}]} \times f_{[0, r - l]}$ 的贡献}（后半部分即为 $l = 0$ 中漏掉的贡献）。
-\item 特别地，递归到 $l = r$ 时，要补齐 $f_0\times g_l$ 的贡献。
+\item 递归到叶子 $l = r$ 时，先根据 $f_0, \dots, f_{l - 1}$ 求出 $g_l$，再\textbf{计算 $f_0 \times g_l$ 的贡献}。
 \end{itemize}
 
 可以证明，点对的贡献不重不漏。
@@ -520,18 +380,16 @@ g(l, r) = g(l, \mathrm{mid}) \times g(\mathrm{mid} + 1, r)
 时间复杂度 $\mathcal{O}(n \log^2 n)$。
 
 \begin{quoteblock}
-还有一种基于长链剖分的做法，时间复杂度 $\mathcal{O}(n \log n)$，详见 \href{https://www.cnblogs.com/zkyJuruo/p/18809573}{zak 的博客}。
+还有一种基于长链剖分的做法，时间复杂度 $\mathcal{O}(n \log n)$，详见 \href{https://www.cnblogs.com/zkyJuruo/p/18809573}{\texttt{zak} 的博客}。
 \end{quoteblock}
 
 \subsection{多项式基本运算}
 
 \subsubsection{多项式除法（暴力）}
 
-\Highlight{多项式除法}：给出两个多项式 $A(x), B(x)$，你需要求出多项式 $C(x)$，满足 $B(x)C(x) = A(x)$。
+\Highlight{多项式除法}：给出两个多项式 $A(x), B(x)$，求出多项式 $C(x)$，满足 $B(x)C(x) = A(x)$。
 
-设 $A(x) = \sum_{i = 0}^n a_ix^i, B(x) = \sum_{i = 0}^m b_ix^i, C(x) = \sum_{i = 0}^{n - m}c_ix^i$。直接根据定义 $\sum_{j = 0}^ic_jb_{i - j} = a_i$ 暴力展开。
-
-先对 $b$ 的前导零进行处理，设 $b$ 的前导零有 $t$ 位，则需要使得 $a, b$ 左移 $t$ 位。
+设 $A(x) = \sum_{i = 0}^n a_ix^i, B(x) = \sum_{i = 0}^m b_ix^i, C(x) = \sum_{i = 0}^{n - m}c_ix^i$。先对 $b$ 的前导零进行处理，设 $b$ 的前导零有 $t$ 位，则需要使得 $a, b$ 左移 $t$ 位。然后直接根据定义 $\sum_{j = 0}^ic_jb_{i - j} = a_i$ 暴力展开。
 
 初值
 \[
@@ -558,15 +416,17 @@ f'(x) = \left( \sum\limits_{i = 0}^na_ix^i \right)' = \sum\limits_{i = 1}^n ia_i
 
 \subsubsection{多项式牛顿迭代}
 
-问题：已知函数 $g$，假设满足 $g(f(x)) = 0$ 的函数 $f(x) = h(x)$，我们需要求出 $h \bmod x^n$（在这里，我们将 $f(x)$ 看成函数 $g(f(x))$ 的自变量，则我们要求的就是 $g(f(x)) = 0$ 模 $x^n$ 意义下的零点）。
+\Highlight{多项式牛顿迭代}：已知多项式函数 $g$，假设满足 $g(f(x)) = 0$ 的函数 $f(x) = h(x)$，求出 $h \bmod x^n$。
+
+（在这里，我们将 $f(x)$ 看成函数 $g(f(x))$ 的自变量，则我们要求的就是 $g(f(x)) = 0$ 模 $x^n$ 意义下的零点）。
 
 当 $n = 1$ 时，$[x^0]h(x)$ 需要单独求出。
 
-当 $n > 1$ 时，\textbf{记 $h_0 = h \bmod x^{\left\lceil \frac{n}{2} \right\rceil}, h_1 = h \bmod x^n$，假设我们现在已经求出了 $h_0$，我们希望通过 $h_0$ 推出 $h_1$}。考虑将函数 $g(f(x))$ 在 $f(x) = h_0(x)$ 处泰勒展开。
+当 $n > 1$ 时，\textbf{记 $h_0 = h \bmod x^{\left\lceil \frac{n}{2} \right\rceil}, h_1 = h \bmod x^n$，假设现在已经求出了 $h_0$，希望通过 $h_0$ 推出 $h_1$}。考虑将函数 $g(f(x))$ 在 $f(x) = h_0(x)$ 处泰勒展开。
 \[
 g(f(x)) = \sum\limits_{i = 0}^{\infty} \frac{g^{(i)}(h_0(x))}{i!}(f(x) - h_0(x))^i
 \]
-将 $h_1(x)$ 代入自变量 $f(x)$，观察到 $h_1(x) - h_0(x)$ 的前 $\left\lceil \frac{n}{2} \right\rceil$ 项均为 $0$（因为模 $x^{\left\lceil \frac{n}{2} \right\rceil}$ 意义下两者显然相等）。
+将 $h_1(x)$ 代入自变量 $f(x)$，观察到 $h_1(x) - h_0(x)$ 的前 $\left\lceil \frac{n}{2} \right\rceil$ 项均为 $0$（模 $x^{\left\lceil \frac{n}{2} \right\rceil}$ 意义下两者显然相等）。
 
 也就是说 $h_1(x) - h_0(x)$ 的\textbf{最低次数}为 $\left\lceil \frac{n}{2} \right\rceil$，进一步有 $\left( h_1(x) - h_0(x) \right)^i$ 的最低次数为 $i\left\lceil \frac{n}{2} \right\rceil$。当 $i \geq 2$ 时，$\left(h_1(x) - h_0(x)\right)^i \bmod x^n$ 均为 $0$，\textbf{于是可以忽略 $i \geq 2$ 的项}。
 
@@ -582,15 +442,13 @@ h_1(x) \equiv h_0(x) - \frac{g(h_0(x))}{g'(h_0(x))} \pmod{x^n}
 
 \subsubsection{多项式求逆}
 
-\Highlight{多项式逆}：给出一个多项式 $A(x)$，你需要求出多项式 $B(x)$，满足 $A(x) \times B(x) = 1$。一般我们只需要求出 $B \bmod{x^m}$ 的结果。
+\Highlight{多项式逆}：给出一个多项式 $A(x)$，求出多项式 $B(x)$，满足 $A(x)B(x) = 1$。一般我们只需要求出 $B \bmod{x^m}$ 的结果。
 
 \Highlight{多项式逆存在条件}：多项式 $A(x)$ 存在逆，当且仅当 $[x^0]A(x) \neq 0$。
 
 （注意：\textbf{一个多项式的逆可能是有无穷项的}，例如 $\frac{1}{1 - x} = 1 + x + x^2 + \dots$）
 
 \Highlight{少项式求逆（暴力）}：
-
-需要满足 $a_0 \neq 0$。
 
 设 $A(x) = \sum_{i = 0}^n a_ix^i, B(x) = \sum b_ix^i$。直接根据多项式逆的定义 $\sum_{j = 0}^{i} b_ja_{i - j} = [i = 0]$ 暴力展开。
 
@@ -626,7 +484,7 @@ h_1(x) \equiv 2h_0(x) - A(x)h_0^2(x) \pmod{x^m}
 
 \subsubsection{多项式开方}
 
-\Highlight{多项式开方}：给出一个多项式 $A(x)$，你需要求出多项式 $B(x)$，满足 $B^2(x) \equiv A(x)$。一般我们只需要求出 $B \bmod x^m$ 的结果。
+\Highlight{多项式开方}：给出一个多项式 $A(x)$，求出多项式 $B(x)$，满足 $B^2(x) = A(x)$。一般我们只需要求出 $B \bmod x^m$ 的结果。
 
 \Highlight{多项式开方存在条件}：当 $[x^0]A(x) \neq 0$ 时，多项式 $A(x)$ 存在开方，当且仅当 $[x^0]A(x)$ 存在模意义下的二次剩余。
 
@@ -642,12 +500,12 @@ h_1(x) \equiv \frac{h_0^2(x) + A(x)}{2h_0(x)} \pmod{x^m}
 时间复杂度 $\mathcal{O}(m \log m)$。
 
 \begin{quoteblock}
-By the way：注意到 $\sqrt{A(x)} = e^{\frac{1}{2}\ln A(x)}$，可以直接套用多项式 ln 与多项式 exp 的模板。
+By the way：注意到 $\sqrt{A(x)} = e^{\frac{1}{2}\ln A(x)}$，若 $[x^0]A(x) = 1$，可以直接套用多项式 ln/exp。
 \end{quoteblock}
 
 \subsubsection{多项式带余除法}
 
-\Highlight{多项式带余除法}：给出一个 $n$ 次多项式 $A(x)$ 和一个 $m$ 次多项式 $B(x)$，你需要求出多项式 $Q(x), R(x)$ 满足：
+\Highlight{多项式带余除法}：给出一个 $n$ 次多项式 $A(x)$ 和一个 $m$ 次多项式 $B(x)$，求出多项式 $Q(x), R(x)$ 满足：
 
 \begin{itemize}
 \item $Q(x)$ 的次数为 $n - m$，$R(x)$ 的次数 $<m$。
@@ -688,7 +546,7 @@ $e$ 在模 $998244353$ 下没有意义。同理，$\ln 2$ 在模 $998244353$ 下
 \]
 \Highlight{多项式 ln 存在条件}：\textbf{多项式 $f(x)$ 存在 ln，当且仅当 $[x^0]f(x) = 1$，并且由此可得 $[x^0] \ln f(x) = 0$}。
 
-\Highlight{多项式 ln}：给出一个多项式 $A(x)$，你需要求出多项式 $B(x) = \ln A(x)$。一般我们只需要求出 $B \bmod{x^m}$ 的结果。
+\Highlight{多项式 ln}：给出一个多项式 $A(x)$，求出多项式 $B(x) = \ln A(x)$。一般我们只需要求出 $B \bmod{x^m}$ 的结果。
 
 将 $B(x) = \ln A(x)$ 等式两边对 $x$ 求导可得
 \[
@@ -704,7 +562,7 @@ B(x) = \int \frac{A'(x)}{A(x)} \mathrm{dx}
 
 \Highlight{多项式 exp 存在条件}：\textbf{多项式 $f(x)$ 存在 exp，当且仅当 $[x^0]f(x) = 0$，并且可以推出 $[x^0]\exp f(x) = 1$}。
 
-\Highlight{多项式 exp}：给出一个多项式 $A(x)$，你需要求出多项式 $B(x) = \exp A(x)$。一般我们只需要求出 $B \bmod{x^m}$ 的结果。
+\Highlight{多项式 exp}：给出一个多项式 $A(x)$，求出多项式 $B(x) = \exp A(x)$。一般我们只需要求出 $B \bmod{x^m}$ 的结果。
 
 构造函数 $g(f(x)) = \ln f(x) - A(x)$，代入牛顿迭代得
 \[
@@ -733,7 +591,7 @@ e.g. 多项式快速幂且保留次数在 $[-m, m]$ 的项。
 
 \Highlight{多项式快速幂（先 ln 后 exp）}：注意到 $A^k(x) = e^{k\ln A(x)}$，考虑直接套用多项式 ln 与多项式 exp 的模板。
 
-\textbf{但由于多项式 ln 的一些限制（需要保证 $[x^0]A(x) = 1$），首先要对 $A(x)$ 进行一些操作}。
+\textbf{但由于多项式 ln 需要保证 $[x^0]A(x) = 1$，首先要对 $A(x)$ 进行一些操作}。
 
 找出一个最小的 $i$，满足 $[x^i]A(x) \neq 0$（相当于是找出 $A(x)$ 的第一个非零系数），记 $v = [x^i]A(x)$。则有
 \[
@@ -752,41 +610,25 @@ A^k(x) = \left(\frac{A(x)}{x^iv}\right)^k x^{ik}v^k
 时间复杂度 $\mathcal{O}(m \log m)$。
 
 \begin{quoteblock}
-设模数为质数 $P$。
+设模数为质数 $P$。当 $k \leq P$ 时，可以放心应用该做法；当 $k > P$ 时，\textbf{需要进一步讨论 $k$ 的取模相关问题}。
 
+由 $(a + b)^P \equiv a^P + b^P \pmod P$ 以及费马小定理可得 $f^P(x) \equiv f(x^P) \pmod P$。
+
+在一般情况下 $P > m$，所以 $f^P(x) \equiv f(x^P) \equiv [x^0]f(x) \pmod{x^m}$，由于我们进行了一系列操作使得 $[x^0]f(x) = 1$，\textbf{所以 $f^P(x) \equiv 1 \pmod{x^m}$}。于是：
 \begin{itemize}
-\item 当 $k \leq P$ 时，可以放心应用该做法。
-\item 当 $k > P$ 时，\textbf{需要进一步讨论 $k$ 的取模相关问题}。
+\item \textbf{多项式 ln/exp 部分}：$k$ 需要对 $P$ 取模。
+\item \textbf{$v^k$ 部分}：$k$ 需要对 $\varphi(P) = P - 1$ 取模（因为是数值计算）。
+\item \textbf{$x^{ik}$ 部分}：用原始的 $k$ 判断，当 $i > 0$ 且 $k \geq m$ 时答案必定为 $0$。
 \end{itemize}
 
-引理 1：设 $P$ 为质数。则对于任意整数 $a, b$
-\[
-(a + b)^P \equiv a^P + b^P \pmod P
-\]
-
-证明：因为 $(a + b)^P = \sum_{i = 0}^P \binom{P}{i}a^ib^{P - i}$，当 $0 < i < P$ 时，有 $\binom{P}{i} = \frac{P}{i}\binom{P - 1}{i - 1}$，由于 $P$ 是质数，所以该式子是 $P$ 的倍数。故上式得证。
-
-引理 2：设 $f(x)$ 为一个 $n$ 次多项式，$P$ 为质数。则有
-\[
-f^P(x) \equiv f(x^P) \pmod P
-\]
-
-证明：不断地应用引理 1，最后应用费马小定理即可。
-
-由于一般情况下 $P > m$，所以 $f^P(x) \equiv f(x^P) \equiv ([x^0]f(x))^P \pmod{x^m}$。由于我们进行了一系列操作使得 $[x^0]f(x) = 1$，所以 $f^P(x) \equiv 1 \pmod{x^m}$。
-
-\begin{itemize}
-\item \textbf{所以多项式 ln 与多项式 exp 部分，$k$ 需要对 $P$ 取模}。
-\item 对于 $x^{ik}$，当 $i = 0$ 时可以直接忽略，当 $i > 0$ 时 $k$ 显然不能超过 $P$，否则右移 $ik$ 位已经远超需要保留的范围。所以乘以 $x^{ik}$ 部分，当 $i > 0$ 时 $k$ 不能超过 $P$。
-\item 对于 $v^k$，由于是数值计算，\textbf{所以乘以 $v^k$ 部分，$k$ 需要对 $\varphi(P) = P - 1$ 取模}。
-\end{itemize}
+By the way：因为 $(a + b)^P = \sum_{i = 0}^P \binom{P}{i}a^ib^{P - i}$，当 $0 < i < P$ 时，有 $\binom{P}{i} = \frac{P}{i}\binom{P - 1}{i - 1}$，由于 $P$ 是质数，所以该式子是 $P$ 的倍数。故 $(a + b)^P \equiv a^P + b^P \pmod P$ 得证。
 \end{quoteblock}
 
 \subsubsection{少项式快速幂}
 
-\Highlight{少项式快速幂}：给出一个次数不高的多项式 $A(x)$，你需要求出 $A^k(x) \bmod x^m$。
+\Highlight{少项式快速幂}：给出一个次数不高的多项式 $A(x)$，求出 $A^k(x) \bmod x^m$。
 
-需要满足 $a_0 \neq 0$。
+该做法需要满足 $[x^0]A(x) \neq 0$，可以对前导 $0$ 特殊处理。
 
 设 $A(x) = \sum_{i = 0}^n a_ix^i, A^k(x) = \sum_{i = 0}^{m - 1}b_ix^i$。考虑对 $A^k(x)$ 求导
 \[
@@ -801,7 +643,7 @@ A^k(x)' = kA^{k - 1}(x)A'(x) \\
 \]
 等式左边只需枚举到 $j \geq i - n$，等式右边只需枚举到 $j \geq i - n + 1$。可以解得
 \[
-b_{i + 1} = \frac{\left( k\cdot \sum_{j = i - n + 1}^{i} (i - j + 1)a_{i - j + 1}b_j \right) - \left( \sum_{j = i - n}^{i - 1}(j + 1)b_{j + 1}a_{i - j} \right)}{(i + 1)a_0}
+b_{i + 1} = \frac{\left( k\cdot \sum\limits_{j = i - n + 1}^{i} (i - j + 1)a_{i - j + 1}b_j \right) - \left( \sum\limits_{j = i - n}^{i - 1}(j + 1)b_{j + 1}a_{i - j} \right)}{(i + 1)a_0}
 \]
 初值 $b_0 = a_0^k$，上式可以在已知 $b_0, b_1, \dots, b_i$ 的情况下递推出 $b_{i + 1}$。
 
@@ -813,13 +655,13 @@ b_{i + 1} = \frac{\left( k\cdot \sum_{j = i - n + 1}^{i} (i - j + 1)a_{i - j + 1
 By the way：从这个递推式进行归纳可知，当 $a_0 = 1$ 时，$[x^n]A^k(x)$ 是一个关于 $k$ 的至多 $n$ 次多项式。
 \end{quoteblock}
 
-\subsection{*转置原理}
+\subsection{转置原理}
 
 \sout{待填坑。}
 
 \subsection{多项式多点求值}
 
-\Highlight{多项式多点求值}：给出一个多项式 $f(x)$ 和 $n$ 个点 $x_1, x_2, \dots, x_n$，求 $f(x_1), f(x_2), \dots, f(x_n)$。
+\Highlight{多项式多点求值}：给出一个多项式 $f(x)$ 和 $n$ 个点 $x_1, \dots, x_n$，求 $f(x_1), \dots, f(x_n)$。
 
 \Highlight{多项式多点求值（多项式取模）}：
 
@@ -849,7 +691,7 @@ g_1(x) = \prod\limits_{x_i \in X_1}(x - x_i), \quad g_2(x) = \prod\limits_{x_i \
 
 \subsection{多项式快速插值}
 
-\Highlight{多项式快速插值}：给出 $n$ 个点 $(x_1, y_1), (x_2, y_2), \dots, (x_n, y_n)$，其中横坐标两两不同。快速地求一个至多为 $n - 1$ 次多项式，使得这 $n$ 个点都在 $f(x)$ 上。
+\Highlight{多项式快速插值}：给出 $n$ 个点 $(x_1, y_1), (x_2, y_2), \dots, (x_n, y_n)$，其中横坐标（模意义下）两两不同。快速地求一个至多为 $n - 1$ 次多项式，使得这 $n$ 个点都在 $f(x)$ 上。
 
 考虑拉格朗日插值
 \[
@@ -878,7 +720,7 @@ f_2(x) = \sum\limits_{i = \mathrm{mid} + 1}^n v_i \left( \prod\limits_{j \neq i,
 
 \subsection{多项式平移}
 
-\Highlight{多项式平移}：给出一个多项式 $A(x)$ 以及一个常数 $c$，你需要求出多项式 $A(x + c)$。
+\Highlight{多项式平移}：给出一个多项式 $A(x)$ 以及一个常数 $c$，求出多项式 $A(x + c)$。
 
 \Highlight{多项式平移（二项式定理法）}：设 $A(x) = \sum_{i = 0}^n a_ix^i$，考虑二项式定理
 \[
@@ -894,7 +736,7 @@ A(x + c) & = \sum_{i = 0}^n a_i(x + c)^i \\
 
 时间复杂度 $\mathcal{O}(n \log n)$。
 
-\Highlight{连续点值平移}：给出 $n + 1$ 个连续点值 $f(0), f(1), \dots, f(n)$（其中 $f$ 是一个次数至多为 $n$ 的多项式）以及一个常数 $c$，你需要求出 $f(c), f(c + 1), \dots, f(c + n)$。
+\Highlight{连续点值平移}：给出 $n + 1$ 个连续点值 $f(0), f(1), \dots, f(n)$（其中 $f$ 是一个次数至多为 $n$ 的多项式）以及一个常数 $c$，求出 $f(c), f(c + 1), \dots, f(c + n)$。
 
 代入拉格朗日插值公式，得
 \[
@@ -928,14 +770,18 @@ f(c + x) = \left( \prod_{v = c + x - n}^{c + x} v \right) \mathrm{res}_{x + n}
 时间复杂度 $\mathcal{O}(n \log n)$。
 
 \begin{quoteblock}
-给出 $n + 1$ 个等差点值 $f(b), f(b + k), \dots, f(b + nk)$（其中 $f$ 是一个次数至多为 $n$ 的多项式） 以及一个常数 $c$，你需要求出 $f(c + b), f(c + b + k), \dots, f(c + b + nk)$。
+给出 $n + 1$ 个等差点值 $f(b), f(b + k), \dots, f(b + nk)$（其中 $f$ 是一个次数至多为 $n$ 的多项式） 以及一个常数 $c$，求出 $f(c + b), f(c + b + k), \dots, f(c + b + nk)$。
 
-设 $g(x) = f(b + xk)$，可以看成：已知 $g(0), g(1), \dots, g(n)$，向右平移 $\frac{c}{k}$ 得到 $g(\frac{c}{k}), g(\frac{c}{k} + 1), \dots, g(\frac{c}{k} + n)$。
+设 $g(x) = f(b + xk)$，可以看成 $g(0), g(1), \dots, g(n)$ 向右平移 $\frac{c}{k}$ 得到 $g(\frac{c}{k}), g(\frac{c}{k} + 1), \dots, g(\frac{c}{k} + n)$。
 \end{quoteblock}
+
+\subsection{Chirp Z-Transform}
+
+
 
 \subsection{多项式全家桶}
 
-reference：\textcolor{black}{j}\textcolor{red}{iangly} 算法模板。
+reference：\texttt{\textcolor{black}{j}\textcolor{red}{iangly}} 算法模板。
 
 封装理念：
 
@@ -956,13 +802,18 @@ reference：\textcolor{black}{j}\textcolor{red}{iangly} 算法模板。
 \[
 \frac{P(x)}{Q(x)} = \frac{P(x)Q(-x)}{Q(x)Q(-x)}
 \]
-记 $V(x) = Q(x)Q(-x)$，注意到 $V(x) = V(-x)$，则 $V(x)$ 仅有偶次项有值。
 
-记 $P(x)Q(-x) = C_{\mathrm{even}}(x^2) + xC_{\mathrm{odd}}(x^2)$，$Q(x)Q(-x) = U(x^2)$。于是我们有
+由于 $Q(x)Q(-x)$ 是偶函数，仅偶次项有值。记 $U(x^2) = Q(x)Q(-x)$，然后将分子按照奇偶次项拆开
+\[
+P(x)Q(-x) = C_{\mathrm{even}}(x^2) + xC_{\mathrm{odd}}(x^2)
+\]
+
+于是
 \[
 \frac{P(x)}{Q(x)} = \frac{C_{\mathrm{even}}(x^2)}{U(x^2)} + \frac{xC_{\mathrm{odd}}(x^2)}{U(x^2)}
 \]
-由于左边只影响偶次项，右边只影响奇次项（因为 $\frac{1}{U(x^2)} = \frac{1}{Q(x)Q(-x)}$ 也是偶函数，仅有偶次项有值），于是我们只需要根据 $n$ 的奇偶递归到其中一边即可。
+
+由于右式第一项只影响偶次项，右式第二项只影响奇次项。于是我们只需要根据 $n$ 的奇偶递归到其中一边即可。
 
 当 $n$ 为偶数时
 \[
@@ -972,6 +823,7 @@ reference：\textcolor{black}{j}\textcolor{red}{iangly} 算法模板。
 \[
 [x^n]\frac{P(x)}{Q(x)} = [x^{\frac{n - 1}{2}}]\frac{C_{\mathrm{odd}}(x)}{U(x)}
 \]
+
 递归到 $n = 0$ 时，有 $[x^0]\frac{f(x)}{g(x)} = \frac{f_0}{g_0}$。
 
 时间复杂度 $\mathcal{O}(m \log m \log n)$，其中 $m$ 表示分子分母的长度。
@@ -984,7 +836,7 @@ reference：\textcolor{black}{j}\textcolor{red}{iangly} 算法模板。
 
 \subsection{常系数齐次线性递推}
 
-\Highlight{常系数齐次线性递推}：已知初值 $a_0, \dots, a_{k - 1}$ 与系数 $c_1, \dots, c_k$（常数项 $c_0 = 0$），对于一个 $k$ 阶齐次线性递推数列 $a_i = \sum_{j = 1}^k c_ja_{i - j}$，你需要求出第 $n$ 项。
+\Highlight{常系数齐次线性递推}：已知初值 $a_0, \dots, a_{k - 1}$ 与系数 $c_1, \dots, c_k$（常数项 $c_0 = 0$），对于一个 $k$ 阶齐次线性递推数列 $a_i = \sum_{j = 1}^k c_ja_{i - j}$，求出第 $n$ 项。
 
 \subsubsection{Fiduccia 算法}
 
@@ -996,7 +848,9 @@ a_n = \left(x^n \bmod \Gamma(x) \right) \cdot A(x)
 
 于是应用多项式快速幂（倍增法）求出 $x^n \bmod \Gamma(x)$，最后求出点积即可。
 
-时间复杂度 $\mathcal{O}(k \log k \log n)$，当项数 $n$ 与递推系数 $c$ 固定时，可以做到 $\mathcal{O}(k \log k \log n)$ 预处理，$\mathcal{O}(k)$ 查询。
+时间复杂度 $\mathcal{O}(k \log k \log n)$。
+
+该做法的优点是，当项数 $n$ 与递推系数 $c$ 固定时，可以做到 $\mathcal{O}(k \log k \log n)$ 预处理，$\mathcal{O}(k)$ 查询。
 
 \Highlight{Fiduccia 算法的简单解释}：我们想要知道 $a_n$ 具体可以被多少个 $a_0, \dots, a_{k - 1}$ 表示。相当于是初始有一个 $a_n$，每次选出最高项 $a_i$，根据公式 $a_i = \sum_{j = 1}^kc_ja_{i - j}$ 将 $a_i$ 消成更低的项。
 
@@ -1013,15 +867,7 @@ Q(x) = 1 - \sum_{i = 1}^kc_ix^i \\
 P(x) = \left(\left(\sum_{i = 0}^{k - 1} a_ix^i \right) \times Q(x)\right) \bmod{x^k}
 \end{gathered}
 \]
-下面是检验：设 $\frac{P(x)}{Q(x)} = \sum_{i = 0}^{\infty} h_ix^i$。
-
-\begin{itemize}
-\item 当 $i = 0$ 时，有 $h_0 = \frac{p_0}{q_0} = a_0$。
-\item 当 $1 \leq i < k$ 时，根据多项式 $P(x), Q(x)$ 的定义，显然有 $h_i = a_i$。
-\item 当 $i \geq k$ 时，有 $h_i = -\frac{1}{q_0}\sum_{j = 1}^k q_jh_{i - j}$，化简得 $h_i = \sum_{j = 1}^k c_jh_{i - j}$，正是 $\{a_i\}$ 的递推式，归纳得 $h_i = a_i$。
-\end{itemize}
-
-\textbf{综上 $h_i = a_i$，原命题成立}。
+检验：设 $\frac{P(x)}{Q(x)} = \sum_{i = 0}^{\infty} h_ix^i$。当 $0 \leq i < k$ 时，根据定义有 $h_i = a_i$。当 $i \geq k$ 时，化简得 $h_i = \sum_{j = 1}^k c_jh_{i - j}$，正是 $\{a_i\}$ 的递推式。归纳得 $h_i = a_i$。
 
 于是构造多项式 $P(x), Q(x)$，套用 Bostan-Mori 求解 $[x^n]\frac{P(x)}{Q(x)}$ 即可。
 
@@ -1030,8 +876,6 @@ P(x) = \left(\left(\sum_{i = 0}^{k - 1} a_ix^i \right) \times Q(x)\right) \bmod{
 \InputCode{cpp}{contents/0x30 数学/code/0x31 常系数齐次线性递推（Bostan-Mori）.cpp}
 
 \subsection{整式递推}
-
-\sout{待填坑。}
 
 \subsubsection{应用：快速阶乘算法}
 
@@ -1052,10 +896,14 @@ n! = \left( \prod_{i = 0}^{v - 1}g(iv) \right) \cdot \left( \prod_{i = v^2 + 1}^
 操作 1：$d \gets 2d$。
 
 \begin{itemize}
-\item 补齐点值：补齐 $g_d((d + 1)v), \dots, g_d(2dv)$，可以通过 $g_d(0), g_d(v), \dots, g_d(dv)$ 向右平移 $dv$ 得到。\newline{}
-\textcolor{blue}{（可以看作连续点值 $h(x) = g_d(xv)$ 向右平移 $d$）}
-\item 修正点值：有公式 $g_{2d}(x) = g_d(x)g_d(x + d)$，将所有点值 $g_d(x)$ 向右平移 $d$ 即可得到 $g_d(x + d)$，然后相乘即可。\newline{}
-\textcolor{blue}{（可以看作连续点值 $h(x) = g_d(xv)$ 向右平移 $\frac{d}{v}$）}
+\item 补齐点值：补齐 $g_d((d + 1)v), \dots, g_d(2dv)$，可以通过 $g_d(0), g_d(v), \dots, g_d(dv)$ 向右平移 $dv$ 得到。
+  \begin{itemize}
+  \item 可以视作\textbf{连续点值 $h(x) = g_d(xv)$ 向右平移 $d$}。
+  \end{itemize}
+\item 修正点值：有公式 $g_{2d}(x) = g_d(x)g_d(x + d)$，将所有点值 $g_d(x)$ 向右平移 $d$ 得到 $g_d(x + d)$，然后对应位相乘即可。
+  \begin{itemize}
+  \item 可以视作\textbf{连续点值 $h(x) = g_d(xv)$ 向右平移 $\frac{d}{v}$}。
+  \end{itemize}
 \end{itemize}
 
 操作 2：$d \gets d + 1$。
@@ -1065,13 +913,16 @@ n! = \left( \prod_{i = 0}^{v - 1}g(iv) \right) \cdot \left( \prod_{i = v^2 + 1}^
 \item 补齐点值：补齐 $g_{d + 1}((d + 1)v)$，直接暴力 $\mathcal{O}(d)$ 求出即可。
 \end{itemize}
 
-于是可以从 $d = 1$ 通过倍增变换到 $d = v$。倍增过程的时间复杂度为 $T(n) = T(\frac{n}{2}) + \mathcal{O}(n \log n) = \mathcal{O}(n \log n)$。
+于是可以从 $d = 1$ 通过倍增变换到 $d = v$。倍增过程的时间复杂度为 $T(v) = T(\frac{v}{2}) + \mathcal{O}(v \log v) = \mathcal{O}(v \log v)$。
 
 而我们只需要 $\mathcal{O}(\sqrt{n})$ 个点值，故时间复杂度 $\mathcal{O}(\sqrt{n} \log n)$。
 
 \InputCode{cpp}{contents/0x30 数学/code/0x31 快速阶乘算法.cpp}
 
+\subsection{多项式复合}
+
 \subsection{拉格朗日反演}
 
-\sout{待填坑。}
+\subsection{Power Projection}
 
+\subsection{多项式复合逆}
