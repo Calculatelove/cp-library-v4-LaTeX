@@ -751,7 +751,6 @@ f(c + x) = \left( \prod_{v = c + x - n}^{c + x} v \right) \mathrm{res}_{x + n}
 \Highlight{Chirp Z-Transform}：给出一个 $n$ 次多项式 $f(x)$ 以及整数 $c, m$，求出 $f(c^0), f(c^1), \dots, f(c^{m - 1})$。
 
 利用 $ij = \binom{i + j}{2} - \binom{i}{2} - \binom{j}{2}$，有
-
 \[
 \begin{aligned}
 f(c^i) & = \sum\limits_{j = 0}^n a_jc^{ij} \\
@@ -906,7 +905,12 @@ n! = \left( \prod_{i = 0}^{v - 1}g(iv) \right) \cdot \left( \prod_{i = v^2 + 1}^
 
 \subsection{Power Projection}
 
-\sout{待填坑。}
+\Highlight{Power Projection}：给出多项式 $A(x), B(x)$ 以及正整数 $n$，保证 $[x^0]B(x) = 0$。求出
+\[
+[x^{n - 1}]A(x)B(x)^i \quad (0 \leq i < n)
+\]
+
+\InputCode{cpp}{contents/0x30 数学/code/0x31 Power Projection.cpp}
 
 \subsection{多项式复合逆}
 
