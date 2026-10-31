@@ -119,7 +119,7 @@ A_n^m = \frac{n!}{(n - m)!} = n^{\underline{m}}
 \[
 \binom{n + k - 1}{k - 1}
 \]
-\Highlight{问题 3}：给 $n$ 个完全相同的元素分成 $k$ 组，保证第 $i$ 组至少分到 $a_i$ 个元素。
+\Highlight{问题 3}：将 $n$ 个完全相同的元素分成 $k$ 组，保证第 $i$ 组至少分到 $a_i$ 个元素。
 
 给第 $i$ 组提前安排 $a_i$ 个元素，转化为问题 2。
 \[
@@ -347,7 +347,7 @@ B_n = \sum_{i = 0}^{n - 1} \binom{n - 1}{i}B_i
 \]
 简单推导：枚举与元素 $n$ 在同一集合的元素个数 $i$，共有 $\binom{n - 1}{i}$ 种选法，剩下的元素继续划分，于是这部分的方案数为 $\binom{n - 1}{i}B_{n - 1 - i}$。
 
-\Highlight{\textbf{贝尔数级别的暴搜}}：当我们需要将 $n$ 个两两不同的元素，划分成若干个互不区分的非空子集时。\textbf{若 $n$ 较小可以直接暴搜，复杂度为 $B_n$ 级别}。
+\Highlight{\textbf{贝尔数级别的暴搜}}：当我们需要将 $n$ 个两两不同的元素，划分成若干个互不区分的非空子集时，\textbf{若 $n$ 较小可以直接暴搜，复杂度为 $B_n$ 级别}。
 
 设 $s_1, \dots, s_{t}$ 表示当前时刻已经存在的集合，每次加入一个新元素 $x$ 时有两种转移
 
@@ -457,7 +457,7 @@ G_n = \mathrm{Fib}_{n - 1} \times a + \mathrm{Fib}_n \times b
 \]
 简单推导：可以使用“类斐波那契数列”的知识解释。
 
-记 $G_0 = \mathrm{Fib}_n, G_1 = \mathrm{Fib}_{n + 1}$，$G_n = G_{n - 1} + G_{n - 2}$，则有 $\mathrm{Fib}_{n + m} = G_m$。
+记 $G_0 = \mathrm{Fib}_n, G_1 = \mathrm{Fib}_{n + 1}$，$G_k = G_{k - 1} + G_{k - 2}$，则有 $\mathrm{Fib}_{n + m} = G_m$。
 
 \Highlight{斐波那契数列相邻项互质性质}：
 \[
@@ -475,7 +475,7 @@ G_n = \mathrm{Fib}_{n - 1} \times a + \mathrm{Fib}_n \times b
 & = \gcd(\mathrm{Fib}_n, \mathrm{Fib}_{n + 1}\mathrm{Fib}_{m - n})
 \end{aligned}
 \]
-由上文提到的 $\mathrm{Fib}_{n + 1}$ 与 $\mathrm{Fib}_n$ 互质。则有 $\gcd(\mathrm{Fib}_n, \mathrm{Fib}_m) = \gcd(\mathrm{Fib}_n, \mathrm{Fib}_{m - n})$。该式子与辗转相除法相似，得证。
+由上文提到的 $\mathrm{Fib}_{n + 1}$ 与 $\mathrm{Fib}_n$ 互质，则有 $\gcd(\mathrm{Fib}_n, \mathrm{Fib}_m) = \gcd(\mathrm{Fib}_n, \mathrm{Fib}_{m - n})$。该式子与辗转相除法相似，得证。
 
 \Highlight{斐波那契数列整除性质}：
 \[
@@ -564,7 +564,7 @@ A^{iS} \equiv A^j \pmod p
 
 \Highlight{求斐波那契数列循环节（生日悖论随机化）}：
 
-若存在两个数 $0 \leq i, j \leq 6p$，满足 $(\mathrm{Fib}_i, \mathrm{Fib}_{i + 1}) \equiv (\mathrm{Fib}_j, \mathrm{Fib}_{j + 1}) \pmod p$，则 $|i - j|$ 为一个循环节（注意这并不是最小循环节）。
+若存在两个数 $0 \leq i, j \leq 6p$ ($i \neq j$)，满足 $(\mathrm{Fib}_i, \mathrm{Fib}_{i + 1}) \equiv (\mathrm{Fib}_j, \mathrm{Fib}_{j + 1}) \pmod p$，则 $|i - j|$ 为一个循环节（注意这并不是最小循环节）。
 
 每次新随机一个数 $x$，将二元组 $(\mathrm{Fib}_x, \mathrm{Fib}_{x + 1})$ 存入哈希表中，并查询哈希表中有没有与之相同的 $(\mathrm{Fib}_y, \mathrm{Fib}_{y + 1})$。
 
@@ -616,7 +616,7 @@ EGF 常用于解决\textbf{有标号的计数问题}。
 \begin{itemize}
 \item $\{1, 1, 1, \dots\} \xrightarrow{\mathrm{EGF}} e^x$
 \item $\{1, p, p^2, \dots\} \xrightarrow{\mathrm{EGF}} e^{px}$
-\item $\{1, n, n^{\underline{2}}, n^{\underline{3}}, n^{\underline{4}} \dots \} \xrightarrow{\mathrm{EGF}} (1 + x)^n$
+\item $\{1, n, n^{\underline{2}}, n^{\underline{3}}, n^{\underline{4}}, \dots \} \xrightarrow{\mathrm{EGF}} (1 + x)^n$
 \end{itemize}
 
 \Highlight{EGF 中多项式 exp 的组合意义}：
@@ -730,7 +730,7 @@ f_i = \sum_{j = 1}^{i}(-1)^{j + 1} \binom{i}{j} 2^{j(i - j)}f_{i - j}
 \[
 \frac{f_i}{i! \cdot 2^\binom{i}{2}} = \sum_{j = 1}^i \frac{(-1)^{j + 1}}{j! \cdot 2^\binom{j}{2}} \cdot \frac{f_{i - j}}{(i - j)! \cdot 2^\binom{i - j}{2}}
 \]
-设 $F_i = \frac{f_i}{i! \cdot 2^\binom{i}{2}}, G_j = \frac{(-1)^{j + 1}}{j! \cdot 2^\binom{j}{2}}$，则有
+设 $F_i = \frac{f_i}{i! \cdot 2^\binom{i}{2}}, G_j = \frac{(-1)^{j + 1}}{j! \cdot 2^\binom{j}{2}}$ ($G_0 = 0$)，则有
 \[
 \begin{gathered}
 F = G\times F + 1 \\

@@ -137,7 +137,7 @@ g_k = \sum\limits_{i = 0}^{n - 1}a_i \left( \omega_n^k \right)^i \iff a_k = \fra
 
 时间复杂度 $\mathcal{O}((n + m) \log (n + m))$。
 
-\Highlight{循环卷积}：对长度为 $L$ 的两个序列进行 DFT，将点值对应位置相乘，再 IDFT 回去。实际上是做长度为 $L$ 的循环卷积，即 $a_ib_j$ 贡献给了 $c_{(i + j) \bmod L}$。当补充界 $L \geq n + m + 1$ 即为正常卷积。只需要部分项时，可以据此缩小补充界（见半在线卷积的卡常技巧）。
+\Highlight{循环卷积}：对长度为 $L$ 的两个序列进行 DFT，将点值对应位置相乘，再 IDFT 回去。实际上是做长度为 $L$ 的循环卷积，即 $a_ib_j$ 贡献给了 $c_{(i + j) \bmod L}$。当补充界 $L \geq n + m + 1$ 时，即为正常卷积。只需要部分项时，可以据此缩小补充界（见半在线卷积的卡常技巧）。
 
 \InputCode{cpp}{contents/0x30 数学/code/0x31 FFT.cpp}
 
@@ -346,7 +346,7 @@ S_{n, m + 1} = S_{n, m} + \binom{n}{m + 1}
 \begin{quoteblock}
 卡常技巧：计算 $f_{[l, \mathrm{mid}]}$ 与 $g_{[0, r - l]}$ 的卷积结果时，\textbf{只需将补充界设定成 $\geq \mathrm{len}$ 即可（而非 $\geq \frac{3 \cdot \mathrm{len}}{2}$）}。
 
-因为循环卷积只会污染 $0 \sim \frac{\mathrm{len}}{2}$ 次项，但我们只需 $\frac{\mathrm{len}}{2} \sim \mathrm{len}$ 次项。
+因为循环卷积只会污染 $0 \sim \frac{\mathrm{len}}{2}$ 次项，但我们只需要 $\frac{\mathrm{len}}{2} \sim \mathrm{len}$ 次项。
 \end{quoteblock}
 
 \Highlight{全在线卷积}：求出 $f_0, \dots, f_n$，其中 $f_0 = 1$，$f_i = \sum_{j = 1}^i f_{i - j}g_j$，但是 $g_i$ 与 $f_0, \dots, f_{i - 1}$ 强相关。
@@ -365,7 +365,7 @@ S_{n, m + 1} = S_{n, m} + \binom{n}{m + 1}
 
 \subsection{Model：树上路径长度统计}
 
-\Highlight{树上路径长度统计}：有一个包含 $n$ 个点的树，对于每个 $k$ ($1 \leq k < n$) 求出有多少条路径的长度为 $k$。
+\Highlight{树上路径长度统计}：有一棵包含 $n$ 个点的树，对于每个 $k$ ($1 \leq k < n$) 求出有多少条路径的长度为 $k$。
 
 对树进行点分治，设当前的分治重心为 $c$，考虑统计经过当前分治重心的路径贡献。设删除分治重心 $c$ 之后，剩下的连通块内的点到 $c$ 的距离分布多项式分别为 $b_1(x), \dots, b_m(x)$，其中 $[x^k]b_i(x)$ 表示第 $i$ 个连通块有多少个距离 $c$ 为 $k$ 的点。
 
@@ -460,7 +460,7 @@ h_1(x) \equiv 2h_0(x) - A(x)h_0^2(x) \pmod{x^m}
 
 \Highlight{多项式开方}：给出一个多项式 $A(x)$，求出多项式 $B(x)$，满足 $B^2(x) = A(x)$。一般只需要求出 $B \bmod x^m$。
 
-\Highlight{多项式开方存在条件}：当 $[x^0]A(x) \neq 0$ 时，多项式 $A(x)$ 存在开方，当且仅当 $[x^0]A(x)$ 存在模意义下的二次剩余。
+\Highlight{多项式开方存在条件}：当 $[x^0]A(x) \neq 0$ 时，多项式 $A(x)$ 存在开方，当且仅当 $[x^0]A(x)$ 是模意义下的二次剩余。
 
 构造函数 $g(f(x)) = f^2(x) - A(x)$，代入牛顿迭代法得
 \[
@@ -469,7 +469,7 @@ h_1(x) \equiv h_0(x) - \frac{h_0^2(x) - A(x)}{2h_0(x)} \pmod{x^m} \\
 h_1(x) \equiv \frac{h_0^2(x) + A(x)}{2h_0(x)} \pmod{x^m}
 \end{gathered}
 \]
-初始时，$\sqrt{A(x)}$ 的常数项即为 $A(x)$ 常数项的二次剩余。当 $A(x)$ 常数项不等于 $1$ 时，还需要通过二次剩余求解常数项。
+初始时，$\sqrt{A(x)}$ 的常数项即为 $A(x)$ 常数项模意义下的平方根。当 $A(x)$ 常数项不等于 $1$ 时，还需要通过二次剩余求解常数项。
 
 时间复杂度 $\mathcal{O}(m \log m)$。
 
@@ -493,7 +493,7 @@ By the way：注意到 $\sqrt{A(x)} = e^{\frac{1}{2}\ln A(x)}$，若 $[x^0]A(x) 
 \begin{gathered}
 x^nA\left(\frac{1}{x}\right) = x^{n - m}Q\left(\frac{1}{x}\right) \times x^mB\left(\frac{1}{x}\right) + x^{n - m + 1}x^{m - 1} R\left(\frac{1}{x}\right) \\
 A^R(x) = Q^R(x) \times B^R(x) + x^{n - m + 1}x^{m - 1}R\left(\frac{1}{x}\right) \\
-A^R(x) = Q^R(x) \times B^R(x) \pmod{x^{n - m + 1}}
+A^R(x) \equiv Q^R(x) \times B^R(x) \pmod{x^{n - m + 1}}
 \end{gathered}
 \]
 由于 $Q(x)$ 的次数小于 $n - m + 1$，故对 $x^{n - m + 1}$ 取模没有影响。

@@ -64,7 +64,7 @@ n = p_1^{c_1}p_2^{c_2}\dots p_t^{c_t}
 
 \subsubsection{线性筛}
 
-为了避免埃氏筛重复标记合数。在线性筛中，我们希望确定一个合数的方式能够唯一。
+为了避免埃氏筛重复标记合数，在线性筛中，我们希望确定一个合数的方式能够唯一。
 
 从 $2$ 到 $n$ 依次扫描每一个数 $x$，在标记合数时，\textbf{我们只在 $x$ 的基础上乘一个质因子 $p$，并且保证 $p$ 是 $xp$ 的最小质因子}。这样做，每个合数只会被自己的最小质因子标记一次。并且顺带还能筛出每个数的最小质因子。
 
@@ -199,7 +199,7 @@ for (int j = 1; j <= primeCount; j ++) {
 
 于是我们每 $k$ 对 $a, b$ 就计算一次 $\gcd$。时间复杂度 $\mathcal{O}(\sqrt{p} + k^{-1}\sqrt{p} \log n)$，当 $k$ 与 $\log n$ 大致相等时，\textbf{可以得到 $\mathcal{O}(\sqrt{p})$ 的理论复杂度}。具体实现中，一般取 $k = 128$。
 
-\Highlight{Pollard-Rho 质因数分解}：如果要对 $n$ 进行质因数分解，先使用 Miller-Rabin 判断 $n$ 是否是质数，若 $n$ 为合数，则使用 Pollard-Rho 找出 $n$ 的一个非平凡因数 $d$，得到两个规模分别为 $d$ 和 $\frac{n}{d}$ 的两个子问题，递归进行求解。
+\Highlight{Pollard-Rho 质因数分解}：如果要对 $n$ 进行质因数分解，先使用 Miller-Rabin 判断 $n$ 是否是质数，若 $n$ 为合数，则使用 Pollard-Rho 找出 $n$ 的一个非平凡因数 $d$，得到两个规模分别为 $d$ 和 $\frac{n}{d}$ 的子问题，递归进行求解。
 
 \InputCode{cpp}{contents/0x30 数学/code/0x34 素性测试与质因数分解（Miller-Rabin + Pollard-Rho）.cpp}
 
@@ -222,7 +222,7 @@ for (int j = 1; j <= primeCount; j ++) {
 \Highlight{约数个数}：
 
 \begin{itemize}
-\item $n$ 的约数个数必定不超过 $2\sqrt{n}$。实际上很难到达该上界，可以简单认为在 $10^6 \sim 10^{18}$ 范围内为 $\mathcal{O}(\sqrt[3]{n})$ 级别。
+\item $n$ 的约数个数必定不超过 $2\sqrt{n}$。实际上很难达到该上界，可以简单认为在 $10^6 \sim 10^{18}$ 范围内为 $\mathcal{O}(\sqrt[3]{n})$ 级别。
 \item $1\sim n$ 的约数个数总和为 $\mathcal{O}(n \log n)$ 级别。
 \end{itemize}
 
@@ -414,8 +414,8 @@ for (int i = 0; i <= n; i ++) {
 \textbf{证明 2}：考虑归纳。当 $n = 1$ 时显然成立。当 $n > 1$ 时，设 $p$ 为 $n$ 的最小质因数，设 $a', b', c'$ ($a' \leq b' \leq c'$) 为 $\frac{n}{p}$ 的一组合法拆分。
 
 \begin{itemize}
-\item 当 $p \leq \sqrt[4]{n}$ 时。由于 $a' \leq \sqrt[3]{\frac{n}{p}}$，所以 $pa' \leq \sqrt[3]{np^2} \leq \sqrt{n}$。此时 $pa', b', c'$ 为一组合法拆分。
-\item 当 $p > \sqrt[4]{n}$ 时。假设 $a' \geq p$，则 $n = pa'b'c' \geq p^4 > n$ 矛盾，故 $a' < p$。由于 $p$ 为 $n$ 的最小质因数，所以 $a' = 1$。此时 $p, b', c'$ 为一组合法拆分。
+\item 当 $p \leq \sqrt[4]{n}$ 时，由于 $a' \leq \sqrt[3]{\frac{n}{p}}$，所以 $pa' \leq \sqrt[3]{np^2} \leq \sqrt{n}$。此时 $pa', b', c'$ 为一组合法拆分。
+\item 当 $p > \sqrt[4]{n}$ 时，假设 $a' \geq p$，则 $n = pa'b'c' \geq p^4 > n$ 矛盾，故 $a' < p$。由于 $p$ 为 $n$ 的最小质因数，所以 $a' = 1$。此时 $p, b', c'$ 为一组合法拆分。
 \end{itemize}
 
 \Separator{}
@@ -712,7 +712,7 @@ f(x)g(x) \\
 
 \subsubsection{线性筛筛积性函数}
 
-对于积性函数 $f(x)$，若\textbf{质数幂的函数值 $f(p^c)$ 便于求出}。则 $f(x)$ 的前 $n$ 项函数值可以通过线性筛得出。
+对于积性函数 $f(x)$，若\textbf{质数幂的函数值 $f(p^c)$ 便于求出}，则 $f(x)$ 的前 $n$ 项函数值可以通过线性筛得出。
 
 具体地，记 $\mathrm{low}_i$ 表示：设 $i$ 的最小质因子为 $p_1$，其次数为 $c_1$，则 $\mathrm{low}_i = p_1^{c_1}$。
 
@@ -867,7 +867,7 @@ S(n) = \frac{n(n + 1)}{2} - \sum_{i = 2}^n S\left( \left\lfloor \frac{n}{i} \rig
 \]
 求欧拉函数前缀和，更简便的方法是莫比乌斯反演，注意到 $\sum_{i = 1}^n \varphi(i) = \sum_{1 \leq i \leq j \leq n} [\gcd(i, j) = 1]$。
 
-然而 $\sum_{i = 1}^n \sum_{j = 1}^n [\gcd(i, j) = 1] = \sum_{d = 1}^n \mu(d)\left\lfloor \frac{n}{d} \right\rfloor^2$，使用莫比乌斯函数前缀和配合数论分块处理该式即可。
+而 $\sum_{i = 1}^n \sum_{j = 1}^n [\gcd(i, j) = 1] = \sum_{d = 1}^n \mu(d)\left\lfloor \frac{n}{d} \right\rfloor^2$，使用莫比乌斯函数前缀和配合数论分块处理该式即可。
 
 \subsection{Min\_25 筛}
 
@@ -973,7 +973,7 @@ a^{b \bmod \varphi(m) + \varphi(m)} & \gcd(a, m) \neq 1, b \geq \varphi(m)
 
 \subsubsection{模质数意义下逆元}
 
-当模数 $p$ 为质数时。对于任意整数 $a$（$a$ 不能是 $p$ 的倍数），有
+当模数 $p$ 为质数时，对于任意整数 $a$（$a$ 不能是 $p$ 的倍数），有
 \[
 a \times a^{p - 2} \equiv 1 \pmod p
 \]
@@ -995,7 +995,7 @@ a \times a^{p - 2} \equiv 1 \pmod p
 
 \subsubsection{预处理线性逆元}
 
-若要求解 $1 \sim n$ 所有整数模质数 $p$ 意义下的逆元。对于 $1 < i < p$，有
+若要求解 $1 \sim n$ 所有整数模质数 $p$ 意义下的逆元，对于 $1 < i < p$，有
 \[
 0 \equiv \left\lfloor \frac{p}{i} \right\rfloor i + (p \bmod i) \pmod p
 \]
@@ -1034,8 +1034,8 @@ i^{-1} \equiv -\left\lfloor \frac{p}{i} \right\rfloor (p \bmod i)^{-1} \pmod p
 在欧几里得算法的基础上归纳求解：
 
 \begin{itemize}
-\item 当 $b = 0$ 时。此时有 $x = 1, y = 0$，使得 $a \cdot 1 + 0 \cdot 0 = \gcd(a, 0)$。
-\item 当 $b > 0$ 时。由于 $\gcd(a, b) = \gcd(b, a \bmod b)$，假设存在一对 $x, y$ 使得
+\item 当 $b = 0$ 时，此时有 $x = 1, y = 0$，使得 $a \cdot 1 + 0 \cdot 0 = \gcd(a, 0)$。
+\item 当 $b > 0$ 时，由于 $\gcd(a, b) = \gcd(b, a \bmod b)$，假设存在一对 $x, y$ 使得
 \[
 bx + (a \bmod b)y = \gcd(b, a \bmod b)
 \]
@@ -1284,7 +1284,7 @@ g^{\frac{\varphi(m)}{p}} \not\equiv 1 \pmod m
 
 \Highlight{\textbf{固定底数且与模数互质}的高次同余方程 $a^x \equiv b \pmod{p}$（BSGS）}：
 
-取 $S = \left\lceil \sqrt{p} \right\rceil$，设 $m = iS - j$（其中 $i \geq 1$ 且 $0 \leq j < S$），则有
+取 $S = \left\lceil \sqrt{p} \right\rceil$，设 $x = iS - j$（其中 $i \geq 1$ 且 $0 \leq j < S$），则有
 \[
 \begin{gathered}
 a^{iS - j} \equiv b \pmod p \\
