@@ -31,7 +31,7 @@ f(s[l : r]) = \mathrm{pre}_r - \mathrm{pre}_{l - 1} \times \mathrm{base}^{r - l 
 
 \Highlight{卡自然溢出哈希（Hash Killer I）}：
 
-$\mathrm{base}$ 为偶数：此时 $\mathrm{base}^{64} \equiv 0 \pmod{2^{64}}$。所以两个长度 $> 64$，且后 $64$ 位相同的不完全相同字符串就会哈希冲突。
+$\mathrm{base}$ 为偶数：此时 $\mathrm{base}^{64} \equiv 0 \pmod{2^{64}}$。所以两个长度 $> 64$ 且后 $64$ 位相同但不完全相同的字符串就会哈希冲突。
 
 $\mathrm{base}$ 为奇数：使用 Thue Morse 序列攻击。对于二进制串 $s$，设 $\overline{s}$ 表示 $s$ 按位取反后得到的串。
 
@@ -60,10 +60,10 @@ Thue Morse 序列的规律：第 $x$ ($x \geq 0$) 位上的值等于 $\mathrm{po
 
 \Highlight{集合哈希}：集合哈希要求\textbf{数据无序}。将集合的元素通过某种映射规则转化后，再通过某种\textbf{具有交换律的运算}结合。
 
-\Highlight{可用的映射规则}：以打乱原来可能有的某些性质。
+\Highlight{可用的映射规则}：用来打乱原来可能有的某些性质。
 
 \begin{itemize}
-\item 查表映射：将原数值 $x$ 随机赋一个新数值 $c_x$ 并存入表中。
+\item 查表映射：给原数值 $x$ 随机赋一个新数值 $c_x$ 并存入表中。
 \end{itemize}
 
 \Highlight{可用的结合方式}：
@@ -123,7 +123,7 @@ f(S) = \bigoplus_{x \in S} \mathrm{shift}(x)
 
 \Highlight{长 border 结构}：$s$ 的所有长度 $\geq \left\lfloor\frac{n}{2}\right\rfloor$ 的 border，它们与 $n$ 共同构成一个等差数列，公差为 $s$ 的最小周期。
 
-证明：对于两个不同 border $n - p, n - q$ ($p, q \leq \left\lceil \frac{n}{2} \right\rceil$)，\textbf{其中 $n - p$ 是最大的 border}。
+证明：设 $n - p, n - q$ ($p, q \leq \left\lceil \frac{n}{2} \right\rceil$) 是两个不同的 border，\textbf{其中 $n - p$ 是最大的 border}。
 
 已知 $p, q$ 是 $s$ 的周期，由于 $p + q \leq n$，可知 $\gcd(p, q)$ 也是 $s$ 的周期。由于 $n - p$ 是最大 border，所以 $p$ 是最小周期。结合两个条件可得 $\gcd(p, q) = p$，即 $p \mid q$。同时，周期的整数倍也一定是周期。
 

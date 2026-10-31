@@ -44,7 +44,7 @@ n = p_1^{c_1}p_2^{c_2}\dots p_t^{c_t}
 
 时间复杂度 $\mathcal{O}(n \log \log n)$。
 
-在开 O2 优化的情况下，\texttt{std::bitset} 连续读写效率较高，可以加以优化埃氏筛。
+在开 O2 优化的情况下，\texttt{std::bitset} 连续读写效率较高，可以用来优化埃氏筛。
 
 \begin{quoteblock}
 埃氏筛的时间复杂度证明：\textbf{相当于是证明 $1 \sim n$ 中所有质数的倒数之和为 $\mathcal{O}(\log \log n)$ 级别}。
@@ -405,7 +405,7 @@ for (int i = 0; i <= n; i ++) {
 
 \subsubsection{求法 4：基于值域预处理的快速 gcd}
 
-\textbf{引理}：对于任意正整数 $n$，一定可以被拆分成三个正整数 $a, b, c$ ($a \leq b \leq c$) 的乘积，其中 $a, b\leq \sqrt{n}$，且 $c \leq \sqrt{n}$ 与 $c \in \mathbb{P}$ 至少有一个成立。
+\textbf{引理}：任意正整数 $n$ 一定可以被拆分成三个正整数 $a, b, c$ ($a \leq b \leq c$) 的乘积，其中 $a, b\leq \sqrt{n}$，且 $c \leq \sqrt{n}$ 与 $c \in \mathbb{P}$ 至少有一个成立。
 
 \textbf{证明 1}：假设 $c > \sqrt{n}$ 且 $c \notin \mathbb{P}$。因为 $c > \sqrt{n}$ 且 $abc = n$，所以 $ab \leq \sqrt{n}$。由于 $c$ 不是质数，设 $c = xy$，显然 $x, y$ 不可能同时 $>\sqrt{n}$，不妨设 $x \leq y$，则必有 $x \leq \sqrt{n}$。此时 $n$ 可以被拆分成 $x, ab, y$ 的乘积。不断对 $y$ 进行相同的讨论。
 
@@ -804,7 +804,7 @@ f(n) & = \prod_{i = 1}^t f(p_i^{c_i}) \\
 
 \subsection{杜教筛}
 
-\Highlight{杜教筛}：用于 $\mathcal{O}(n^{\frac{2}{3}})$ 时间内，求解一类数论函数 $f(x)$ 的前缀和。
+\Highlight{杜教筛}：用于在 $\mathcal{O}(n^{\frac{2}{3}})$ 时间内求解一类数论函数 $f(x)$ 的前缀和。
 
 \begin{itemize}
 \item $f(x)$ 为积性函数。
@@ -1034,7 +1034,7 @@ i^{-1} \equiv -\left\lfloor \frac{p}{i} \right\rfloor (p \bmod i)^{-1} \pmod p
 在欧几里得算法的基础上归纳求解：
 
 \begin{itemize}
-\item 当 $b = 0$ 时，此时有 $x = 1, y = 0$，使得 $a \cdot 1 + 0 \cdot 0 = \gcd(a, 0)$。
+\item 当 $b = 0$ 时，有 $x = 1, y = 0$，使得 $a \cdot 1 + 0 \cdot 0 = \gcd(a, 0)$。
 \item 当 $b > 0$ 时，由于 $\gcd(a, b) = \gcd(b, a \bmod b)$，假设存在一对 $x, y$ 使得
 \[
 bx + (a \bmod b)y = \gcd(b, a \bmod b)
@@ -1331,7 +1331,7 @@ a^{x - 1} \frac{a}{\gcd(a, p)} + k\frac{p}{\gcd(a, p)} = \frac{b}{\gcd(a, p)}
 
 \subsubsection{平方差}
 
-\Highlight{平方差表示}：当且仅当 $1, 2, 4$，以及所有形如 $4k + 2$ 的正整数，\textbf{不能}被表示成\textbf{两个不同正整数的平方差}。
+\Highlight{平方差表示}：只有 $1, 2, 4$，以及所有形如 $4k + 2$ 的正整数，\textbf{不能}被表示成\textbf{两个不同正整数的平方差}。
 
 \Highlight{平方差表示证明}：对于正整数 $n$，相当于判断是否存在两个不同的正整数 $a, b$ ($a > b$) 使得 $n = a^2 - b^2 = (a + b)(a - b)$。
 

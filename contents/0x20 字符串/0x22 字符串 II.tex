@@ -66,7 +66,7 @@
 \item 全局 +1：交换当前节点的左右儿子，然后进入 $0$ 转移边（未交换前是 $1$ 转移边）的儿子进行递归交换。
 \end{itemize}
 
-（因为考虑二进制下 +1，相当于是\textbf{从低位到高位}找到第一个 $0$ 将其改为 $1$，然后将前面的 $1$ 都改为 $0$）
+（因为二进制下 +1，相当于是\textbf{从低位到高位}找到第一个 $0$ 将其改为 $1$，然后将前面的 $1$ 都改为 $0$）
 
 \InputCode{cpp}{contents/0x20 字符串/code/0x22 01 trie 维护集合异或和.cpp}
 
@@ -174,7 +174,7 @@
 
 \Highlight{endpos 集合的维护}：在 parent 树上使用\textbf{（可持久化）线段树合并}维护。
 
-由于在 parent 树上，节点 $p$ 的 endpos 集合为 $\mathrm{subtree}(p)$ 中所有节点 endpos 集合的并集。为此，我们\textbf{在 $s[1 : i]$ 对应状态的 endpos 集合里插入位置 $i$，然后使用数据结构合并子树的 endpos 集合}。
+在 parent 树上，节点 $p$ 的 endpos 集合为 $\mathrm{subtree}(p)$ 中所有节点 endpos 集合的并集。为此，我们\textbf{在 $s[1 : i]$ 对应状态的 endpos 集合里插入位置 $i$，然后使用数据结构合并子树的 endpos 集合}。
 
 当字符集很大时，需要用到 \texttt{std::map} 建立 SAM。
 
@@ -219,7 +219,7 @@ for (int i = 1; i <= m; i ++) {
 维护每个状态 $u$ 对应 endpos 集合的任意一个元素 $\mathrm{pos}_u$，就可以做到\textbf{在原串中定位状态 $u$}。
 
 \begin{itemize}
-\item 若长度等于当前状态的 $\mathrm{maxl}$：则相当于\textbf{在 parent 树上向某一个儿子走}。在构建 parent 树的时候，预处理每个状态的极长串前加一个字符 $c$，能走到哪个儿子即可（枚举 $u$ 以及其儿子 $v$，根据 $\mathrm{pos}_v$ 在原串中定位，即可得知从 $u$ 到 $v$ 需要添加什么字符）。
+\item 若长度等于当前状态的 $\mathrm{maxl}$：则相当于\textbf{在 parent 树上向某一个儿子走}。在构建 parent 树的时候，预处理出每个状态的极长串前面加一个字符 $c$ 后会走到哪个儿子即可（枚举 $u$ 以及其儿子 $v$，根据 $\mathrm{pos}_v$ 在原串中定位，即可得知从 $u$ 到 $v$ 需要添加什么字符）。
 \item 若长度小于当前状态的 $\mathrm{maxl}$：相当于要考虑当前状态是否能够容纳新串，根据 $\mathrm{pos}_u$ 在原串中定位，判断新加的字符是否与原串对应位置上的字符匹配。
 \end{itemize}
 
@@ -299,7 +299,7 @@ f_i = \bigoplus_{s[j + 1 : i] \ \text{is} \ \text{Palindrome}} f_j
 
 考虑将一个 Series 表示的所有回文串的 dp 值都记录到最长的回文串上，设 $g_u$ 表示 $u$ 所在 Series 的 dp 贡献之和（其中 $u$ 作为该 Series 中最长回文节点）。
 
-若节点 $u$ 最近一次在位置 $i$ 结尾，且 $\mathrm{diff}_u = \mathrm{diff}_{\mathrm{link}_u}$，则 $\mathrm{link}_u$ 在严格早于 $i$ 的最近一次出现在位置 $i - \mathrm{diff}_u$ 结尾。
+若节点 $u$ 最近一次在位置 $i$ 结尾，且 $\mathrm{diff}_u = \mathrm{diff}_{\mathrm{link}_u}$，则 $\mathrm{link}_u$ 在 $i$ 之前（严格早于 $i$）的最近一次出现，结尾于位置 $i - \mathrm{diff}_u$。
 
 假设当前处理到位置 $i$，沿着 slink 处理每一个 Series 的贡献。设当前节点为 $u$，则 $u$ 所在 Series 中最短回文串长度为 $\mathrm{diff}_u + \mathrm{len}_{\mathrm{slink}_u}$，除了最短回文串的其他贡献，恰好等于在位置 $i - \mathrm{diff}_u$ 时已经维护好的 $g_{\mathrm{link}_u}$。因此有转移：
 \[

@@ -143,7 +143,7 @@ g_k = \sum\limits_{i = 0}^{n - 1}a_i \left( \omega_n^k \right)^i \iff a_k = \fra
 
 \subsection{NTT}
 
-在模意义下，我们希望找到一个东西来代替单位根。主要是要满足 FFT 过程中，用到的单位根满足的三个性质：
+在模意义下，我们希望找到一个东西来代替单位根。主要是要满足 FFT 过程中，用到的单位根的三个性质：
 
 \begin{itemize}
 \item $\omega_n$ 的阶为 $n$。
@@ -261,7 +261,7 @@ By the way：求出 $n$ 个多项式的积，次数之和为 $m$。
 
 对于分式 $\frac{A_1}{A_2}, \frac{B_1}{B_2}$，若我们已知分子 $A_1, B_1$ 与分母 $A_2, B_2$，\textbf{由通分可得} $\frac{A_1}{A_2} + \frac{B_1}{B_2} = \frac{A_1B_2 + A_2B_1}{A_2B_2}$，由此可以得到新的分子 $A_1B_2 + A_2B_1$ 与分母 $A_2B_2$。
 
-设 $A(l, r), B(l, r)$ 分别表示区间 $[l, r]$ 中所有一次分式的和，按照上述合并方法所得的分子与分母。$A(l, r), B(l, r)$ 的次数同样与区间长度有关。
+设 $A(l, r), B(l, r)$ 分别表示区间 $[l, r]$ 中所有一次分式之和通分后所得的分子与分母。$A(l, r), B(l, r)$ 的次数同样与区间长度有关。
 
 取 $\mathrm{mid} = \lfloor \frac{l + r}{2} \rfloor$，则有
 \[
@@ -834,7 +834,7 @@ a_n = \left(x^n \bmod \Gamma(x) \right) \cdot A(x)
 
 该做法的优点是，当项数 $n$ 与递推系数 $c$ 固定时，可以做到 $\mathcal{O}(k \log k \log n)$ 预处理，$\mathcal{O}(k)$ 查询。
 
-\Highlight{Fiduccia 算法的简单解释}：我们想要知道 $a_n$ 具体可以被多少个 $a_0, \dots, a_{k - 1}$ 表示。相当于是初始有一个 $a_n$，每次选出最高项 $a_i$，根据公式 $a_i = \sum_{j = 1}^kc_ja_{i - j}$ 将 $a_i$ 消成更低的项。
+\Highlight{Fiduccia 算法的简单解释}：我们想要知道 $a_n$ 具体可以表示成怎样的 $a_0, \dots, a_{k - 1}$ 的线性组合。相当于是初始有一个 $a_n$，每次选出最高项 $a_i$，根据公式 $a_i = \sum_{j = 1}^kc_ja_{i - j}$ 将 $a_i$ 消成更低的项。
 
 从生成函数的角度考虑，相当于是将 $x^i$ 替换成 $\sum_{j = 1}^kc_jx^{i - j}$，等价于减去 $x^{i - k}\left( x^k - \sum_{j = 1}^kc_jx^{k - j} \right)$。\textbf{整个过程等价于 $x^n$ 对 $x^{k} - \sum_{j = 1}^k c_jx^{k - j}$ 取模}。
 
