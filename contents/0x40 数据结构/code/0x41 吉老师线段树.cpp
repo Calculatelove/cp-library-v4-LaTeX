@@ -26,7 +26,8 @@ namespace SGT {
         int tag; // 区间取 min 标记（初始值等于 +inf，需要根据数据范围修改）
         void mk_add(int x) {
             sum += 1ll * x * len;
-            info.mx += x, info.md += x;
+            info.mx += x;
+            if (info.md != -inf) info.md += x;
             add += x;
             if (tag < inf) tag += x;
         }

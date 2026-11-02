@@ -38,7 +38,7 @@ namespace GSAM {
             int np = Last = newnode();
 
             t[np].maxl = t[p].maxl + 1;
-            for(; p && t[p].trans[c] == 0; p = t[p].link) {
+            for (; p && t[p].trans[c] == 0; p = t[p].link) {
                 t[p].trans[c] = np;
             }
 
