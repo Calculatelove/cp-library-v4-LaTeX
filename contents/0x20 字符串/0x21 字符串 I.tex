@@ -258,11 +258,26 @@ p_i \geq 0
 
 \begin{itemize}
 \item Lyndon 分解存在且唯一。
-\item 字符串 $s$ 的字典序最小非空后缀为 $w_k$。
+\item 最后一块 $w_k$ 是原串字典序最小的非空后缀（所以可以每次取字典序最小的非空后缀切开）。
+\item 第一块 $w_1$ 是原串最长的 Lyndon 前缀。
 \item 字符串 $s$ 是 Lyndon 串当且仅当 $k = 1$。
 \end{itemize}
 
-\Highlight{Lyndon 分解（duval）}：
+\Highlight{Lyndon 分解（duval）}：维护三个指针 $i, j, k$，将字符串分成三个部分：
+\begin{itemize}
+    \item $s[1 : i - 1]$：这部分的 Lyndon 分解已完成。
+    \item $s[i : j - 1]$：这部分可以被表示为 $w^c + v$，其中 $w$ 是一个 Lyndon 串，$v$ 是 $w$ 的可空真前缀。
+    \item $s[j : n]$：这部分还未处理，当前考虑的是位置 $j$。
+\end{itemize}
+
+其中 $k = j - |w|$，那么 $s_k$ 表示继续循环下去时，位置 $j$ 应当出现的字符。
+
+接下来有三种情况：
+\begin{itemize}
+    \item $s_k = s_j$：可以将 $w$ 继续循环下去，令 $k \gets k + 1$，$j \gets j + 1$。
+    \item $s_k < s_j$：此时 $w^c + v + s_j$ 本身是一个 Lyndon 串，将其作为新的 $w$，令 $k \gets i$，$j \gets j + 1$。
+    \item $s_k > s_j$：将当前的 $c$ 个 $w$ 依次加入 Lyndon 分解，然后从 $v$ 的开头重新扫描。
+\end{itemize}
 
 \InputCode{cpp}{contents/0x20 字符串/code/0x21 duval.cpp}
 
