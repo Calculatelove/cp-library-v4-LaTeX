@@ -1,6 +1,6 @@
 // 闵可夫斯基和（默认：逆时针）
 auto minkowski(std::vector<point> a, std::vector<point> b) {
-    if (a.size() <= 2 || b.size() <= 2) {
+    if (a.size() <= 2 || b.size() <= 2) { // 若 a, b 均为凸壳，可以省去这一段特判
         std::vector<point> c;
         for (point p : a) for (point q : b) c.push_back(p + q);
         return gethull(c);
