@@ -241,7 +241,7 @@ struct poly : public std::vector<int> {
         while (i < size() && (*this)[i] == 0) i ++;
         if (i == size() || 1ll * i * k >= m) return poly(m);
         int v = (*this)[i];
-        poly f = divxk(i) * qpow(v, mod - 2, mod);
+        poly f = divxk(i) / v;
         return (f.ln(m - i * k) * k).exp(m - i * k).mulxk(i * k) * qpow(v, k, mod);
         /*
             当实际 k < mod 时，可以放心使用

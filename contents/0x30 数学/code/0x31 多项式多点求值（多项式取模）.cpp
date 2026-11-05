@@ -1,6 +1,6 @@
 // 多项式多点求值（多项式取模做法），作为 poly 的成员函数
 std::vector<int> eval(std::vector<int> x) const {
-    if (empty()) return std::vector<int>(x.size(), 0);
+    if (empty()) return std::vector<int>(x.size());
     if (x.empty()) return {};
 
     int n = x.size();
