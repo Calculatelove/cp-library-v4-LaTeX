@@ -258,9 +258,9 @@ p_i \geq 0
 
 \begin{itemize}
 \item Lyndon 分解存在且唯一。
-\item 最后一块 $w_k$ 是原串字典序最小的非空后缀（所以可以每次取字典序最小的非空后缀切开）。
-\item 第一块 $w_1$ 是原串最长的 Lyndon 前缀。
 \item 字符串 $s$ 是 Lyndon 串当且仅当 $k = 1$。
+\item 第一块 $w_1$：是原串最长的 Lyndon 前缀。
+\item 最后一块 $w_k$：是原串最长的 Lyndon 后缀，也是原串字典序最小的非空后缀。
 \end{itemize}
 
 \Highlight{Lyndon 分解（duval）}：维护三个指针 $i, j, k$，将字符串分成三个部分：
@@ -278,6 +278,10 @@ p_i \geq 0
     \item $s_k < s_j$：此时 $w^c + v + s_j$ 本身是一个 Lyndon 串，将其作为新的 $w$，令 $k \gets i$，$j \gets j + 1$。
     \item $s_k > s_j$：将当前的 $c$ 个 $w$ 依次加入 Lyndon 分解，然后从 $v$ 的开头重新扫描。
 \end{itemize}
+
+每一轮 $j$ 扫描的长度，不超过 $i$ 前进长度的两倍。时间复杂度 $\mathcal{O}(n)$。
+
+duval 算法过程中，可以顺便求出每个前缀的字典序最小的非空后缀。
 
 \InputCode{cpp}{contents/0x20 字符串/code/0x21 duval.cpp}
 
