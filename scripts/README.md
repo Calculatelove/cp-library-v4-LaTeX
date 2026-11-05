@@ -8,7 +8,7 @@
 | `generate-code.py` | 以横版入口为模板生成代码版入口 `main-code.tex` |
 | `commit-info.sh` | 输出扉页使用的提交信息 |
 | `xelatex-converge.sh` | 用 XeLaTeX 编译到目录与交叉引用稳定；根目录 `run.sh` 与 `preamble/tests` 各组的 `run.sh` 共用 |
-| `tests/` | 上述工具的单元测试，以及入口一致性检查，见其 README |
+| `tests/` | 上述工具的单元测试，以及入口一致性检查，见“单元测试” |
 
 保留现有简短脚本的分工，不继续合并入口，也不添加自动判断改动影响范围的工具（用户确认：避免为简化操作引入新的维护机制）；验证范围按 `preamble/AGENTS.md` 选择。
 
@@ -22,6 +22,16 @@ scripts/check.sh --full   # 编译默认回归样张并检查 PDF 功能
 - 快速检查：`tests/` 中的全部单元测试（含入口一致性）、`generate-code.py --check`（代码版入口是否最新）。
 - `--full` 另外依次运行 `preamble/tests` 各版的 `run.sh`，以及竖版、横版、代码版的样张 PDF 检查（代码版复用横版检查）。此命令不构建或扫描整书；日常修改按 `preamble/AGENTS.md` 的分级范围选择验证。
 - 某一步失败不会中断后续步骤，最后汇总列出失败的步骤；有失败时返回 1，用法错误返回 2。PDF 检查需要 PyMuPDF，见 `preamble/tests/README.md`。
+
+### 单元测试
+
+`tests/` 中的单元测试依赖 Python 3 与 git；`scripts/check.sh` 会运行它们，也可单独运行：
+
+```sh
+python3 -B -m unittest discover -s scripts/tests
+```
+
+测试涵盖代码版生成器（`test_generate_code.py`）、扉页提交信息（`test_commit_info.py`），以及两个手写入口除布局引用外逐行一致（`test_entries.py`）。临时文件使用系统临时目录。
 
 ## 整书构建
 
@@ -46,8 +56,8 @@ scripts/check.sh --full   # 编译默认回归样张并检查 PDF 功能
 
 整书有已知的 Overfull、Underfull 等警告。页数以及警告的数量和位置都随正文变化，正文几乎每次提交都会改变它们，所以不写进文档（用户确认）。
 
-- 按 `preamble/AGENTS.md` 选择需要构建的版本，查看末轮警告并抽查受影响页面。整书不做自动逐页精细比较或 PDF 越栏扫描（用户确认：避免为日常视觉调整维护额外工具链）。
-- 日志中 xeCJK 的字体族重定义提示是预期的；不应出现缺字或字体替换。
+- 按 `preamble/AGENTS.md` 选择需要构建的版本，查看末轮警告并抽查受影响页面（整书不做自动逐页比较或越栏扫描，取舍与理由见该文件）。
+- 日志中 xeCJK 的字体族重定义提示是预期的，缺字与字体替换的判断见 `preamble/tests/README.md` 的“查看效果”。
 
 ## 网页与部署
 
@@ -96,13 +106,13 @@ python3 -B scripts/tests/test_generate_code.py
 2. 在导言区末尾、`\begin{document}` 之前加 `\EditionLabel{代码版}`；
 3. 把每个章节引用换成该章中的代码及其所属标题，没有代码的章节整章省略。
 
-横版入口中的其他内容，包括书名等元信息、`\maketitle`、`\tableofcontents` 和注释，都原样沿用；生成器本身不写死任何书籍信息。横版入口须恰好有一行布局引用和一行 `\begin{document}`，章节引用须单独占一行，否则报错、不生成入口。连续空行合并为一行。
+横版入口中的其他内容，包括书名等元信息、`\maketitle`、`\tableofcontents` 和注释，都原样沿用；生成器本身不写死任何书籍信息。横版入口须恰好有一行布局引用和一行 `\begin{document}`，章节引用须单独占一行，否则报错、不生成入口。入口文本中连续的空行合并为一行，内嵌 minted 代码内部的空行原样保留。
 
 保留代码参数、语言、缩进、空行和注释，保留标题格式和可选短标题。生成的入口不标注来源文件或行号（用户确认）：每章的一级标题与章节文件同名，已能看出出处；行号随正文增删而变，写进入口会让只改正文的提交也要重新生成入口。`--check` 不写文件，入口过期时返回非零。
 
 解析器针对当前项目的静态 LaTeX 写法，支持平衡花括号、注释和 minted 原样文本；不是 TeX 宏展开器，不支持用宏动态生成标题或代码，也不支持条件分支选目。遇到其他代码环境、带星号的标题、嵌套 `\input`、缺失文件或未闭合的参数时，报告来源并停止。正文中可用的写法见 `WRITING.md`；引入新的内容语法时，需要扩展解析与测试。
 
-所有检查通过后才原子替换入口；失败时不覆盖旧入口，内容相同时不重复写入。测试内容见 `tests/README.md`。
+所有检查通过后才原子替换入口；失败时不覆盖旧入口，内容相同时不重复写入。
 
 ## 扉页提交信息
 
@@ -126,7 +136,7 @@ bash scripts/xelatex-converge.sh [--quiet] [--strict] <tex 文件> <输出目录
 ```
 
 - 两个路径都相对于项目根目录；脚本先回到项目根目录再编译。
-- 自动重复编译直到目录与交叉引用稳定；未能收敛或没有生成有效 PDF 时失败。
+- 自动重复编译（至少两轮、最多八轮）直到目录与交叉引用稳定；未能收敛或没有生成有效 PDF 时失败。
 - 默认把 XeLaTeX 输出直接打印到终端，并逐轮提示（根目录 `run.sh` 使用）。`--quiet` 把输出写入 `<输出目录>/<文件名>-console.txt`，失败时显示日志末尾（样张使用）。
 - `--strict` 在收敛后检查日志，有缺字、Overfull、字体替换或页眉高度不足时失败（样张使用；整书有已知的 Overfull，不用此项）。
 - 收敛后汇总末轮日志的警告；`--quiet` 只显示非零项。
@@ -135,11 +145,7 @@ bash scripts/xelatex-converge.sh [--quiet] [--strict] <tex 文件> <输出目录
 
 ## 修改须知
 
-以下行为是约定，修改脚本时须保持。有单元测试的部分见 `tests/README.md`；`run.sh` 与 `xelatex-converge.sh` 没有单元测试，改动后要手工验证相应分支。
+以下约定在修改脚本或网页时须保持；`run.sh` 与 `xelatex-converge.sh` 没有单元测试，改动后要手工验证相应分支。
 
-- `run.sh`、`xelatex-converge.sh`：至少两轮、最多八轮；失败时保留辅助文件与日志；成功后保留辅助文件、日志与缓存；各版本与测试目录的产物互相隔离；使用默认的受限 shell escape。
-- `generate-code.py`：所有检查通过后才原子替换入口，失败不覆盖旧入口；`--check` 不写文件；不写死书籍信息。
-- `commit-info.sh`：取 HEAD；dirty 判定排除 `build/`；不在 Git 仓库中、没有 git 或尚无提交时不输出内容，返回 0。
 - `site/index.html` 与 `pages.yml`：PDF 只经 Release 部署到 Pages，不提交进 Git；阅读器用浏览器自带的，不引入 PDF.js；组装写在 workflow 中，不另写脚本（均为用户确认：保持仓库与部署简单）。初始缩放沿用浏览器默认，不加整页显示之类的打开参数（用户确认）。浏览器标签页的标题由网页设为“算法竞赛小记-版本名”，不改 PDF 自身的标题（用户确认）。
-- 脚本由 macOS 自带的 bash 3.2 执行。`$变量名` 后紧跟中文等非 ASCII 字符时写成 `${变量名}`，否则在 UTF-8 区域设置下，bash 会把多字节字符的前几个字节读进变量名，在 `set -u` 下报 unbound variable。也不要用关联数组、`${var,,}`、`mapfile` 等 bash 4 才有的写法。
-- 用户的终端是 UTF-8 区域设置；agent 的终端若是 C 区域设置，验证时加 `LC_ALL=zh_CN.UTF-8`。
+- bash 3.2 兼容：`$变量名` 后紧跟中文等非 ASCII 字符时写成 `${变量名}`，否则在 UTF-8 区域设置下，bash 会把多字节字符的前几个字节读进变量名，在 `set -u` 下报 unbound variable。也不要用关联数组、`${var,,}`、`mapfile` 等 bash 4 才有的写法。

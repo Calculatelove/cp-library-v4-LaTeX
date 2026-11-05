@@ -11,7 +11,7 @@
 - 原始文件 SHA-256：`de6c18832938afc99caf132b39d6a30a19bac7f2e812e28db2535b4608d27551`
 - 静态实例 SHA-256：`bb0b7c50babec65b164ff346f0a0ea1786bf306c9f08730b9410cd0237da982f`
 
-使用 fontTools 4.60.2 生成（仅更新字体时需要，编译无需 Python）：
+使用 fontTools 4.60.2 生成（仅更新字体时需要）：
 
 ```python
 from fontTools.ttLib import TTFont

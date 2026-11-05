@@ -148,6 +148,17 @@ def chapter_code(root, chapter):
     return lines, references, files, inline
 
 
+def collapse_blank(lines):
+    """相邻的空行合并为一行（整章省略后入口里会留下连续空行）；
+    内嵌的 minted 是含换行的单个元素，其中的空行原样保留。"""
+    result = []
+    for line in lines:
+        if line == '' and result and result[-1] == '':
+            continue
+        result.append(line)
+    return result
+
+
 def derive(source, blocks):
     """由横版入口文本得到代码版入口：换布局一行，导言区末尾加版本标记，章节引用行换成 blocks 中的内容。"""
     out = [HEADER]
@@ -163,7 +174,7 @@ def derive(source, blocks):
             out.extend(blocks[stripped])
         else:
             out.append(line)
-    return re.sub(r'\n{3,}', '\n\n', '\n'.join(out).rstrip('\n') + '\n')
+    return '\n'.join(collapse_blank(out)).rstrip('\n') + '\n'
 
 
 def generate(root):

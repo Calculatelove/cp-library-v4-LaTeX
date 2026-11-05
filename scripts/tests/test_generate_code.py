@@ -101,6 +101,19 @@ class GeneratorTests(unittest.TestCase):
             r'\end{document}', ''])
         self.assertEqual(result, expected)
 
+    def test_inline_code_blank_lines_kept(self):
+        """内嵌 minted 里连续的空行与只含空白的行原样保留；入口其余位置连续的空行仍合并为一行。"""
+        code = '\\begin{minted}{cpp}\nint a;\n\n\n\nint b;\n  \n\n\nint c;\n\\end{minted}'
+        entry = SKELETON % '\n\n\n'.join([r'\input{contents/0x11 a.tex}', r'\input{contents/0x12 b.tex}'])
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self.make_root(tmp, entry, {
+                'contents/0x11 a.tex': '\\section{甲}\n\n\n正文不收录。\n' + code + '\n',
+                'contents/0x12 b.tex': '\\section{乙}\n没有代码的章节整章省略。\n'})
+            result, _, _ = g.generate(root)
+        self.assertEqual(result.count(code), 1)
+        for outside in result.split(code):
+            self.assertNotIn('\n\n\n', outside)
+
     def test_prose_edits_keep_entry(self):
         """入口不含来源与行号：只增删正文或注释行时，代码版入口不变。"""
         chapter = '\\section{甲}\n正文。\n\\begin{minted}{cpp}\nint a;\n\\end{minted}\n'

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 依赖：XeLaTeX、latexminted 及项目导言区使用的 TeX 宏包；扉页提交信息另需 git（可选）。
+# 依赖：XeLaTeX、latexminted 及项目导言区使用的 TeX 宏包；代码版（code、all）另需 python3；扉页提交信息另需 git（可选）。
 # 用法：./run.sh [portrait|landscape|code|all]；默认 portrait。
 # 编译收敛循环在 scripts/xelatex-converge.sh，与 preamble/tests 的运行脚本共用。
 set -euo pipefail

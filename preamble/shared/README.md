@@ -1,6 +1,6 @@
 # 共用实现
 
-本目录存放三版共用的排版实现，由竖版、横版布局文件按依赖顺序 `\input`，代码版通过载入横版布局复用，入口不直接引用。
+本目录存放各版复用的排版实现（各文件载入的版本见下表），由竖版、横版布局文件按依赖顺序 `\input`，代码版通过载入横版布局复用，入口不直接引用。
 
 这里只放实现，不放各版参数。纸张、字号、间距、标题样式、栏距、扉页版面等参数写在各版布局文件中。修改约束、命名规则与验收范围见 `../AGENTS.md`：根据具体行为判断受影响的版本。
 
@@ -23,7 +23,7 @@
 
 ## 参数
 
-- 扉页：`\TitlePageSetup{title=…, english=…, author=…, image=…, stamp=…, image-width=…, image-height=…}`。前五项是以纸张中心为原点的纵向位置（书名、英文书名、作者的基线，配图区中心，底部信息区底边），后两项是配图区尺寸。7 项都必须给出，缺少时编译报错；数值按原文交给 TikZ，不预先换算。
+- 扉页：`\TitlePageSetup{title=…, english=…, author=…, image=…, stamp=…, image-width=…, image-height=…}`。前五项是以纸张中心为原点的纵向位置（书名、英文书名、作者的基线，配图区中心，底部信息区底边），后两项是配图区尺寸。各版布局应给齐 7 项，缺项不一定报错（如配图区宽高缺失时配图会缩成一点）；纵向位置按原文交给 TikZ，宽高经 `\setlength` 设置，都不预先换算。
 - 代码字号默认值见 `code.tex`；某版要不同时，在载入 `code.tex` 之后用 `\setminted{fontsize=…}` 覆盖。
 - 代码卡片与引用块的前后距：各版布局设定 `\BookBoxBeforeSkip`、`\BookBoxAfterSkip`，由 `code.tex` 的 `book-box-spacing` 样式使用。`mystyle.tex` 中两种盒子以 `book-box-spacing/.try` 引用，未设置该样式时沿用 tcolorbox 默认前后距。
 - 双栏版本须在 `\titleformat{\section}` 的标题文字处调用 `\BookChapterAnchor`，页眉据此判断页顶所在的章。

@@ -12,7 +12,7 @@
 
 % 版面参数：以纸张中心为原点，书名、英文书名、作者的基线，配图区中心，底部信息区底边的纵向位置，
 % 以及配图区的宽和高。配图在配图区内等比缩放后居中；标题区与底部信息区的位置不随图片比例变化。
-% 各版布局须给出全部 7 项，缺少时编译报错；数值按原文交给 TikZ 与 \setlength，不预先换算。
+% 各版布局应给齐 7 项，缺项不一定报错（如配图区宽高缺失时配图会缩成一点）；数值按原文交给 TikZ 与 \setlength，不预先换算。
 \newlength{\BookTitlePageImageWidth}
 \newlength{\BookTitlePageImageHeight}
 \pgfkeys{
@@ -54,6 +54,8 @@
 % 仓库地址：设置后，底部信息区首行为 GitHub 标志加地址，整行链接到仓库；提交哈希链接到 GitHub 上的
 % 该提交“<仓库地址>/commit/<短哈希>”，外观不变（hidelinks）。地址不带末尾的 /，按原样读取，
 % ~ _ % 等字符不需转义；不写或参数为空时没有地址行，哈希也不加链接。
+% 不另输出完整哈希（用户确认）：GitHub 能直接打开短哈希，日后与其他对象撞前缀的概率可以忽略，
+% 扉页的日期与提交说明也能定位提交。
 \ExplSyntaxOn
 \str_new:N \g__book_titlepage_repository_str
 \NewDocumentCommand \RepositoryURL { v }
@@ -107,8 +109,9 @@
       {#1} {#2}
   }
 % 仓库地址行（用户确认）：Nerd Fonts 的 GitHub 标志 oct-mark_github 加去掉开头 https:// 的地址，
-% 与日期同为等宽次要灰；整行链接到仓库，标志与地址作为整体居中。标志取自等宽字体，字形宽 1 em，
-% 步进却只有 0.6 em，所以放进 1 em 宽的盒子，再空 0.45 em 接地址。
+% 与日期同为等宽次要灰；整行链接到仓库，标志与地址作为整体居中。地址用等宽字体：苹方的连字符过宽，
+% 像破折号。标志与地址不像“（代码版）”那样悬挂：标志是这一行的开头，悬挂会让整行看着偏左。
+% 标志取自等宽字体，字形宽 1 em，步进却只有 0.6 em，所以放进 1 em 宽的盒子，再空 0.45 em 接地址。
 \str_new:N \l__book_titlepage_repository_text_str
 \cs_new_protected:Npn \__book_titlepage_repository_line:
   {
