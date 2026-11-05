@@ -63,21 +63,21 @@ Thue Morse 序列的规律：第 $x$ ($x \geq 0$) 位上的值等于 $\mathrm{po
 \Highlight{可用的映射规则}：用来打乱原来可能有的某些性质。
 
 \begin{itemize}
-\item 查表映射：给原数值 $x$ 随机赋一个新数值 $c_x$ 并存入表中。
+    \item 查表映射：给原数值 $x$ 随机赋一个新数值 $c_x$ 并存入表中。
 \end{itemize}
 
 \Highlight{可用的结合方式}：
 
 \begin{itemize}
-\item 使用加法结合：
-\[
-f(S) = \sum_{x \in S} \mathrm{shift}(x)
-\]
+    \item 使用加法结合：
+    \[
+    f(S) = \sum_{x \in S} \mathrm{shift}(x)
+    \]
 
-\item 使用异或结合（\textbf{异或哈希}）：
-\[
-f(S) = \bigoplus_{x \in S} \mathrm{shift}(x)
-\]
+    \item 使用异或结合（\textbf{异或哈希}）：
+    \[
+    f(S) = \bigoplus_{x \in S} \mathrm{shift}(x)
+    \]
 \end{itemize}
 
 此时出现偶数次元素无贡献，出现奇数次元素只贡献一次。
@@ -111,8 +111,8 @@ f(S) = \bigoplus_{x \in S} \mathrm{shift}(x)
 证明：不妨设 $p > q$，下面证明 $p - q$ 也是 $s$ 的周期。
 
 \begin{itemize}
-\item 当 $i \leq q$ 时，$s_i = s_{i + p} = s_{i + p - q}$。
-\item 当 $i > q$ 时，$s_i = s_{i - q} = s_{i + p - q}$。
+    \item 当 $i \leq q$ 时，$s_i = s_{i + p} = s_{i + p - q}$。
+    \item 当 $i > q$ 时，$s_i = s_{i - q} = s_{i + p - q}$。
 \end{itemize}
 
 所以 $p - q$ 也是 $s$ 的周期，运用辗转相除法可知 $\gcd(p, q)$ 也是 $s$ 的周期。
@@ -156,8 +156,8 @@ W, B + W, B^2 + W, \dots, B^k + W
 \Highlight{Misc}：
 
 \begin{itemize}
-\item 若 $s$ 在 $t$ 中的某两个匹配 $s_1, s_2$ 有重合，且起始位置相差 $d$，则 $d$ 均为 $s$ 与 $s_1 \cup s_2$（两个匹配区间并）的周期。
-\item 若 $|s| \geq \frac{|t|}{2}$，则 $s$ 在 $t$ 中的匹配起始位置形成等差数列。若该等差数列至少有 $3$ 项，则公差为 $s$ 的最小周期 $\mathrm{per}(s)$。
+    \item 若 $s$ 在 $t$ 中的某两个匹配 $s_1, s_2$ 有重合，且起始位置相差 $d$，则 $d$ 均为 $s$ 与 $s_1 \cup s_2$（两个匹配区间并）的周期。
+    \item 若 $|s| \geq \frac{|t|}{2}$，则 $s$ 在 $t$ 中的匹配起始位置形成等差数列。若该等差数列至少有 $3$ 项，则公差为 $s$ 的最小周期 $\mathrm{per}(s)$。
 \end{itemize}
 
 \subsection{Z Algorithm}
@@ -167,15 +167,15 @@ W, B + W, B^2 + W, \dots, B^k + W
 考虑从前向后扫。维护一个右端点最靠右，且与 $s$ 的前缀匹配的子串 $s[l : r]$。
 
 \begin{itemize}
-\item 若 $i \leq r$，则
-\[
-Z_i \geq \min(Z_{i - l + 1}, r - i + 1)
-\]
+    \item 若 $i \leq r$，则
+    \[
+    Z_i \geq \min(Z_{i - l + 1}, r - i + 1)
+    \]
 
-\item 若 $i > r$，则
-\[
-Z_i \geq 0
-\]
+    \item 若 $i > r$，则
+    \[
+    Z_i \geq 0
+    \]
 \end{itemize}
 
 在当前 $Z_i$ 的基础上不断尝试扩展。
@@ -197,15 +197,15 @@ Z_i \geq 0
 考虑从前向后扫。维护一个右端点最靠右的回文子串，不妨记该回文串的中心为 $k$。
 
 \begin{itemize}
-\item 若 $i \leq k + p_k - 1$，则
-\[
-p_i \geq \min(k + p_k - i, p_{2k - i})
-\]
+    \item 若 $i \leq k + p_k - 1$，则
+    \[
+    p_i \geq \min(k + p_k - i, p_{2k - i})
+    \]
 
-\item 若 $i > k + p_k - 1$，则
-\[
-p_i \geq 0
-\]
+    \item 若 $i > k + p_k - 1$，则
+    \[
+    p_i \geq 0
+    \]
 \end{itemize}
 
 在当前 $p_i$ 的基础上不断尝试扩展。
@@ -231,25 +231,25 @@ p_i \geq 0
 等价定义：
 
 \begin{itemize}
-\item 字符串 $s$ 的字典序\textbf{严格小于} $s$ 的其他循环移位。
-\item 对字符串 $s$ 的任意非空分解 $s = uv$，都有 $u < v$。
-\item 对字符串 $s$ 的任意非空分解 $s = uv$，都有 $uv < vu$。
+    \item 字符串 $s$ 的字典序\textbf{严格小于} $s$ 的其他循环移位。
+    \item 对字符串 $s$ 的任意非空分解 $s = uv$，都有 $u < v$。
+    \item 对字符串 $s$ 的任意非空分解 $s = uv$，都有 $uv < vu$。
 \end{itemize}
 
 \Highlight{Lyndon 串的拼接性质}：
 
 \begin{itemize}
-\item \textbf{若字符串 $u, v$ 均为 Lyndon 串并且 $u < v$，则 $uv$ 为 Lyndon 串，且 $u < uv < v$}。
-\item 若字符串 $u, v$ 均为 Lyndon 串并且 $u < v$，则对于任意正整数 $a, b$，均有 $u^av^b$ 为 Lyndon 串，且 $u < u^av^b < v$。
-\item 字符串 $s$ ($|s| \geq 2$) 是 Lyndon 串，当且仅当 $s = uv$ ($|u| > 0, |v| > 0, \boldsymbol{u < v}$) 并且 $u, v$ 均为 Lyndon 串。
+    \item \textbf{若字符串 $u, v$ 均为 Lyndon 串并且 $u < v$，则 $uv$ 为 Lyndon 串，且 $u < uv < v$}。
+    \item 若字符串 $u, v$ 均为 Lyndon 串并且 $u < v$，则对于任意正整数 $a, b$，均有 $u^av^b$ 为 Lyndon 串，且 $u < u^av^b < v$。
+    \item 字符串 $s$ ($|s| \geq 2$) 是 Lyndon 串，当且仅当 $s = uv$ ($|u| > 0, |v| > 0, \boldsymbol{u < v}$) 并且 $u, v$ 均为 Lyndon 串。
 \end{itemize}
 
 \Highlight{Lyndon 串的简单性质}：
 
 \begin{itemize}
-\item Lyndon 串不存在非空 border。
-\item 截取 Lyndon 串的某个前缀，将其末字符增大，结果仍是 Lyndon 串（截出的前缀本身不必是 Lyndon 串）。
-\item 若字符串 $s_1, s_2$ 满足 $s_1$ 是 Lyndon 串且 $s_1 > s_2$，则 $s_1 > s_2^2$。
+    \item Lyndon 串不存在非空 border。
+    \item 截取 Lyndon 串的某个前缀，将其末字符增大，结果仍是 Lyndon 串（截出的前缀本身不必是 Lyndon 串）。
+    \item 若字符串 $s_1, s_2$ 满足 $s_1$ 是 Lyndon 串且 $s_1 > s_2$，则 $s_1 > s_2^2$。
 \end{itemize}
 
 \Highlight{Lyndon 分解}：将字符串 $s$ 分解为 $w_1w_2\dots w_k$，其中所有的 $w_i$ 均为 Lyndon 串，且满足 $w_1 \geq w_2 \geq \dots \geq w_k$。
@@ -257,10 +257,10 @@ p_i \geq 0
 \Highlight{Lyndon 分解的性质}：
 
 \begin{itemize}
-\item Lyndon 分解存在且唯一。
-\item 字符串 $s$ 是 Lyndon 串当且仅当 $k = 1$。
-\item 第一块 $w_1$：是原串最长的 Lyndon 前缀。
-\item 最后一块 $w_k$：是原串最长的 Lyndon 后缀，也是原串字典序最小的非空后缀。
+    \item Lyndon 分解存在且唯一。
+    \item 字符串 $s$ 是 Lyndon 串当且仅当 $k = 1$。
+    \item 第一块 $w_1$：是原串最长的 Lyndon 前缀。
+    \item 最后一块 $w_k$：是原串最长的 Lyndon 后缀，也是原串字典序最小的非空后缀。
 \end{itemize}
 
 \Highlight{Lyndon 分解（duval）}：维护三个指针 $i, j, k$，将字符串分成三个部分：
@@ -294,9 +294,9 @@ duval 算法过程中，可以顺便求出每个前缀的字典序最小的非�
 对于两个不同的起始位置 $i, j$，已知它们的前 $k$ 位相同。考虑继续比较下一位：
 
 \begin{itemize}
-\item 若 $s_{(i + k) \bmod n} > s_{(j + k) \bmod n}$，可以发现区间 $[i, i + k]$ 内的起始位置都不能成为答案，因为\textbf{对于起始位置 $i + p$ ($p \in [0, k]$) 来说，起始位置 $j + p$ 一定更优}。所以此时可以跳过区间 $[i, i + k]$ 的起始位置，令 $i \gets i + k + 1$，$k \gets 0$。
-\item 若 $s_{(i + k) \bmod n} < s_{(j + k) \bmod n}$ 也是同理，跳过区间 $[j, j + k]$ 的起始位置，令 $j \gets j + k + 1$，$k \gets 0$。
-\item 若 $s_{(i + k) \bmod n} = s_{(j + k) \bmod n}$，令 $k \gets k + 1$，然后继续比较。
+    \item 若 $s_{(i + k) \bmod n} > s_{(j + k) \bmod n}$，可以发现区间 $[i, i + k]$ 内的起始位置都不能成为答案，因为\textbf{对于起始位置 $i + p$ ($p \in [0, k]$) 来说，起始位置 $j + p$ 一定更优}。所以此时可以跳过区间 $[i, i + k]$ 的起始位置，令 $i \gets i + k + 1$，$k \gets 0$。
+    \item 若 $s_{(i + k) \bmod n} < s_{(j + k) \bmod n}$ 也是同理，跳过区间 $[j, j + k]$ 的起始位置，令 $j \gets j + k + 1$，$k \gets 0$。
+    \item 若 $s_{(i + k) \bmod n} = s_{(j + k) \bmod n}$，令 $k \gets k + 1$，然后继续比较。
 \end{itemize}
 
 在跳转的过程中，若两个起始位置 $i, j$ 相同，则任选一个加一。最终 $\min(i, j)$ 即为最优的起始位置。

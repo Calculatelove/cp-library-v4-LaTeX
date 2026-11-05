@@ -13,32 +13,32 @@ T(n) = aT\left( \frac{n}{b} \right) + f(n)
 \textbf{以 $n^{\log_b a}$ 为处理问题用时的基准线。}
 
 \begin{itemize}
-\item 若 $f(n) = O(n^{\log_b a - \epsilon})$\newline{}
-\textbf{直觉：总工作量由“叶子层”主导。}
-\[
-T(n) = \Theta(n^{\log_b a})
-\]
+    \item 若 $f(n) = O(n^{\log_b a - \epsilon})$\newline{}
+    \textbf{直觉：总工作量由“叶子层”主导。}
+    \[
+    T(n) = \Theta(n^{\log_b a})
+    \]
 
-\item 若 $f(n) = \Theta(n^{\log_b a}\log^k n)$ 且满足 $k\geq 0$\newline{}
-\textbf{直觉：每一层工作量相近，共 $\log_b n$ 层。}
-\[
-T(n) = \Theta(n^{\log_b a}\log^{k + 1} n)
-\]
+    \item 若 $f(n) = \Theta(n^{\log_b a}\log^k n)$ 且满足 $k\geq 0$\newline{}
+    \textbf{直觉：每一层工作量相近，共 $\log_b n$ 层。}
+    \[
+    T(n) = \Theta(n^{\log_b a}\log^{k + 1} n)
+    \]
 
-\item 若 $f(n) = \Omega(n^{\log_b a + \epsilon})$ 且满足正则性条件 $af(\frac{n}{b}) \leq cf(n)$（其中 $c < 1$）\newline{}
-\textbf{直觉：总工作量由顶层的 合并/分割 主导。}
-\[
-T(n) = \Theta(f(n))
-\]
+    \item 若 $f(n) = \Omega(n^{\log_b a + \epsilon})$ 且满足正则性条件 $af(\frac{n}{b}) \leq cf(n)$（其中 $c < 1$）\newline{}
+    \textbf{直觉：总工作量由顶层的 合并/分割 主导。}
+    \[
+    T(n) = \Theta(f(n))
+    \]
 \end{itemize}
 
 \begin{quoteblock}
 一些例子：
 
 \begin{itemize}
-\item 情形 1：遍历满二叉树 $T(n) = 2T(\frac{n}{2}) + O(1) = O(n)$。
-\item 情形 2：归并排序 $T(n) = 2T(\frac{n}{2}) + O(n) = \mathcal{O}(n \log n)$。
-\item 情形 3：多项式牛顿迭代 $T(n) = T(\frac{n}{2}) + \mathcal{O}(n \log n) = \mathcal{O}(n \log n)$。
+    \item 情形 1：遍历满二叉树 $T(n) = 2T(\frac{n}{2}) + O(1) = O(n)$。
+    \item 情形 2：归并排序 $T(n) = 2T(\frac{n}{2}) + O(n) = \mathcal{O}(n \log n)$。
+    \item 情形 3：多项式牛顿迭代 $T(n) = T(\frac{n}{2}) + \mathcal{O}(n \log n) = \mathcal{O}(n \log n)$。
 \end{itemize}
 
 一个主定理处理不了的例子：$T(n) = 2T\left(\frac{n}{2}\right) + \mathcal{O}\left(\frac{n}{\log n}\right) = \mathcal{O}(n \log \log n)$。

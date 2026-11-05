@@ -67,15 +67,15 @@ c(i, j)c(i, k) & = \left(\prod_{x = 0}^{m - 1}c(i_x, j_x)\right) \left( \prod_{x
 发现括号里的式子是一个子问题。记 $a_0$ 表示幂级数 $a$ 最高位为 $0$ 的部分，$a_1$ 表示幂级数 $a$ 最高位为 $1$ 的部分。
 
 \begin{itemize}
-\item 对于 $k < n / 2$，代入 $i = k$ 得
-\[
-\mathrm{dwt}(a)_k = c(0, 0) \cdot \mathrm{dwt}(a_0)_k + c(0, 1) \cdot \mathrm{dwt}(a_1)_k
-\]
+    \item 对于 $k < n / 2$，代入 $i = k$ 得
+    \[
+    \mathrm{dwt}(a)_k = c(0, 0) \cdot \mathrm{dwt}(a_0)_k + c(0, 1) \cdot \mathrm{dwt}(a_1)_k
+    \]
 
-\item 对于 $k < n / 2$，代入 $i = k + n / 2$ 得
-\[
-\mathrm{dwt}(a)_{k + n / 2} = c(1, 0) \cdot \mathrm{dwt}(a_0)_k + c(1, 1) \cdot \mathrm{dwt}(a_1)_k
-\]
+    \item 对于 $k < n / 2$，代入 $i = k + n / 2$ 得
+    \[
+    \mathrm{dwt}(a)_{k + n / 2} = c(1, 0) \cdot \mathrm{dwt}(a_0)_k + c(1, 1) \cdot \mathrm{dwt}(a_1)_k
+    \]
 \end{itemize}
 
 如果我们知道 $\mathrm{dwt}(a_0)_i, \mathrm{dwt}(a_1)_i$ 在 $i = 0, 1, \dots, n / 2 - 1$ 处的值，就可以 $\mathcal{O}(n)$ 求出 $\mathrm{dwt}(a)_i$ 在 $i = 0, 1, \dots, n - 1$ 处的值。

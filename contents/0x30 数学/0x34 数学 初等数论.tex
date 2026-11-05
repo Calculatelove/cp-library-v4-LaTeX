@@ -147,9 +147,9 @@ for (int j = 1; j <= primeCount; j ++) {
 每次随机一个基底 $a$，进行如下的判断：
 
 \begin{itemize}
-\item 先使用快速幂求出 $v = a^u \bmod n$。如果 $v = 1$ 或 $v = n - 1$，则该轮测试通过。
-\item 然后对这个值进行 $t - 1$ 次平方操作，途中如果该值等于 $n - 1$，则该轮测试通过。
-\item 否则该轮测试不通过。
+    \item 先使用快速幂求出 $v = a^u \bmod n$。如果 $v = 1$ 或 $v = n - 1$，则该轮测试通过。
+    \item 然后对这个值进行 $t - 1$ 次平方操作，途中如果该值等于 $n - 1$，则该轮测试通过。
+    \item 否则该轮测试不通过。
 \end{itemize}
 
 在不考虑乘法的开销时，对 $n$ 进行 $k$ 轮测试的时间复杂度为 $\mathcal{O}(k \log n)$。
@@ -188,9 +188,9 @@ for (int j = 1; j <= primeCount; j ++) {
 \textbf{Brent 倍增迭代}：初始有两个点 $a, b$，在第 $k$ 轮，$a$ 原地不动，$b$ 不断地向前共计 $2^k$ 步，最后再让 $a$ 直接跳到 $b$ 的位置。$b$ 的每一步移动，我们都计算 $d = \gcd(|a - b|, n)$，当第一次出现 $d > 1$ 时
 
 \begin{itemize}
-\item 若 $1 < d < n$，则我们已经找到了一个非平凡因数，直接返回 $d$。
-\item 若 $d = n$，则说明我们已经完整地跑完了一个环，继续在环上跑也没有意义。\newline{}
-此时我们应该换个映射，或者换一个初始值继续做。
+    \item 若 $1 < d < n$，则我们已经找到了一个非平凡因数，直接返回 $d$。
+    \item 若 $d = n$，则说明我们已经完整地跑完了一个环，继续在环上跑也没有意义。\newline{}
+    此时我们应该换个映射，或者换一个初始值继续做。
 \end{itemize}
 
 \textbf{进一步，我们想要降低求解 $\gcd$ 的次数}。注意到，如果 $\gcd(a, n) > 1$，则对于任意正整数 $b$ 均有 $\gcd(ab \bmod n, n) = \gcd(ab, n) > 1$。
@@ -213,17 +213,17 @@ for (int j = 1; j <= primeCount; j ++) {
 \Highlight{整除的简单性质}：
 
 \begin{itemize}
-\item $a \mid b \land b \mid c \Longrightarrow a\mid c$。
-\item $a \mid b \land a \mid c \Longrightarrow \forall x, y \in \mathbb{Z}, a \mid (xb + yc)$。
-\item 设 $m \neq 0$，则 $a \mid b \Longrightarrow ma \mid mb$。
-\item 设 $\gcd(a, m) = 1$，则 $a \mid mb \Longrightarrow a\mid b$。
+    \item $a \mid b \land b \mid c \Longrightarrow a\mid c$。
+    \item $a \mid b \land a \mid c \Longrightarrow \forall x, y \in \mathbb{Z}, a \mid (xb + yc)$。
+    \item 设 $m \neq 0$，则 $a \mid b \Longrightarrow ma \mid mb$。
+    \item 设 $\gcd(a, m) = 1$，则 $a \mid mb \Longrightarrow a\mid b$。
 \end{itemize}
 
 \Highlight{约数个数}：
 
 \begin{itemize}
-\item $n$ 的约数个数必定不超过 $2\sqrt{n}$。实际上很难达到该上界，可以简单认为在 $10^6 \sim 10^{18}$ 范围内为 $\mathcal{O}(\sqrt[3]{n})$ 级别。
-\item $1\sim n$ 的约数个数总和为 $\mathcal{O}(n \log n)$ 级别。
+    \item $n$ 的约数个数必定不超过 $2\sqrt{n}$。实际上很难达到该上界，可以简单认为在 $10^6 \sim 10^{18}$ 范围内为 $\mathcal{O}(\sqrt[3]{n})$ 级别。
+    \item $1\sim n$ 的约数个数总和为 $\mathcal{O}(n \log n)$ 级别。
 \end{itemize}
 
 \subsection{最大公约数与最小公倍数}
@@ -244,19 +244,19 @@ for (int j = 1; j <= primeCount; j ++) {
 \Highlight{gcd 的简单性质}：
 
 \begin{itemize}
-\item $\gcd(a_1, \dots, a_n) = \gcd(|a_1|, \dots, |a_n|)$。
-\item $\gcd(a, 0) = \gcd(a, a) = |a|$。
-\item $\gcd(bq + r, b) = \gcd(r, b)$。
-\item 设 $\gcd(a, m) = 1$，则 $\gcd(a, mb) = \gcd(a, b)$。
-\item $\gcd(ma_1, \dots, ma_n) = |m| \gcd(a_1, \dots, a_n)$。
+    \item $\gcd(a_1, \dots, a_n) = \gcd(|a_1|, \dots, |a_n|)$。
+    \item $\gcd(a, 0) = \gcd(a, a) = |a|$。
+    \item $\gcd(bq + r, b) = \gcd(r, b)$。
+    \item 设 $\gcd(a, m) = 1$，则 $\gcd(a, mb) = \gcd(a, b)$。
+    \item $\gcd(ma_1, \dots, ma_n) = |m| \gcd(a_1, \dots, a_n)$。
 \end{itemize}
 
 \Highlight{lcm 的简单性质}：
 
 \begin{itemize}
-\item $\mathrm{lcm}(a_1, \dots, a_n) = \mathrm{lcm}(|a_1|, \dots, |a_n|)$。
-\item $\mathrm{lcm}(a, 1) = \mathrm{lcm}(a, a) = |a|$。
-\item $\mathrm{lcm}(ma_1, \dots, ma_n) = |m| \operatorname{lcm}(a_1, \dots, a_n)$。
+    \item $\mathrm{lcm}(a_1, \dots, a_n) = \mathrm{lcm}(|a_1|, \dots, |a_n|)$。
+    \item $\mathrm{lcm}(a, 1) = \mathrm{lcm}(a, a) = |a|$。
+    \item $\mathrm{lcm}(ma_1, \dots, ma_n) = |m| \operatorname{lcm}(a_1, \dots, a_n)$。
 \end{itemize}
 
 \subsubsection{gcd 和 lcm 的常见恒等式}
@@ -348,8 +348,8 @@ a^{\gcd(n, m)} - b^{\gcd(n, m)} \mid \gcd(a^n - b^n, a^m - b^m)
 \]
 
 \begin{itemize}
-\item 当 $a < b$ 时，一次迭代后就会转化为 $a \geq b$。
-\item 当 $a \geq b$ 时，由于 $a \bmod b \leq \frac{a}{2}$，这样的迭代不超过 $2\log_2 a$ 次。
+    \item 当 $a < b$ 时，一次迭代后就会转化为 $a \geq b$。
+    \item 当 $a \geq b$ 时，由于 $a \bmod b \leq \frac{a}{2}$，这样的迭代不超过 $2\log_2 a$ 次。
 \end{itemize}
 
 时间复杂度 $\mathcal{O}(\log \max(a, b))$。
@@ -374,10 +374,10 @@ int gcd(int a, int b) {
 \]
 
 \begin{itemize}
-\item 当 $a = b$ 时，$\gcd(a, b) = a$。
-\item“两个偶数”：$\gcd(a, b) = 2\gcd(\frac{a}{2}, \frac{b}{2})$。
-\item“一奇一偶”：不妨设 $a$ 为偶数，$\gcd(a, b) = \gcd(\frac{a}{2}, b)$。
-\item“两个奇数”：不妨设 $a \geq b$，$\gcd(a, b) = \gcd(a - b, b)$。
+    \item 当 $a = b$ 时，$\gcd(a, b) = a$。
+    \item“两个偶数”：$\gcd(a, b) = 2\gcd(\frac{a}{2}, \frac{b}{2})$。
+    \item“一奇一偶”：不妨设 $a$ 为偶数，$\gcd(a, b) = \gcd(\frac{a}{2}, b)$。
+    \item“两个奇数”：不妨设 $a \geq b$，$\gcd(a, b) = \gcd(a - b, b)$。
 \end{itemize}
 
 当至少有一个偶数的时候，每次迭代至少会将 $a, b$ 之一减半。而两个奇数相减会得到偶数。
@@ -414,8 +414,8 @@ for (int i = 0; i <= n; i ++) {
 \textbf{证明 2}：考虑归纳。当 $n = 1$ 时显然成立。当 $n > 1$ 时，设 $p$ 为 $n$ 的最小质因数，设 $a', b', c'$ ($a' \leq b' \leq c'$) 为 $\frac{n}{p}$ 的一组合法拆分。
 
 \begin{itemize}
-\item 当 $p \leq \sqrt[4]{n}$ 时，由于 $a' \leq \sqrt[3]{\frac{n}{p}}$，所以 $pa' \leq \sqrt[3]{np^2} \leq \sqrt{n}$。此时 $pa', b', c'$ 为一组合法拆分。
-\item 当 $p > \sqrt[4]{n}$ 时，假设 $a' \geq p$，则 $n = pa'b'c' \geq p^4 > n$ 矛盾，故 $a' < p$。由于 $p$ 为 $n$ 的最小质因数，所以 $a' = 1$。此时 $p, b', c'$ 为一组合法拆分。
+    \item 当 $p \leq \sqrt[4]{n}$ 时，由于 $a' \leq \sqrt[3]{\frac{n}{p}}$，所以 $pa' \leq \sqrt[3]{np^2} \leq \sqrt{n}$。此时 $pa', b', c'$ 为一组合法拆分。
+    \item 当 $p > \sqrt[4]{n}$ 时，假设 $a' \geq p$，则 $n = pa'b'c' \geq p^4 > n$ 矛盾，故 $a' < p$。由于 $p$ 为 $n$ 的最小质因数，所以 $a' = 1$。此时 $p, b', c'$ 为一组合法拆分。
 \end{itemize}
 
 \Separator{}
@@ -425,12 +425,12 @@ for (int i = 0; i <= n; i ++) {
 查询：当询问 $\gcd(p, q)$ 时，根据 gcd 对乘法的分配律，依次考虑 $q$ 的合法拆分 $a, b, c$，设当前考虑到的数为 $x$。
 
 \begin{itemize}
-\item 计算 $t = \gcd(p, x)$，具体地：
-  \begin{itemize}
-  \item 若 $x$ 为合数（此时 $x \leq \sqrt{n}$），则 $\gcd(p, x) = \gcd(x, p \bmod x)$。使用预处理的 gcd 值回答即可。
-  \item 若 $x$ 为质数，则当且仅当 $p$ 为 $x$ 的倍数时 $\gcd(p, x) = x$，否则 $\gcd(p, x) = 1$。
-  \end{itemize}
-\item 然后将 $p$ 除以 $t$，答案乘以 $t$。
+    \item 计算 $t = \gcd(p, x)$，具体地：
+    \begin{itemize}
+        \item 若 $x$ 为合数（此时 $x \leq \sqrt{n}$），则 $\gcd(p, x) = \gcd(x, p \bmod x)$。使用预处理的 gcd 值回答即可。
+        \item 若 $x$ 为质数，则当且仅当 $p$ 为 $x$ 的倍数时 $\gcd(p, x) = x$，否则 $\gcd(p, x) = 1$。
+    \end{itemize}
+    \item 然后将 $p$ 除以 $t$，答案乘以 $t$。
 \end{itemize}
 
 时间复杂度：预处理 $\mathcal{O}(n)$，查询 $\mathcal{O}(1)$。
@@ -487,8 +487,8 @@ f(a, b, c, n) & = \sum_{i = 0}^n \left\lfloor \frac{ai + b}{c} \right\rfloor \\
 \Highlight{取整的简单性质}：
 
 \begin{itemize}
-\item $x - 1 < \lfloor x \rfloor \leq x$，$x \leq \lceil x \rceil < x + 1$。
-\item $\lfloor -x \rfloor = - \lceil x \rceil$，$\lceil -x \rceil = - \lfloor x \rfloor$。
+    \item $x - 1 < \lfloor x \rfloor \leq x$，$x \leq \lceil x \rceil < x + 1$。
+    \item $\lfloor -x \rfloor = - \lceil x \rceil$，$\lceil -x \rceil = - \lfloor x \rfloor$。
 \end{itemize}
 
 \subsubsection{取整的常见恒等式}
@@ -529,8 +529,8 @@ f(a, b, c, n) & = \sum_{i = 0}^n \left\lfloor \frac{ai + b}{c} \right\rfloor \\
 简单推导：
 
 \begin{itemize}
-\item 当 $d \leq \sqrt{n}$ 时，因为 $d$ 的取值不超过 $\sqrt{n}$ 种，所以此时 $\left\lfloor \frac{n}{d} \right\rfloor$ 的取值不超过 $\sqrt{n}$ 种。
-\item 当 $d > \sqrt{n}$ 时，因为 $\left\lfloor \frac{n}{d} \right\rfloor \leq \sqrt{n}$，所以此时 $\left\lfloor \frac{n}{d} \right\rfloor$ 的取值不超过 $\sqrt{n}$ 种。
+    \item 当 $d \leq \sqrt{n}$ 时，因为 $d$ 的取值不超过 $\sqrt{n}$ 种，所以此时 $\left\lfloor \frac{n}{d} \right\rfloor$ 的取值不超过 $\sqrt{n}$ 种。
+    \item 当 $d > \sqrt{n}$ 时，因为 $\left\lfloor \frac{n}{d} \right\rfloor \leq \sqrt{n}$，所以此时 $\left\lfloor \frac{n}{d} \right\rfloor$ 的取值不超过 $\sqrt{n}$ 种。
 \end{itemize}
 
 \textbf{性质 2}：若 $m \in D_n$，则 $D_m \subseteq D_n$。
@@ -616,18 +616,18 @@ for (int x = 1, nx; x <= h; x = nx + 1) {
 \Highlight{积性函数的简单性质}：
 
 \begin{itemize}
-\item 对于任意积性函数 $f(x)$（除了恒为 $0$ 的函数），有 $f(1) = 1$。
-\item 对于任意积性函数 $f(x), g(x)$，\textbf{以下的函数仍为积性函数}
-\[
-\begin{gathered}
-f(x^p) \\
-f^p(x) \\
-f(x)g(x) \\
-\sum_{d \mid x} f(d)g\left( \frac{x}{d} \right)
-\end{gathered}
-\]
+    \item 对于任意积性函数 $f(x)$（除了恒为 $0$ 的函数），有 $f(1) = 1$。
+    \item 对于任意积性函数 $f(x), g(x)$，\textbf{以下的函数仍为积性函数}
+    \[
+    \begin{gathered}
+    f(x^p) \\
+    f^p(x) \\
+    f(x)g(x) \\
+    \sum_{d \mid x} f(d)g\left( \frac{x}{d} \right)
+    \end{gathered}
+    \]
 
-\item 对于任意积性函数 $f(x)$，将 $x$ 唯一分解成 $x = p_1^{c_1}p_2^{c_2}\dots p_t^{c_t}$，有 $f(x) = \prod_{i = 1}^t f(p_i^{c_i})$。
+    \item 对于任意积性函数 $f(x)$，将 $x$ 唯一分解成 $x = p_1^{c_1}p_2^{c_2}\dots p_t^{c_t}$，有 $f(x) = \prod_{i = 1}^t f(p_i^{c_i})$。
 \end{itemize}
 
 \subsubsection{常见积性函数（及性质）}
@@ -719,9 +719,9 @@ f(x)g(x) \\
 在线性筛的过程中，额外进行如下的维护
 
 \begin{itemize}
-\item 维护 $\mathrm{low}_i$ 数组。
-\item 每当筛出一个质数 $p$，就将 $f(p), f(p^2), \dots, f(p^c)$ 全都求出来。
-\item 其余满足 $i \neq\mathrm{low}_i$ 的 $i$，使用递推式 $f(i) = f(\mathrm{low}_i) \times f\left(\frac{i}{\mathrm{low}_i}\right)$ 计算函数值。
+    \item 维护 $\mathrm{low}_i$ 数组。
+    \item 每当筛出一个质数 $p$，就将 $f(p), f(p^2), \dots, f(p^c)$ 全都求出来。
+    \item 其余满足 $i \neq\mathrm{low}_i$ 的 $i$，使用递推式 $f(i) = f(\mathrm{low}_i) \times f\left(\frac{i}{\mathrm{low}_i}\right)$ 计算函数值。
 \end{itemize}
 
 \InputCode{cpp}{contents/0x30 数学/code/0x34 线性筛筛积性函数.cpp}
@@ -735,10 +735,10 @@ f(x)g(x) \\
 \Highlight{狄利克雷卷积的简单性质}：
 
 \begin{itemize}
-\item 交换律：$f \ast g = g \ast f$。
-\item 结合律：$(f \ast g) \ast h = f \ast (g \ast h)$。
-\item 分配律：$f \ast (g + h) = f \ast g + f \ast h$。
-\item 单位元：$f \ast \epsilon = \epsilon \ast f = f$，因此 $\epsilon$ 又被称为狄利克雷卷积的单位元。
+    \item 交换律：$f \ast g = g \ast f$。
+    \item 结合律：$(f \ast g) \ast h = f \ast (g \ast h)$。
+    \item 分配律：$f \ast (g + h) = f \ast g + f \ast h$。
+    \item 单位元：$f \ast \epsilon = \epsilon \ast f = f$，因此 $\epsilon$ 又被称为狄利克雷卷积的单位元。
 \end{itemize}
 
 \subsubsection{常见狄利克雷卷积式}
@@ -751,16 +751,16 @@ f(x)g(x) \\
 简单推导：由积性函数的简单性质可知，关于 $n$ 的函数 $f(n) = \sum_{d \mid n} \mu(d)$ 为积性函数。
 
 \begin{itemize}
-\item 当 $n = 1$ 时，等式成立。
-\item 当 $n > 1$ 时，将 $n$ 唯一分解成 $n = p_1^{c_1}p_2^{c_2}\dots p_t^{c_t}$，则有
-\[
-\begin{aligned}
-f(n) & = \prod_{i = 1}^t f(p_i^{c_i}) \\
-& = \prod_{i = 1}^t \left( \sum_{j = 0}^{c_i} \mu(p_i^j) \right) \\
-& = \prod_{i = 1}^t \left( \mu(1) + \mu(p_i) \right) \\
-& = 0
-\end{aligned}
-\]
+    \item 当 $n = 1$ 时，等式成立。
+    \item 当 $n > 1$ 时，将 $n$ 唯一分解成 $n = p_1^{c_1}p_2^{c_2}\dots p_t^{c_t}$，则有
+    \[
+    \begin{aligned}
+    f(n) & = \prod_{i = 1}^t f(p_i^{c_i}) \\
+    & = \prod_{i = 1}^t \left( \sum_{j = 0}^{c_i} \mu(p_i^j) \right) \\
+    & = \prod_{i = 1}^t \left( \mu(1) + \mu(p_i) \right) \\
+    & = 0
+    \end{aligned}
+    \]
 \end{itemize}
 
 综上，$\sum_{d \mid n} \mu(d) = [n = 1]$。
@@ -773,17 +773,17 @@ f(n) & = \prod_{i = 1}^t f(p_i^{c_i}) \\
 简单推导：由积性函数的简单性质可知，关于 $n$ 的函数 $f(n) = \sum_{d \mid n} \varphi(d)$ 为积性函数。
 
 \begin{itemize}
-\item 当 $n = 1$ 时，等式成立。
-\item 当 $n > 1$ 时，将 $n$ 唯一分解成 $n = p_1^{c_1}p_2^{c_2}\dots p_t^{c_t}$，则有
-\[
-\begin{aligned}
-f(n) & = \prod_{i = 1}^t f(p_i^{c_i}) \\
-& = \prod_{i = 1}^t \left( \sum_{j = 0}^{c_i} \varphi(p_i^j) \right) \\
-& = \prod_{i = 1}^t \left( 1 + \sum_{j = 1}^{c_i}(p_i^{j} - p_i^{j - 1}) \right) \\
-& = \prod_{i = 1}^t p_i^{c_i} \\
-& = n
-\end{aligned}
-\]
+    \item 当 $n = 1$ 时，等式成立。
+    \item 当 $n > 1$ 时，将 $n$ 唯一分解成 $n = p_1^{c_1}p_2^{c_2}\dots p_t^{c_t}$，则有
+    \[
+    \begin{aligned}
+    f(n) & = \prod_{i = 1}^t f(p_i^{c_i}) \\
+    & = \prod_{i = 1}^t \left( \sum_{j = 0}^{c_i} \varphi(p_i^j) \right) \\
+    & = \prod_{i = 1}^t \left( 1 + \sum_{j = 1}^{c_i}(p_i^{j} - p_i^{j - 1}) \right) \\
+    & = \prod_{i = 1}^t p_i^{c_i} \\
+    & = n
+    \end{aligned}
+    \]
 \end{itemize}
 
 综上，$\sum_{d \mid n} \varphi(d) = n$。
@@ -807,8 +807,8 @@ f(n) & = \prod_{i = 1}^t f(p_i^{c_i}) \\
 \Highlight{杜教筛}：用于在 $\mathcal{O}(n^{\frac{2}{3}})$ 时间内求解一类数论函数 $f(x)$ 的前缀和。
 
 \begin{itemize}
-\item $f(x)$ 为积性函数。
-\item 存在辅助函数 $g(x)$，满足函数 $f \ast g$ 与 $g$ 的前缀和便于求出。
+    \item $f(x)$ 为积性函数。
+    \item 存在辅助函数 $g(x)$，满足函数 $f \ast g$ 与 $g$ 的前缀和便于求出。
 \end{itemize}
 
 \Separator{}
@@ -887,12 +887,12 @@ S(n) = \frac{n(n + 1)}{2} - \sum_{i = 2}^n S\left( \left\lfloor \frac{n}{i} \rig
 \Highlight{同余的简单性质}：
 
 \begin{itemize}
-\item 若 $a \equiv b \pmod m, c \equiv d \pmod m$，则
-  \begin{itemize}
-  \item $a + c \equiv b + d \pmod m$。
-  \item $ac \equiv bd \pmod m$。
-  \end{itemize}
-\item $ac \equiv bc \pmod m \Longrightarrow a \equiv b \pmod{\frac{m}{\gcd(c, m)}}$。
+    \item 若 $a \equiv b \pmod m, c \equiv d \pmod m$，则
+    \begin{itemize}
+        \item $a + c \equiv b + d \pmod m$。
+        \item $ac \equiv bd \pmod m$。
+    \end{itemize}
+    \item $ac \equiv bc \pmod m \Longrightarrow a \equiv b \pmod{\frac{m}{\gcd(c, m)}}$。
 \end{itemize}
 
 \Highlight{同余类}：集合 $\overline{a} = \{a + km \mid k \in \mathbb{Z}\}$（其中 $a\in [0, m - 1]$）中的所有数模 $m$ 同余，余数均为 $a$，该集合称为一个模 $m$ 的同余类。
@@ -904,8 +904,8 @@ S(n) = \frac{n(n + 1)}{2} - \sum_{i = 2}^n S\left( \left\lfloor \frac{n}{i} \rig
 \Highlight{剩余系的简单性质}：
 
 \begin{itemize}
-\item 对于 $i = 0, 1, \dots, m - 1$，$ia \bmod m$ 两两不同当且仅当 $\gcd(a, m) = 1$。
-\item 对于与 $m$ 互质的整数 $i, j$，$ij \bmod m$ 仍然与 $m$ 互质。
+    \item 对于 $i = 0, 1, \dots, m - 1$，$ia \bmod m$ 两两不同当且仅当 $\gcd(a, m) = 1$。
+    \item 对于与 $m$ 互质的整数 $i, j$，$ij \bmod m$ 仍然与 $m$ 互质。
 \end{itemize}
 
 \subsection{费马小定理与欧拉定理}
@@ -1014,16 +1014,16 @@ i^{-1} \equiv -\left\lfloor \frac{p}{i} \right\rfloor (p \bmod i)^{-1} \pmod p
 \Highlight{裴蜀定理}：设 $a, b$ 是不均为 $0$ 的整数。
 
 \begin{itemize}
-\item 存在整数 $x, y$，使得 $ax + by = \gcd(a, b)$。
-\item 对于任意整数 $x, y$，均有 $\gcd(a, b) \mid ax + by$。
+    \item 存在整数 $x, y$，使得 $ax + by = \gcd(a, b)$。
+    \item 对于任意整数 $x, y$，均有 $\gcd(a, b) \mid ax + by$。
 \end{itemize}
 
 \begin{quoteblock}
 裴蜀定理可以扩展到更多维：设 $a_1, \dots, a_n$ 是不均为 $0$ 的整数。
 
 \begin{itemize}
-\item 存在整数 $x_1, \dots, x_n$，使得 $\sum_{i = 1}^n a_ix_i = \gcd(a_1, \dots, a_n)$。
-\item 对于任意整数 $x_1, \dots, x_n$，均有 $\gcd(a_1, \dots, a_n) \mid \sum_{i = 1}^n a_ix_i$。
+    \item 存在整数 $x_1, \dots, x_n$，使得 $\sum_{i = 1}^n a_ix_i = \gcd(a_1, \dots, a_n)$。
+    \item 对于任意整数 $x_1, \dots, x_n$，均有 $\gcd(a_1, \dots, a_n) \mid \sum_{i = 1}^n a_ix_i$。
 \end{itemize}
 
 可以使用 gcd 的结合律进行归纳证明。
@@ -1034,11 +1034,11 @@ i^{-1} \equiv -\left\lfloor \frac{p}{i} \right\rfloor (p \bmod i)^{-1} \pmod p
 在欧几里得算法的基础上归纳求解：
 
 \begin{itemize}
-\item 当 $b = 0$ 时，有 $x = 1, y = 0$，使得 $a \cdot 1 + 0 \cdot 0 = \gcd(a, 0)$。
-\item 当 $b > 0$ 时，由于 $\gcd(a, b) = \gcd(b, a \bmod b)$，假设存在一对 $x, y$ 使得
-\[
-bx + (a \bmod b)y = \gcd(b, a \bmod b)
-\]
+    \item 当 $b = 0$ 时，有 $x = 1, y = 0$，使得 $a \cdot 1 + 0 \cdot 0 = \gcd(a, 0)$。
+    \item 当 $b > 0$ 时，由于 $\gcd(a, b) = \gcd(b, a \bmod b)$，假设存在一对 $x, y$ 使得
+    \[
+    bx + (a \bmod b)y = \gcd(b, a \bmod b)
+    \]
 \end{itemize}
 
 利用 $a \bmod b = a - \left\lfloor \frac{a}{b} \right\rfloor b$，并移项得
@@ -1056,14 +1056,14 @@ ay + b\left(x - \left\lfloor \frac{a}{b} \right\rfloor y\right) = \gcd(a, b)
 \Highlight{\textbf{二元一次不定方程 $ax + by = c$}}：
 
 \begin{itemize}
-\item 有解性：当且仅当 $\gcd(a, b) \mid c$。
-\item 通解：使用 exgcd 找出方程 $ax + by = \gcd(a, b)$ 的一组特解 $x_0, y_0$，则有通解
-\[
-\begin{gathered}
-x = \frac{c}{\gcd(a, b)}x_0 + k\frac{b}{\gcd(a, b)} \\
-y = \frac{c}{\gcd(a, b)}y_0 - k\frac{a}{\gcd(a, b)}
-\end{gathered}
-\]
+    \item 有解性：当且仅当 $\gcd(a, b) \mid c$。
+    \item 通解：使用 exgcd 找出方程 $ax + by = \gcd(a, b)$ 的一组特解 $x_0, y_0$，则有通解
+    \[
+    \begin{gathered}
+    x = \frac{c}{\gcd(a, b)}x_0 + k\frac{b}{\gcd(a, b)} \\
+    y = \frac{c}{\gcd(a, b)}y_0 - k\frac{a}{\gcd(a, b)}
+    \end{gathered}
+    \]
 \end{itemize}
 
 \Highlight{\textbf{线性同余方程 $ax \equiv b \pmod m$}}：
@@ -1071,11 +1071,11 @@ y = \frac{c}{\gcd(a, b)}y_0 - k\frac{a}{\gcd(a, b)}
 该方程等价于 $ax - b$ 为 $m$ 的倍数，不妨设为 $-y$ 倍，则原方程转化为 $ax + my = b$。
 
 \begin{itemize}
-\item 有解性：当且仅当 $\gcd(a, m) \mid b$。
-\item 通解：使用 exgcd 找出方程 $ax + my = \gcd(a, m)$ 的一组特解 $x_0, y_0$，则有通解
-\[
-x = \frac{b}{\gcd(a, m)}x_0 + k\frac{m}{\gcd(a, m)}
-\]
+    \item 有解性：当且仅当 $\gcd(a, m) \mid b$。
+    \item 通解：使用 exgcd 找出方程 $ax + my = \gcd(a, m)$ 的一组特解 $x_0, y_0$，则有通解
+    \[
+    x = \frac{b}{\gcd(a, m)}x_0 + k\frac{m}{\gcd(a, m)}
+    \]
 \end{itemize}
 
 \begin{quoteblock}
@@ -1104,21 +1104,21 @@ x \equiv a_n \pmod{m_n}
 \]
 
 \begin{itemize}
-\item 记所有模数的积为 $M = \prod_{i = 1}^n m_i$。
-\item 对于第 $i$ 个方程：
-  \begin{itemize}
-  \item 记 $M_i = \frac{M}{m_i}$。
-  \item 记 $V_i$ 表示 $M_i$ 在模 $m_i$ 意义下的逆元。
-  \end{itemize}
-\item 特解：
-\[
-x_0 = \sum_{i = 1}^n a_iM_iV_i
-\]
+    \item 记所有模数的积为 $M = \prod_{i = 1}^n m_i$。
+    \item 对于第 $i$ 个方程：
+    \begin{itemize}
+        \item 记 $M_i = \frac{M}{m_i}$。
+        \item 记 $V_i$ 表示 $M_i$ 在模 $m_i$ 意义下的逆元。
+    \end{itemize}
+    \item 特解：
+    \[
+    x_0 = \sum_{i = 1}^n a_iM_iV_i
+    \]
 
-\item 通解：
-\[
-x = x_0 + kM
-\]
+    \item 通解：
+    \[
+    x = x_0 + kM
+    \]
 \end{itemize}
 
 \InputCode{cpp}{contents/0x30 数学/code/0x34 CRT（中国剩余定理）.cpp}
@@ -1159,34 +1159,34 @@ x \equiv a' \pmod{m'}
 \Highlight{阶的简单性质}：
 
 \begin{itemize}
-\item 若 $a\perp m$，则 $a, a^2, \dots, a^{\mathrm{ord}_m(a)}$ 模 $m$ 两两不同。
-\item 若 $a \perp m$，则 $\mathrm{ord}_m(a) \mid \varphi(m)$。
-\item 若 $a \perp m$，则
-\[
-\mathrm{ord}_m(a^k) = \frac{\mathrm{ord}_m(a)}{\gcd(\mathrm{ord}_m(a), k)}
-\]
+    \item 若 $a\perp m$，则 $a, a^2, \dots, a^{\mathrm{ord}_m(a)}$ 模 $m$ 两两不同。
+    \item 若 $a \perp m$，则 $\mathrm{ord}_m(a) \mid \varphi(m)$。
+    \item 若 $a \perp m$，则
+    \[
+    \mathrm{ord}_m(a^k) = \frac{\mathrm{ord}_m(a)}{\gcd(\mathrm{ord}_m(a), k)}
+    \]
 
 \end{itemize}
 
 简单推导：$\mathrm{ord}_m(a^k) = \frac{\mathrm{lcm}(\mathrm{ord}_m(a), k)}{k}$。
 
 \begin{itemize}
-\item 若 $a\perp m, b\perp m$，则
-\[
-\frac{\mathrm{lcm}(\mathrm{ord}_m(a), \mathrm{ord}_m(b))}{\gcd(\mathrm{ord}_m(a), \mathrm{ord}_m(b))} \mid
-\mathrm{ord}_m(ab)
-\mid \mathrm{lcm}(\mathrm{ord}_m(a), \mathrm{ord}_m(b))
-\]
+    \item 若 $a\perp m, b\perp m$，则
+    \[
+    \frac{\mathrm{lcm}(\mathrm{ord}_m(a), \mathrm{ord}_m(b))}{\gcd(\mathrm{ord}_m(a), \mathrm{ord}_m(b))} \mid
+    \mathrm{ord}_m(ab)
+    \mid \mathrm{lcm}(\mathrm{ord}_m(a), \mathrm{ord}_m(b))
+    \]
 
-\item 若 $a \perp m, b \perp m$，则
-\[
-\mathrm{ord}_m(ab) = \mathrm{ord}_m(a)\mathrm{ord}_m(b) \iff \gcd(\mathrm{ord}_m(a), \mathrm{ord}_m(b)) = 1
-\]
+    \item 若 $a \perp m, b \perp m$，则
+    \[
+    \mathrm{ord}_m(ab) = \mathrm{ord}_m(a)\mathrm{ord}_m(b) \iff \gcd(\mathrm{ord}_m(a), \mathrm{ord}_m(b)) = 1
+    \]
 
-\item 若 $a \perp m, b\perp m$，则总是存在满足 $c\perp m$ 的 $c$，使得
-\[
-\mathrm{ord}_m(c) = \mathrm{lcm}(\mathrm{ord}_m(a), \mathrm{ord}_m(b))
-\]
+    \item 若 $a \perp m, b\perp m$，则总是存在满足 $c\perp m$ 的 $c$，使得
+    \[
+    \mathrm{ord}_m(c) = \mathrm{lcm}(\mathrm{ord}_m(a), \mathrm{ord}_m(b))
+    \]
 \end{itemize}
 
 \begin{quoteblock}
@@ -1274,10 +1274,10 @@ g^{\frac{\varphi(m)}{p}} \not\equiv 1 \pmod m
 \Highlight{离散对数的简单性质}：
 
 \begin{itemize}
-\item $\mathrm{ind}_g(ab) \equiv \mathrm{ind}_g(a) + \mathrm{ind}_g(b) \pmod{\varphi(m)}$。\newline{}
-说明离散对数可以将“模 $m$ 意义下乘法”转换成“模 $\varphi(m)$ 意义下加法”。
-\item $\mathrm{ind}_g(a^k) \equiv k\operatorname{ind}_g(a) \pmod{\varphi(m)}$。
-\item $\mathrm{ind}_{g_1}(a) \equiv \operatorname{ind}_{g_2}(a) \operatorname{ind}_{g_1}(g_2) \pmod{\varphi(m)}$。其中 $g_1, g_2$ 均为 $m$ 的原根。
+    \item $\mathrm{ind}_g(ab) \equiv \mathrm{ind}_g(a) + \mathrm{ind}_g(b) \pmod{\varphi(m)}$。\newline{}
+    说明离散对数可以将“模 $m$ 意义下乘法”转换成“模 $\varphi(m)$ 意义下加法”。
+    \item $\mathrm{ind}_g(a^k) \equiv k\operatorname{ind}_g(a) \pmod{\varphi(m)}$。
+    \item $\mathrm{ind}_{g_1}(a) \equiv \operatorname{ind}_{g_2}(a) \operatorname{ind}_{g_1}(g_2) \pmod{\varphi(m)}$。其中 $g_1, g_2$ 均为 $m$ 的原根。
 \end{itemize}
 
 \subsection{高次同余方程}
@@ -1321,8 +1321,8 @@ a^{x - 1} \frac{a}{\gcd(a, p)} + k\frac{p}{\gcd(a, p)} = \frac{b}{\gcd(a, p)}
 记 $v = g^a$，此时得到一个\textbf{固定底数}的高次同余方程 $v^c \equiv b \pmod p$。
 
 \begin{itemize}
-\item 特解：$x \equiv g^{c} \pmod p$，使用 BSGS 得到。
-\item 通解：$x \equiv g^{c + k\frac{p - 1}{\gcd(p - 1, a)}} \pmod{p}$，此时 $k = 0, 1, \dots, \gcd(p - 1, a) - 1$，其中 $\frac{p - 1}{\gcd(p - 1, a)}$ 表示 $\mathrm{ord}_p(g^a)$。
+    \item 特解：$x \equiv g^{c} \pmod p$，使用 BSGS 得到。
+    \item 通解：$x \equiv g^{c + k\frac{p - 1}{\gcd(p - 1, a)}} \pmod{p}$，此时 $k = 0, 1, \dots, \gcd(p - 1, a) - 1$，其中 $\frac{p - 1}{\gcd(p - 1, a)}$ 表示 $\mathrm{ord}_p(g^a)$。
 \end{itemize}
 
 注意特判 $b = 0$ 的情况。
@@ -1340,11 +1340,11 @@ a^{x - 1} \frac{a}{\gcd(a, p)} + k\frac{p}{\gcd(a, p)} = \frac{b}{\gcd(a, p)}
 故对于正整数 $n$，相当于是要找出 $n$ 的两个不同的约数 $x, y$，且 $x, y$ 奇偶性相同。
 
 \begin{itemize}
-\item 当 $n$ 为奇数时，取 $x = n, y = 1$ 即可。
-\item 当 $n$ 为偶数时：
-  \begin{itemize}
-  \item 当 $n = 4k$ 时，取 $x = 2k, y = 2$ 即可。
-  \item 当 $n = 4k + 2$ 时，分解出的两个约数，必为一奇一偶。
-  \end{itemize}
-\item $n = 1, 2, 4$ 为特殊情况，均不能被表示。
+    \item 当 $n$ 为奇数时，取 $x = n, y = 1$ 即可。
+    \item 当 $n$ 为偶数时：
+    \begin{itemize}
+        \item 当 $n = 4k$ 时，取 $x = 2k, y = 2$ 即可。
+        \item 当 $n = 4k + 2$ 时，分解出的两个约数，必为一奇一偶。
+    \end{itemize}
+    \item $n = 1, 2, 4$ 为特殊情况，均不能被表示。
 \end{itemize}
