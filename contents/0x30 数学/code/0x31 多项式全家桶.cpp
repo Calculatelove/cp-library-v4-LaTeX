@@ -31,7 +31,7 @@ void idft(std::vector<int> &a) {
     }
 }
 
-// 多项式全家桶（2026-10-29）
+// 多项式全家桶（2026-11-05）
 struct poly : public std::vector<int> {
     using std::vector<int>::vector;
     explicit poly(const std::vector<int> &a) : std::vector<int>(a) {}
@@ -117,19 +117,19 @@ struct poly : public std::vector<int> {
     }
 
     poly &operator += (poly b) {
-        return (*this) = (*this) + b;
+        return *this = *this + b;
     }
     poly &operator -= (poly b) {
-        return (*this) = (*this) - b;
+        return *this = *this - b;
     }
     poly &operator *= (poly b) {
-        return (*this) = (*this) * b;
+        return *this = *this * b;
     }
     poly &operator *= (int b) {
-        return (*this) = (*this) * b;
+        return *this = *this * b;
     }
     poly &operator /= (int b) {
-        return (*this) = (*this) / b;
+        return *this = *this / b;
     }
 
     poly mulxk(int k) const {
@@ -139,11 +139,11 @@ struct poly : public std::vector<int> {
     }
     poly divxk(int k) const {
         if (k >= size()) return poly();
-        return poly((*this).begin() + k, (*this).end());
+        return poly(begin() + k, end());
     }
     poly modxk(int k) const {
         if (k >= size()) return *this;
-        return poly((*this).begin(), (*this).begin() + k);
+        return poly(begin(), begin() + k);
     }
     poly cirxk(int k) const {
         auto res = *this;
@@ -160,7 +160,7 @@ struct poly : public std::vector<int> {
     }
 
     poly mulT(poly b) const {
-        if (b.size() == 0) return poly();
+        if (b.empty()) return poly();
         std::reverse(b.begin(), b.end());
         return ((*this) * b).divxk(b.size() - 1);
         // 等价于“翻转卷积”，a.mulT(b) 相当于是求 a[i] * b[j] -> c[i - j]
@@ -187,7 +187,7 @@ struct poly : public std::vector<int> {
 
     // 多项式求逆
     poly inv(int m) const { // 需要保证常数项不为 0
-        poly x{qpow((*this)[0], mod - 2, mod)};
+        poly x{qpow(front(), mod - 2, mod)};
         int k = 1;
         while (k < m) {
             k <<= 1;
@@ -260,13 +260,11 @@ struct poly : public std::vector<int> {
             v[i] = 1ll * v[mod % i] * (mod - mod / i) % mod;
         }
 
-        auto &&a = *this;
+        const poly a = *this;
         int n = a.size() - 1, inv = qpow(a[0], mod - 2, mod);
-
         poly b(m);
         b[0] = qpow(a[0], k, mod);
         for (int i = 0; i + 1 < m; i ++) {
-            b[i + 1] = 0;
             for (int j = std::max(0, i - n + 1); j <= i; j ++) {
                 add(b[i + 1], 1ll * (i - j + 1) * a[i - j + 1] % mod * b[j] % mod);
             }
@@ -281,7 +279,7 @@ struct poly : public std::vector<int> {
 
     // 多项式多点求值
     std::vector<int> eval(std::vector<int> x) const {
-        if (empty()) return std::vector<int>(x.size(), 0);
+        if (empty()) return std::vector<int>(x.size());
 
         int n = std::max(x.size(), size());
         std::vector<poly> t(n * 4);
@@ -317,7 +315,6 @@ struct poly : public std::vector<int> {
     // 多项式平移
     poly shift(int c) const {
         int n = size() - 1;
-
         std::vector<int> fact(n + 1), facv(n + 1);
         fact[0] = 1;
         for (int i = 1; i <= n; i ++) {
@@ -348,7 +345,7 @@ struct poly : public std::vector<int> {
     std::vector<int> czt(int c, int m) const {
         c = norm(c);
         if (c == 0) {
-            std::vector<int> res(m, (*this)[0]);
+            std::vector<int> res(m, front());
             res[0] = 0;
             for (int x : *this) add(res[0], x);
             return res;
@@ -411,7 +408,6 @@ poly lagrange(std::vector<std::pair<int, int>> seq) {
 // 连续点值平移
 std::vector<int> shift_conti(std::vector<int> y, int c) {
     int n = y.size() - 1; // y 下标从 0 开始，连续点值为 f(0), ..., f(n)
-
     std::vector<int> fact(n + 1), facv(n + 1);
     fact[0] = 1;
     for (int i = 1; i <= n; i ++) {
@@ -439,11 +435,7 @@ std::vector<int> shift_conti(std::vector<int> y, int c) {
     }
     std::vector<int> ans(n + 1);
     for (int i = 0; i <= n; i ++) {
-        if (z) {
-            ans[i] = y[norm(c + i)];
-        } else {
-            ans[i] = 1ll * num * res[i + n] % mod;
-        }
+        ans[i] = z ? y[norm(c + i)] : 1ll * num * res[i + n] % mod;
         int v1 = norm(c - n + i), v2 = norm(c + i + 1);
         if (v1) mul(num, a[i]); else z --;
         if (v2) mul(num, v2); else z ++;
