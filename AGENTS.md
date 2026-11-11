@@ -32,6 +32,7 @@ C.L. 的算法竞赛第四版笔记，已由 Markdown 迁移为 LaTeX，内容�
 | 要改的内容 | 先读 |
 | --- | --- |
 | `contents/` 中的正文、代码或图片 | `WRITING.md` |
+| 将 LaTeX 笔记转换为博客用 Markdown | `WRITING.md`、[convert-markdown/README.md](convert-markdown/README.md)（本地转换工作区，被 Git 忽略） |
 | `preamble/` 中的排版 | `preamble/AGENTS.md`、`preamble/README.md`；改 `shared/` 另读 `preamble/shared/README.md` |
 | 样张与 PDF 检查 | `preamble/tests/README.md` |
 | 构建、生成与检查脚本 | `scripts/README.md` |

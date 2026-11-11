@@ -1,5 +1,6 @@
 .DS_Store
+__pycache__/
 /preamble/tests/build/
 /build/
-__pycache__/
+/convert-markdown/
 commit-manual.md
