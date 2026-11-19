@@ -281,9 +281,9 @@ W, B + W, B^2 + W, \dots, B^k + W
 
 每一轮 $j$ 扫描的长度，不超过 $i$ 前进长度的两倍。时间复杂度 $\mathcal{O}(n)$。
 
-duval 算法过程中，可以顺便求出每个前缀的字典序最小的非空后缀。
-
 \InputCode{cpp}{contents/0x20 字符串/code/0x21 duval.cpp}
+
+\Highlight{标准分解}：对于 Lyndon 串 $s$ ($|s| \geq 2$)，记 $s$ 的最长 Lyndon 真后缀为 $v$，此时 $s = uv$，记 $(u, v)$ 为 $s$ 的标准分解。
 
 \subsection{最小表示法}
 
@@ -306,4 +306,3 @@ duval 算法过程中，可以顺便求出每个前缀的字典序最小的非�
 \InputCode{cpp}{contents/0x20 字符串/code/0x21 最小表示法.cpp}
 
 \subsection{带通配符的字符串匹配}
-
